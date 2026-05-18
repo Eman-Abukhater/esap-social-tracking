@@ -1,11 +1,26 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
+
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
 import { products, users } from "@/lib/mock-data";
+
 import type { ContentItem } from "@/lib/types";
 
 type ContentTableProps = {
   contentItems: ContentItem[];
+
+  onStatusChange: (
+    contentId: string,
+    status: ContentItem["status"]
+  ) => void;
 };
 
 function getStatusLabel(status: string) {
@@ -26,7 +41,10 @@ function getPriorityVariant(priority: string) {
   return "outline";
 }
 
-export function ContentTable({ contentItems }: ContentTableProps) {
+export function ContentTable({
+  contentItems,
+  onStatusChange,
+}: ContentTableProps) {
   return (
     <div className="overflow-hidden rounded-xl border bg-background shadow-sm">
       <table className="w-full">
@@ -35,21 +53,27 @@ export function ContentTable({ contentItems }: ContentTableProps) {
             <th className="px-4 py-3 text-left text-xs font-medium uppercase text-muted-foreground">
               Title
             </th>
+
             <th className="px-4 py-3 text-left text-xs font-medium uppercase text-muted-foreground">
               Product
             </th>
+
             <th className="px-4 py-3 text-left text-xs font-medium uppercase text-muted-foreground">
               Platforms
             </th>
+
             <th className="px-4 py-3 text-left text-xs font-medium uppercase text-muted-foreground">
               Status
             </th>
+
             <th className="px-4 py-3 text-left text-xs font-medium uppercase text-muted-foreground">
               Assigned To
             </th>
+
             <th className="px-4 py-3 text-left text-xs font-medium uppercase text-muted-foreground">
               Priority
             </th>
+
             <th className="px-4 py-3 text-left text-xs font-medium uppercase text-muted-foreground">
               Scheduled
             </th>
@@ -73,7 +97,10 @@ export function ContentTable({ contentItems }: ContentTableProps) {
               >
                 <td className="px-4 py-4">
                   <div>
-                    <p className="font-medium">{item.title}</p>
+                    <p className="font-medium">
+                      {item.title}
+                    </p>
+
                     <p className="text-sm text-muted-foreground">
                       {item.type}
                     </p>
@@ -84,10 +111,14 @@ export function ContentTable({ contentItems }: ContentTableProps) {
                   <div className="flex items-center gap-2">
                     <span
                       className="h-2.5 w-2.5 rounded-full"
-                      style={{ backgroundColor: product?.color }}
+                      style={{
+                        backgroundColor: product?.color,
+                      }}
                     />
+
                     <span className="text-sm">
-                      {product?.name ?? "Unknown Product"}
+                      {product?.name ??
+                        "Unknown Product"}
                     </span>
                   </div>
                 </td>
@@ -95,7 +126,10 @@ export function ContentTable({ contentItems }: ContentTableProps) {
                 <td className="px-4 py-4">
                   <div className="flex flex-wrap gap-1">
                     {item.platforms.map((platform) => (
-                      <Badge key={platform} variant="outline">
+                      <Badge
+                        key={platform}
+                        variant="outline"
+                      >
                         {platform}
                       </Badge>
                     ))}
@@ -103,17 +137,56 @@ export function ContentTable({ contentItems }: ContentTableProps) {
                 </td>
 
                 <td className="px-4 py-4">
-                  <Badge variant="secondary">
-                    {getStatusLabel(item.status)}
-                  </Badge>
+                  <Select
+                    value={item.status}
+                    onValueChange={(value) =>
+                      onStatusChange(
+                        item.id,
+                        value as ContentItem["status"]
+                      )
+                    }
+                  >
+                    <SelectTrigger className="w-[160px]">
+                      <SelectValue>
+                        {getStatusLabel(item.status)}
+                      </SelectValue>
+                    </SelectTrigger>
+
+                    <SelectContent>
+                      <SelectItem value="planned">
+                        Planned
+                      </SelectItem>
+
+                      <SelectItem value="in_progress">
+                        In Progress
+                      </SelectItem>
+
+                      <SelectItem value="review">
+                        Review
+                      </SelectItem>
+
+                      <SelectItem value="done">
+                        Done
+                      </SelectItem>
+
+                      <SelectItem value="published">
+                        Published
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
                 </td>
 
                 <td className="px-4 py-4 text-sm">
-                  {assignedUser?.name ?? "Unassigned"}
+                  {assignedUser?.name ??
+                    "Unassigned"}
                 </td>
 
                 <td className="px-4 py-4">
-                  <Badge variant={getPriorityVariant(item.priority)}>
+                  <Badge
+                    variant={getPriorityVariant(
+                      item.priority
+                    )}
+                  >
                     {item.priority}
                   </Badge>
                 </td>
