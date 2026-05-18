@@ -1,7 +1,6 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
-
 import {
   Select,
   SelectContent,
@@ -9,14 +8,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
 import { products, users } from "@/lib/mock-data";
-
 import type { ContentItem } from "@/lib/types";
 
 type ContentTableProps = {
   contentItems: ContentItem[];
-
   onStatusChange: (
     contentId: string,
     status: ContentItem["status"]
@@ -41,164 +37,150 @@ function getPriorityVariant(priority: string) {
   return "outline";
 }
 
+function formatDate(date?: string) {
+  if (!date) return "—";
+
+  return new Date(date).toLocaleDateString();
+}
+
 export function ContentTable({
   contentItems,
   onStatusChange,
 }: ContentTableProps) {
+  if (contentItems.length === 0) {
+    return (
+      <div className="rounded-xl border bg-background p-10 text-center shadow-sm">
+        <h3 className="font-semibold">No content found</h3>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Create your first content item to start tracking execution.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="overflow-hidden rounded-xl border bg-background shadow-sm">
-      <table className="w-full">
-        <thead className="border-b bg-muted/50">
-          <tr>
-            <th className="px-4 py-3 text-left text-xs font-medium uppercase text-muted-foreground">
-              Title
-            </th>
+      <div className="overflow-x-auto">
+        <table className="w-full min-w-[1000px]">
+          <thead className="border-b bg-muted/50">
+            <tr>
+              <th className="px-4 py-3 text-left text-xs font-medium uppercase text-muted-foreground">
+                Title
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-medium uppercase text-muted-foreground">
+                Product
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-medium uppercase text-muted-foreground">
+                Platforms
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-medium uppercase text-muted-foreground">
+                Status
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-medium uppercase text-muted-foreground">
+                Assigned To
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-medium uppercase text-muted-foreground">
+                Priority
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-medium uppercase text-muted-foreground">
+                Scheduled
+              </th>
+              <th className="px-4 py-3 text-left text-xs font-medium uppercase text-muted-foreground">
+                Last Updated
+              </th>
+            </tr>
+          </thead>
 
-            <th className="px-4 py-3 text-left text-xs font-medium uppercase text-muted-foreground">
-              Product
-            </th>
+          <tbody>
+            {contentItems.map((item) => {
+              const product = products.find(
+                (product) => product.id === item.productId
+              );
 
-            <th className="px-4 py-3 text-left text-xs font-medium uppercase text-muted-foreground">
-              Platforms
-            </th>
+              const assignedUser = users.find(
+                (user) => user.id === item.assignedTo
+              );
 
-            <th className="px-4 py-3 text-left text-xs font-medium uppercase text-muted-foreground">
-              Status
-            </th>
+              return (
+                <tr
+                  key={item.id}
+                  className="border-b transition hover:bg-muted/40"
+                >
+                  <td className="px-4 py-4">
+                    <div>
+                      <p className="font-medium">{item.title}</p>
+                      <p className="text-sm capitalize text-muted-foreground">
+                        {item.type}
+                      </p>
+                    </div>
+                  </td>
 
-            <th className="px-4 py-3 text-left text-xs font-medium uppercase text-muted-foreground">
-              Assigned To
-            </th>
+                  <td className="px-4 py-4">
+                    <div className="flex items-center gap-2">
+                      <span
+                        className="h-2.5 w-2.5 rounded-full"
+                        style={{ backgroundColor: product?.color }}
+                      />
+                      <span className="text-sm">
+                        {product?.name ?? "Unknown Product"}
+                      </span>
+                    </div>
+                  </td>
 
-            <th className="px-4 py-3 text-left text-xs font-medium uppercase text-muted-foreground">
-              Priority
-            </th>
+                  <td className="px-4 py-4">
+                    <div className="flex flex-wrap gap-1">
+                      {item.platforms.map((platform) => (
+                        <Badge key={platform} variant="outline">
+                          {platform}
+                        </Badge>
+                      ))}
+                    </div>
+                  </td>
 
-            <th className="px-4 py-3 text-left text-xs font-medium uppercase text-muted-foreground">
-              Scheduled
-            </th>
-          </tr>
-        </thead>
+                  <td className="px-4 py-4">
+                    <Select
+                      value={item.status}
+                      onValueChange={(value) =>
+                        onStatusChange(item.id, value as ContentItem["status"])
+                      }
+                    >
+                      <SelectTrigger className="w-[160px]">
+                        <SelectValue>{getStatusLabel(item.status)}</SelectValue>
+                      </SelectTrigger>
 
-        <tbody>
-          {contentItems.map((item) => {
-            const product = products.find(
-              (product) => product.id === item.productId
-            );
+                      <SelectContent>
+                        <SelectItem value="planned">Planned</SelectItem>
+                        <SelectItem value="in_progress">In Progress</SelectItem>
+                        <SelectItem value="review">Review</SelectItem>
+                        <SelectItem value="done">Done</SelectItem>
+                        <SelectItem value="published">Published</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </td>
 
-            const assignedUser = users.find(
-              (user) => user.id === item.assignedTo
-            );
+                  <td className="px-4 py-4 text-sm">
+                    {assignedUser?.name ?? "Unassigned"}
+                  </td>
 
-            return (
-              <tr
-                key={item.id}
-                className="border-b transition hover:bg-muted/40"
-              >
-                <td className="px-4 py-4">
-                  <div>
-                    <p className="font-medium">
-                      {item.title}
-                    </p>
+                  <td className="px-4 py-4">
+                    <Badge variant={getPriorityVariant(item.priority)}>
+                      {item.priority}
+                    </Badge>
+                  </td>
 
-                    <p className="text-sm text-muted-foreground">
-                      {item.type}
-                    </p>
-                  </div>
-                </td>
+                  <td className="px-4 py-4 text-sm text-muted-foreground">
+                    {formatDate(item.scheduledDate)}
+                  </td>
 
-                <td className="px-4 py-4">
-                  <div className="flex items-center gap-2">
-                    <span
-                      className="h-2.5 w-2.5 rounded-full"
-                      style={{
-                        backgroundColor: product?.color,
-                      }}
-                    />
-
-                    <span className="text-sm">
-                      {product?.name ??
-                        "Unknown Product"}
-                    </span>
-                  </div>
-                </td>
-
-                <td className="px-4 py-4">
-                  <div className="flex flex-wrap gap-1">
-                    {item.platforms.map((platform) => (
-                      <Badge
-                        key={platform}
-                        variant="outline"
-                      >
-                        {platform}
-                      </Badge>
-                    ))}
-                  </div>
-                </td>
-
-                <td className="px-4 py-4">
-                  <Select
-                    value={item.status}
-                    onValueChange={(value) =>
-                      onStatusChange(
-                        item.id,
-                        value as ContentItem["status"]
-                      )
-                    }
-                  >
-                    <SelectTrigger className="w-[160px]">
-                      <SelectValue>
-                        {getStatusLabel(item.status)}
-                      </SelectValue>
-                    </SelectTrigger>
-
-                    <SelectContent>
-                      <SelectItem value="planned">
-                        Planned
-                      </SelectItem>
-
-                      <SelectItem value="in_progress">
-                        In Progress
-                      </SelectItem>
-
-                      <SelectItem value="review">
-                        Review
-                      </SelectItem>
-
-                      <SelectItem value="done">
-                        Done
-                      </SelectItem>
-
-                      <SelectItem value="published">
-                        Published
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                </td>
-
-                <td className="px-4 py-4 text-sm">
-                  {assignedUser?.name ??
-                    "Unassigned"}
-                </td>
-
-                <td className="px-4 py-4">
-                  <Badge
-                    variant={getPriorityVariant(
-                      item.priority
-                    )}
-                  >
-                    {item.priority}
-                  </Badge>
-                </td>
-
-                <td className="px-4 py-4 text-sm text-muted-foreground">
-                  {item.scheduledDate ?? "—"}
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+                  <td className="px-4 py-4 text-sm text-muted-foreground">
+                    {formatDate(item.updatedAt)}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }

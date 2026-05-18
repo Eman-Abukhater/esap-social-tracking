@@ -1,12 +1,19 @@
 "use client";
 
 import { useEffect, useState } from "react";
+
 import { AddContentDialog } from "@/components/content/add-content-dialog";
+import {
+  ContentFilters,
+  type ContentFiltersState,
+} from "@/components/content/content-filters";
 import { ContentTable } from "@/components/tables/content-table";
+
 import {
   activityLogs as initialActivityLogs,
   contentItems as initialContentItems,
 } from "@/lib/mock-data";
+
 import type { ActivityLog, ContentItem } from "@/lib/types";
 
 export default function ContentPage() {
@@ -15,6 +22,13 @@ export default function ContentPage() {
 
   const [activityLogs, setActivityLogs] =
     useState<ActivityLog[]>(initialActivityLogs);
+
+  const [filters, setFilters] = useState<ContentFiltersState>({
+    search: "",
+    productId: "all",
+    status: "all",
+    platform: "all",
+  });
 
   useEffect(() => {
     const savedContentItems = localStorage.getItem("esap-content-items");
@@ -36,6 +50,28 @@ export default function ContentPage() {
   useEffect(() => {
     localStorage.setItem("esap-activity-logs", JSON.stringify(activityLogs));
   }, [activityLogs]);
+
+  const filteredContentItems = contentItems.filter((item) => {
+    const matchesSearch = item.title
+      .toLowerCase()
+      .includes(filters.search.toLowerCase());
+
+    const matchesProduct =
+      filters.productId === "all" || item.productId === filters.productId;
+
+    const matchesStatus =
+      filters.status === "all" || item.status === filters.status;
+
+    const matchesPlatform =
+      filters.platform === "all" || item.platforms.includes(filters.platform as never);
+
+    return (
+      matchesSearch &&
+      matchesProduct &&
+      matchesStatus &&
+      matchesPlatform
+    );
+  });
 
   function handleStatusChange(
     contentId: string,
@@ -98,6 +134,7 @@ export default function ContentPage() {
       <div className="flex items-start justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold">Content</h1>
+
           <p className="text-muted-foreground">
             Manage and track all social media content.
           </p>
@@ -106,8 +143,10 @@ export default function ContentPage() {
         <AddContentDialog onCreateContent={handleCreateContent} />
       </div>
 
+      <ContentFilters filters={filters} onFiltersChange={setFilters} />
+
       <ContentTable
-        contentItems={contentItems}
+        contentItems={filteredContentItems}
         onStatusChange={handleStatusChange}
       />
     </div>

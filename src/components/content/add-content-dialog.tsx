@@ -20,7 +20,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { products } from "@/lib/mock-data";
+import { products, users } from "@/lib/mock-data";
 import type { ContentItem, Platform } from "@/lib/types";
 
 type AddContentDialogProps = {
@@ -46,8 +46,20 @@ export function AddContentDialog({ onCreateContent }: AddContentDialogProps) {
     status: "",
     productId: "",
     priority: "",
+    assignedTo: "",
+    scheduledDate: "",
     platforms: [] as Platform[],
   });
+
+  const isFormValid =
+    formData.title.trim() !== "" &&
+    formData.type !== "" &&
+    formData.status !== "" &&
+    formData.productId !== "" &&
+    formData.priority !== "" &&
+    formData.assignedTo !== "" &&
+    formData.scheduledDate !== "" &&
+    formData.platforms.length > 0;
 
   function resetForm() {
     setFormData({
@@ -57,6 +69,8 @@ export function AddContentDialog({ onCreateContent }: AddContentDialogProps) {
       status: "",
       productId: "",
       priority: "",
+      assignedTo: "",
+      scheduledDate: "",
       platforms: [],
     });
   }
@@ -71,13 +85,6 @@ export function AddContentDialog({ onCreateContent }: AddContentDialogProps) {
         : [...formData.platforms, platform],
     });
   }
-  const isFormValid =
-    formData.title.trim() !== "" &&
-    formData.type !== "" &&
-    formData.status !== "" &&
-    formData.productId !== "" &&
-    formData.priority !== "" &&
-    formData.platforms.length > 0;
 
   function handleCancel() {
     resetForm();
@@ -85,6 +92,8 @@ export function AddContentDialog({ onCreateContent }: AddContentDialogProps) {
   }
 
   function handleCreateContent() {
+    if (!isFormValid) return;
+
     const newContent: ContentItem = {
       id: crypto.randomUUID(),
       title: formData.title,
@@ -93,8 +102,9 @@ export function AddContentDialog({ onCreateContent }: AddContentDialogProps) {
       productId: formData.productId,
       status: formData.status as ContentItem["status"],
       platforms: formData.platforms,
+      scheduledDate: formData.scheduledDate,
       createdBy: "user-1",
-      assignedTo: "user-2",
+      assignedTo: formData.assignedTo,
       priority: formData.priority as ContentItem["priority"],
       tags: [],
       createdAt: new Date().toISOString(),
@@ -135,10 +145,7 @@ export function AddContentDialog({ onCreateContent }: AddContentDialogProps) {
               placeholder="Write content description..."
               value={formData.description}
               onChange={(event) =>
-                setFormData({
-                  ...formData,
-                  description: event.target.value,
-                })
+                setFormData({ ...formData, description: event.target.value })
               }
             />
           </div>
@@ -155,7 +162,6 @@ export function AddContentDialog({ onCreateContent }: AddContentDialogProps) {
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select type" />
                 </SelectTrigger>
-
                 <SelectContent>
                   <SelectItem value="post">Post</SelectItem>
                   <SelectItem value="video">Video</SelectItem>
@@ -176,7 +182,6 @@ export function AddContentDialog({ onCreateContent }: AddContentDialogProps) {
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select status" />
                 </SelectTrigger>
-
                 <SelectContent>
                   <SelectItem value="planned">Planned</SelectItem>
                   <SelectItem value="in_progress">In Progress</SelectItem>
@@ -200,7 +205,6 @@ export function AddContentDialog({ onCreateContent }: AddContentDialogProps) {
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select product" />
                 </SelectTrigger>
-
                 <SelectContent>
                   {products.map((product) => (
                     <SelectItem key={product.id} value={product.id}>
@@ -222,13 +226,49 @@ export function AddContentDialog({ onCreateContent }: AddContentDialogProps) {
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select priority" />
                 </SelectTrigger>
-
                 <SelectContent>
                   <SelectItem value="low">Low</SelectItem>
                   <SelectItem value="medium">Medium</SelectItem>
                   <SelectItem value="high">High</SelectItem>
                 </SelectContent>
               </Select>
+            </div>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Assigned To</label>
+              <Select
+                value={formData.assignedTo}
+                onValueChange={(value) =>
+                  setFormData({ ...formData, assignedTo: value })
+                }
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select user" />
+                </SelectTrigger>
+                <SelectContent>
+                  {users.map((user) => (
+                    <SelectItem key={user.id} value={user.id}>
+                      {user.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Scheduled Date</label>
+              <Input
+                type="date"
+                value={formData.scheduledDate}
+                onChange={(event) =>
+                  setFormData({
+                    ...formData,
+                    scheduledDate: event.target.value,
+                  })
+                }
+              />
             </div>
           </div>
 
@@ -255,7 +295,12 @@ export function AddContentDialog({ onCreateContent }: AddContentDialogProps) {
             <Button type="button" variant="outline" onClick={handleCancel}>
               Cancel
             </Button>
-            <Button type="button" onClick={handleCreateContent} disabled={!isFormValid}>
+
+            <Button
+              type="button"
+              onClick={handleCreateContent}
+              disabled={!isFormValid}
+            >
               Create Content
             </Button>
           </div>
