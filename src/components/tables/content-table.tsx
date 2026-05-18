@@ -1,7 +1,12 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
-import { contentItems, products, users } from "@/lib/mock-data";
+import { products, users } from "@/lib/mock-data";
+import type { ContentItem } from "@/lib/types";
+
+type ContentTableProps = {
+  contentItems: ContentItem[];
+};
 
 function getStatusLabel(status: string) {
   const labels: Record<string, string> = {
@@ -21,7 +26,7 @@ function getPriorityVariant(priority: string) {
   return "outline";
 }
 
-export function ContentTable() {
+export function ContentTable({ contentItems }: ContentTableProps) {
   return (
     <div className="overflow-hidden rounded-xl border bg-background shadow-sm">
       <table className="w-full">
@@ -81,7 +86,9 @@ export function ContentTable() {
                       className="h-2.5 w-2.5 rounded-full"
                       style={{ backgroundColor: product?.color }}
                     />
-                    <span className="text-sm">{product?.name}</span>
+                    <span className="text-sm">
+                      {product?.name ?? "Unknown Product"}
+                    </span>
                   </div>
                 </td>
 
@@ -102,7 +109,7 @@ export function ContentTable() {
                 </td>
 
                 <td className="px-4 py-4 text-sm">
-                  {assignedUser?.name}
+                  {assignedUser?.name ?? "Unassigned"}
                 </td>
 
                 <td className="px-4 py-4">

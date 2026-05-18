@@ -20,8 +20,15 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { products } from "@/lib/mock-data";
+import type { ContentItem } from "@/lib/types";
 
-export function AddContentDialog() {
+type AddContentDialogProps = {
+  onCreateContent: (content: ContentItem) => void;
+};
+
+export function AddContentDialog({
+  onCreateContent,
+}: AddContentDialogProps) {
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -30,6 +37,35 @@ export function AddContentDialog() {
     productId: "",
     priority: "",
   });
+
+  function handleCreateContent() {
+    const newContent: ContentItem = {
+      id: crypto.randomUUID(),
+      title: formData.title,
+      description: formData.description,
+      type: formData.type as ContentItem["type"],
+      productId: formData.productId,
+      status: formData.status as ContentItem["status"],
+      platforms: ["Instagram"],
+      createdBy: "user-1",
+      assignedTo: "user-2",
+      priority: formData.priority as ContentItem["priority"],
+      tags: [],
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    onCreateContent(newContent);
+
+    setFormData({
+      title: "",
+      description: "",
+      type: "",
+      status: "",
+      productId: "",
+      priority: "",
+    });
+  }
 
   return (
     <Dialog>
@@ -159,7 +195,8 @@ export function AddContentDialog() {
 
           <div className="flex justify-end gap-3">
             <Button variant="outline">Cancel</Button>
-            <Button>Create Content</Button>
+
+            <Button onClick={handleCreateContent}>Create Content</Button>
           </div>
         </div>
       </DialogContent>
