@@ -3,6 +3,7 @@
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
   DialogContent,
@@ -20,15 +21,24 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { products } from "@/lib/mock-data";
-import type { ContentItem } from "@/lib/types";
+import type { ContentItem, Platform } from "@/lib/types";
 
 type AddContentDialogProps = {
   onCreateContent: (content: ContentItem) => void;
 };
 
-export function AddContentDialog({
-  onCreateContent,
-}: AddContentDialogProps) {
+const platforms: Platform[] = [
+  "LinkedIn",
+  "X",
+  "Instagram",
+  "TikTok",
+  "YouTube",
+  "Facebook",
+];
+
+export function AddContentDialog({ onCreateContent }: AddContentDialogProps) {
+  const [open, setOpen] = useState(false);
+
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -36,7 +46,43 @@ export function AddContentDialog({
     status: "",
     productId: "",
     priority: "",
+    platforms: [] as Platform[],
   });
+
+  function resetForm() {
+    setFormData({
+      title: "",
+      description: "",
+      type: "",
+      status: "",
+      productId: "",
+      priority: "",
+      platforms: [],
+    });
+  }
+
+  function togglePlatform(platform: Platform) {
+    const isSelected = formData.platforms.includes(platform);
+
+    setFormData({
+      ...formData,
+      platforms: isSelected
+        ? formData.platforms.filter((item) => item !== platform)
+        : [...formData.platforms, platform],
+    });
+  }
+  const isFormValid =
+    formData.title.trim() !== "" &&
+    formData.type !== "" &&
+    formData.status !== "" &&
+    formData.productId !== "" &&
+    formData.priority !== "" &&
+    formData.platforms.length > 0;
+
+  function handleCancel() {
+    resetForm();
+    setOpen(false);
+  }
 
   function handleCreateContent() {
     const newContent: ContentItem = {
@@ -46,7 +92,7 @@ export function AddContentDialog({
       type: formData.type as ContentItem["type"],
       productId: formData.productId,
       status: formData.status as ContentItem["status"],
-      platforms: ["Instagram"],
+      platforms: formData.platforms,
       createdBy: "user-1",
       assignedTo: "user-2",
       priority: formData.priority as ContentItem["priority"],
@@ -56,29 +102,22 @@ export function AddContentDialog({
     };
 
     onCreateContent(newContent);
-
-    setFormData({
-      title: "",
-      description: "",
-      type: "",
-      status: "",
-      productId: "",
-      priority: "",
-    });
+    resetForm();
+    setOpen(false);
   }
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button>Add Content</Button>
       </DialogTrigger>
 
-      <DialogContent className="sm:max-w-[600px]">
+      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[620px]">
         <DialogHeader>
           <DialogTitle>Add New Content</DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-6 py-4">
+        <div className="space-y-5 py-2">
           <div className="space-y-2">
             <label className="text-sm font-medium">Title</label>
             <Input
@@ -104,7 +143,7 @@ export function AddContentDialog({
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
               <label className="text-sm font-medium">Type</label>
               <Select
@@ -113,7 +152,7 @@ export function AddContentDialog({
                   setFormData({ ...formData, type: value })
                 }
               >
-                <SelectTrigger>
+                <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select type" />
                 </SelectTrigger>
 
@@ -134,7 +173,7 @@ export function AddContentDialog({
                   setFormData({ ...formData, status: value })
                 }
               >
-                <SelectTrigger>
+                <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select status" />
                 </SelectTrigger>
 
@@ -149,7 +188,7 @@ export function AddContentDialog({
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
               <label className="text-sm font-medium">Product</label>
               <Select
@@ -158,7 +197,7 @@ export function AddContentDialog({
                   setFormData({ ...formData, productId: value })
                 }
               >
-                <SelectTrigger>
+                <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select product" />
                 </SelectTrigger>
 
@@ -180,7 +219,7 @@ export function AddContentDialog({
                   setFormData({ ...formData, priority: value })
                 }
               >
-                <SelectTrigger>
+                <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select priority" />
                 </SelectTrigger>
 
@@ -193,10 +232,32 @@ export function AddContentDialog({
             </div>
           </div>
 
-          <div className="flex justify-end gap-3">
-            <Button variant="outline">Cancel</Button>
+          <div className="space-y-3">
+            <label className="text-sm font-medium">Platforms</label>
 
-            <Button onClick={handleCreateContent}>Create Content</Button>
+            <div className="grid gap-3 rounded-lg border p-4 sm:grid-cols-2">
+              {platforms.map((platform) => (
+                <label
+                  key={platform}
+                  className="flex cursor-pointer items-center gap-2 text-sm"
+                >
+                  <Checkbox
+                    checked={formData.platforms.includes(platform)}
+                    onCheckedChange={() => togglePlatform(platform)}
+                  />
+                  {platform}
+                </label>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex justify-end gap-3 pt-2">
+            <Button type="button" variant="outline" onClick={handleCancel}>
+              Cancel
+            </Button>
+            <Button type="button" onClick={handleCreateContent} disabled={!isFormValid}>
+              Create Content
+            </Button>
           </div>
         </div>
       </DialogContent>
