@@ -20,12 +20,23 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { products, users } from "@/lib/mock-data";
+import { useProducts } from "@/hooks/use-products";
+import { useUsers } from "@/hooks/use-users";
 import type { ContentItem, Platform } from "@/lib/types";
 
 type AddContentDialogProps = {
-  onCreateContent: (content: ContentItem) => void;
-};
+onCreateContent: (content: {
+  title: string;
+  description: string;
+  type: ContentItem["type"];
+  productId: string;
+  status: ContentItem["status"];
+  platforms: Platform[];
+  scheduledDate: string;
+  assignedToId: string;
+  priority: ContentItem["priority"];
+  tags: string[];
+}) => void;};
 
 const platforms: Platform[] = [
   "LinkedIn",
@@ -38,7 +49,8 @@ const platforms: Platform[] = [
 
 export function AddContentDialog({ onCreateContent }: AddContentDialogProps) {
   const [open, setOpen] = useState(false);
-
+  const { data: products = [] } = useProducts();
+  const { data: users = [] } = useUsers(); 
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -92,29 +104,24 @@ export function AddContentDialog({ onCreateContent }: AddContentDialogProps) {
   }
 
   function handleCreateContent() {
-    if (!isFormValid) return;
+  if (!isFormValid) return;
 
-    const newContent: ContentItem = {
-      id: crypto.randomUUID(),
-      title: formData.title,
-      description: formData.description,
-      type: formData.type as ContentItem["type"],
-      productId: formData.productId,
-      status: formData.status as ContentItem["status"],
-      platforms: formData.platforms,
-      scheduledDate: formData.scheduledDate,
-      createdBy: "user-1",
-      assignedTo: formData.assignedTo,
-      priority: formData.priority as ContentItem["priority"],
-      tags: [],
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
+  onCreateContent({
+    title: formData.title,
+    description: formData.description,
+    type: formData.type as ContentItem["type"],
+    productId: formData.productId,
+    status: formData.status as ContentItem["status"],
+    platforms: formData.platforms,
+    scheduledDate: formData.scheduledDate,
+    assignedToId: formData.assignedTo,
+    priority: formData.priority as ContentItem["priority"],
+    tags: [],
+  });
 
-    onCreateContent(newContent);
-    resetForm();
-    setOpen(false);
-  }
+  resetForm();
+  setOpen(false);
+}
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>

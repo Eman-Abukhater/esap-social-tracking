@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-
+import { useCreateContentItem } from "@/hooks/use-create-content-item";
 import { AddContentDialog } from "@/components/content/add-content-dialog";
 import {
   ContentFilters,
@@ -19,7 +19,7 @@ export default function ContentPage() {
     status: "all",
     platform: "all",
   });
-
+  const createContentMutation = useCreateContentItem();
   const {
     data: contentItems = [],
     isLoading,
@@ -36,9 +36,9 @@ export default function ContentPage() {
     });
   }
 
-  function handleCreateContent(newContent: ContentItem) {
-    console.log("Create content will be connected to backend next", newContent);
-  }
+function handleCreateContent(newContent: Parameters<typeof createContentMutation.mutate>[0]) {
+  createContentMutation.mutate(newContent);
+}
 
   return (
     <div className="space-y-6">
