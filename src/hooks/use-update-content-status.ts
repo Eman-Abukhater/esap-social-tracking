@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiFetch } from "@/lib/api";
 import type { BackendContentItem, ContentItem } from "@/lib/types";
 
-const CURRENT_USER_ID = "PUT_REAL_USER_ID_HERE";
+const CURRENT_USER_ID = "a8b5b138-9a56-4513-a2c2-ded39ccbf012";
 
 type UpdateStatusInput = {
   contentId: string;
