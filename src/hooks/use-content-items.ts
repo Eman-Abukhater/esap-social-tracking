@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { apiFetch } from "@/lib/api";
-import type { ContentItem } from "@/lib/types";
+import type { BackendContentItem } from "@/lib/types";
 import type { ContentFiltersState } from "@/components/content/content-filters";
 
 export function useContentItems(filters: ContentFiltersState) {
@@ -26,6 +26,6 @@ export function useContentItems(filters: ContentFiltersState) {
     queryKey: ["content-items", filters],
 
     queryFn: () =>
-      apiFetch<ContentItem[]>(`/content?${params.toString()}`),
+    apiFetch<BackendContentItem[]>(`/content?${params.toString()}`),
   });
 }

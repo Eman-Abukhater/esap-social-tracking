@@ -54,6 +54,14 @@ export type ContentItem = {
   createdAt: string;
   updatedAt: string;
 };
+export type BackendContentItem = Omit<
+  ContentItem,
+  "assignedTo" | "createdBy"
+> & {
+  product: Product;
+  assignedTo: User;
+  createdBy: User;
+};
 
 export type ActivityAction =
   | "created"

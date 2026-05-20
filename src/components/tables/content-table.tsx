@@ -8,11 +8,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { products, users } from "@/lib/mock-data";
-import type { ContentItem } from "@/lib/types";
+import type { BackendContentItem, ContentItem } from "@/lib/types";
 
 type ContentTableProps = {
-  contentItems: ContentItem[];
+  contentItems: BackendContentItem[];
   onStatusChange: (
     contentId: string,
     status: ContentItem["status"]
@@ -93,13 +92,8 @@ export function ContentTable({
 
           <tbody>
             {contentItems.map((item) => {
-              const product = products.find(
-                (product) => product.id === item.productId
-              );
-
-              const assignedUser = users.find(
-                (user) => user.id === item.assignedTo
-              );
+              const product = item.product;
+              const assignedUser = item.assignedTo;
 
               return (
                 <tr
@@ -119,7 +113,9 @@ export function ContentTable({
                     <div className="flex items-center gap-2">
                       <span
                         className="h-2.5 w-2.5 rounded-full"
-                        style={{ backgroundColor: product?.color }}
+                        style={{
+                          backgroundColor: product?.color ?? "#94a3b8",
+                        }}
                       />
                       <span className="text-sm">
                         {product?.name ?? "Unknown Product"}
