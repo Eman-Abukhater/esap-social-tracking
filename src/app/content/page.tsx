@@ -9,7 +9,7 @@ import {
 } from "@/components/content/content-filters";
 import { ContentTable } from "@/components/tables/content-table";
 import { useContentItems } from "@/hooks/use-content-items";
-
+import { useUpdateContentStatus } from "@/hooks/use-update-content-status";
 import type { ContentItem } from "@/lib/types";
 
 export default function ContentPage() {
@@ -25,14 +25,14 @@ export default function ContentPage() {
     isLoading,
     isError,
   } = useContentItems(filters);
-
+  const updateStatusMutation = useUpdateContentStatus();
   function handleStatusChange(
     contentId: string,
     newStatus: ContentItem["status"]
   ) {
-    console.log("Status change will be connected to backend next", {
+    updateStatusMutation.mutate({
       contentId,
-      newStatus,
+      status: newStatus,
     });
   }
 
