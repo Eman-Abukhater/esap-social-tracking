@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Sidebar } from "@/components/layout/sidebar";
+import { ReactQueryProvider } from "@/providers/react-query-provider";
 
 export const metadata: Metadata = {
   title: "ESAP Social Tracking",
@@ -15,11 +16,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <Sidebar />
+        <ReactQueryProvider>
+          <Sidebar />
 
-        <main className="ml-64 min-h-screen bg-muted/30 p-6">
-          {children}
-        </main>
+          <main className="ml-64 min-h-screen bg-muted/30 p-6">
+            {children}
+          </main>
+        </ReactQueryProvider>
       </body>
     </html>
   );
