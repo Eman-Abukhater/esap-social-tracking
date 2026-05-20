@@ -8,7 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { products } from "@/lib/mock-data";
+import { useProducts } from "@/hooks/use-products";
 import type { Platform } from "@/lib/types";
 
 export type ContentFiltersState = {
@@ -36,6 +36,7 @@ export function ContentFilters({
   filters,
   onFiltersChange,
 }: ContentFiltersProps) {
+  const { data: products = [] } = useProducts();
   return (
     <div className="grid gap-3 rounded-xl border bg-background p-4 shadow-sm md:grid-cols-4">
       <Input
