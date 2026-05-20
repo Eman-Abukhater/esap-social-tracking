@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+
 import { Badge } from "@/components/ui/badge";
 import {
   Select,
@@ -46,6 +48,10 @@ export function ContentTable({
   contentItems,
   onStatusChange,
 }: ContentTableProps) {
+  const [localStatuses, setLocalStatuses] = useState<
+    Record<string, ContentItem["status"]>
+  >({});
+
   if (contentItems.length === 0) {
     return (
       <div className="rounded-xl border bg-background p-10 text-center shadow-sm">
@@ -92,8 +98,7 @@ export function ContentTable({
 
           <tbody>
             {contentItems.map((item) => {
-              const product = item.product;
-              const assignedUser = item.assignedTo;
+              const currentStatus = localStatuses[item.id] ?? item.status;
 
               return (
                 <tr
@@ -114,11 +119,11 @@ export function ContentTable({
                       <span
                         className="h-2.5 w-2.5 rounded-full"
                         style={{
-                          backgroundColor: product?.color ?? "#94a3b8",
+                          backgroundColor: item.product?.color ?? "#94a3b8",
                         }}
                       />
                       <span className="text-sm">
-                        {product?.name ?? "Unknown Product"}
+                        {item.product?.name ?? "Unknown Product"}
                       </span>
                     </div>
                   </td>
@@ -135,13 +140,22 @@ export function ContentTable({
 
                   <td className="px-4 py-4">
                     <Select
-                      value={item.status}
-                      onValueChange={(value) =>
-                        onStatusChange(item.id, value as ContentItem["status"])
-                      }
+                      value={currentStatus}
+                      onValueChange={(value) => {
+                        const newStatus = value as ContentItem["status"];
+
+                        setLocalStatuses((previous) => ({
+                          ...previous,
+                          [item.id]: newStatus,
+                        }));
+
+                        onStatusChange(item.id, newStatus);
+                      }}
                     >
                       <SelectTrigger className="w-[160px]">
-                        <SelectValue>{getStatusLabel(item.status)}</SelectValue>
+                        <SelectValue>
+                          {getStatusLabel(currentStatus)}
+                        </SelectValue>
                       </SelectTrigger>
 
                       <SelectContent>
@@ -155,7 +169,7 @@ export function ContentTable({
                   </td>
 
                   <td className="px-4 py-4 text-sm">
-                    {assignedUser?.name ?? "Unassigned"}
+                    {item.assignedTo?.name ?? "Unassigned"}
                   </td>
 
                   <td className="px-4 py-4">

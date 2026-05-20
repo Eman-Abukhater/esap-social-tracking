@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiFetch } from "@/lib/api";
 import type { BackendContentItem, ContentItem } from "@/lib/types";
 
-const CURRENT_USER_ID = "b5a15940-fdac-4cfb-9d50-89e8c700a004";
+const CURRENT_USER_ID = "PUT_REAL_USER_ID_HERE";
 
 type UpdateStatusInput = {
   contentId: string;
@@ -22,7 +22,43 @@ export function useUpdateContentStatus() {
         },
       }),
 
-    onSuccess: () => {
+    onMutate: async ({ contentId, status }) => {
+      await queryClient.cancelQueries({
+        queryKey: ["content-items"],
+      });
+
+      const previousContentItems =
+        queryClient.getQueriesData<BackendContentItem[]>({
+          queryKey: ["content-items"],
+        });
+
+      queryClient.setQueriesData<BackendContentItem[]>(
+        { queryKey: ["content-items"] },
+        (oldItems) => {
+          if (!oldItems) return oldItems;
+
+          return oldItems.map((item) =>
+            item.id === contentId
+              ? {
+                  ...item,
+                  status,
+                  updatedAt: new Date().toISOString(),
+                }
+              : item
+          );
+        }
+      );
+
+      return { previousContentItems };
+    },
+
+    onError: (_error, _variables, context) => {
+      context?.previousContentItems.forEach(([queryKey, data]) => {
+        queryClient.setQueryData(queryKey, data);
+      });
+    },
+
+    onSettled: () => {
       queryClient.invalidateQueries({
         queryKey: ["content-items"],
       });
