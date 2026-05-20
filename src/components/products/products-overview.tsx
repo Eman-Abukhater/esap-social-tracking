@@ -1,12 +1,15 @@
 import { Badge } from "@/components/ui/badge";
-import { products } from "@/lib/mock-data";
-import type { ContentItem } from "@/lib/types";
+import type { BackendContentItem, Product } from "@/lib/types";
 
 type ProductsOverviewProps = {
-  contentItems: ContentItem[];
+  products: Product[];
+  contentItems: BackendContentItem[];
 };
 
-export function ProductsOverview({ contentItems }: ProductsOverviewProps) {
+export function ProductsOverview({
+  products,
+  contentItems,
+}: ProductsOverviewProps) {
   return (
     <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
       {products.map((product) => {

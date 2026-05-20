@@ -1,22 +1,29 @@
 "use client";
 
-import { useEffect, useState } from "react";
-
 import { ProductsOverview } from "@/components/products/products-overview";
-import { contentItems as initialContentItems } from "@/lib/mock-data";
-import type { ContentItem } from "@/lib/types";
+import { useContentItems } from "@/hooks/use-content-items";
+import { useProducts } from "@/hooks/use-products";
 
 export default function ProductsPage() {
-  const [contentItems, setContentItems] =
-    useState<ContentItem[]>(initialContentItems);
+  const {
+    data: products = [],
+    isLoading: isProductsLoading,
+    isError: isProductsError,
+  } = useProducts();
 
-  useEffect(() => {
-    const savedContentItems = localStorage.getItem("esap-content-items");
+  const {
+    data: contentItems = [],
+    isLoading: isContentLoading,
+    isError: isContentError,
+  } = useContentItems({
+    search: "",
+    productId: "all",
+    status: "all",
+    platform: "all",
+  });
 
-    if (savedContentItems) {
-      setContentItems(JSON.parse(savedContentItems));
-    }
-  }, []);
+  const isLoading = isProductsLoading || isContentLoading;
+  const isError = isProductsError || isContentError;
 
   return (
     <div className="space-y-6">
@@ -27,7 +34,24 @@ export default function ProductsPage() {
         </p>
       </div>
 
-      <ProductsOverview contentItems={contentItems} />
+      {isLoading && (
+        <div className="rounded-xl border bg-background p-6 text-sm text-muted-foreground">
+          Loading products overview...
+        </div>
+      )}
+
+      {isError && (
+        <div className="rounded-xl border bg-background p-6 text-sm text-red-500">
+          Failed to load products overview.
+        </div>
+      )}
+
+      {!isLoading && !isError && (
+        <ProductsOverview
+          products={products}
+          contentItems={contentItems}
+        />
+      )}
     </div>
   );
 }
