@@ -62,6 +62,13 @@ export type BackendContentItem = Omit<
   assignedTo: User;
   createdBy: User;
 };
+export type BackendActivityLog = Omit<
+  ActivityLog,
+  "changedBy"
+> & {
+  changedBy: User;
+  contentItem?: ContentItem | null;
+};
 
 export type ActivityAction =
   | "created"
