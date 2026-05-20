@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { AddContentDialog } from "@/components/content/add-content-dialog";
 import {
@@ -8,21 +8,11 @@ import {
   type ContentFiltersState,
 } from "@/components/content/content-filters";
 import { ContentTable } from "@/components/tables/content-table";
+import { useContentItems } from "@/hooks/use-content-items";
 
-import {
-  activityLogs as initialActivityLogs,
-  contentItems as initialContentItems,
-} from "@/lib/mock-data";
-
-import type { ActivityLog, ContentItem } from "@/lib/types";
+import type { ContentItem } from "@/lib/types";
 
 export default function ContentPage() {
-  const [contentItems, setContentItems] =
-    useState<ContentItem[]>(initialContentItems);
-
-  const [activityLogs, setActivityLogs] =
-    useState<ActivityLog[]>(initialActivityLogs);
-
   const [filters, setFilters] = useState<ContentFiltersState>({
     search: "",
     productId: "all",
@@ -30,103 +20,24 @@ export default function ContentPage() {
     platform: "all",
   });
 
-  useEffect(() => {
-    const savedContentItems = localStorage.getItem("esap-content-items");
-    const savedActivityLogs = localStorage.getItem("esap-activity-logs");
-
-    if (savedContentItems) {
-      setContentItems(JSON.parse(savedContentItems));
-    }
-
-    if (savedActivityLogs) {
-      setActivityLogs(JSON.parse(savedActivityLogs));
-    }
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem("esap-content-items", JSON.stringify(contentItems));
-  }, [contentItems]);
-
-  useEffect(() => {
-    localStorage.setItem("esap-activity-logs", JSON.stringify(activityLogs));
-  }, [activityLogs]);
-
-  const filteredContentItems = contentItems.filter((item) => {
-    const matchesSearch = item.title
-      .toLowerCase()
-      .includes(filters.search.toLowerCase());
-
-    const matchesProduct =
-      filters.productId === "all" || item.productId === filters.productId;
-
-    const matchesStatus =
-      filters.status === "all" || item.status === filters.status;
-
-    const matchesPlatform =
-      filters.platform === "all" || item.platforms.includes(filters.platform as never);
-
-    return (
-      matchesSearch &&
-      matchesProduct &&
-      matchesStatus &&
-      matchesPlatform
-    );
-  });
+  const {
+    data: contentItems = [],
+    isLoading,
+    isError,
+  } = useContentItems(filters);
 
   function handleStatusChange(
     contentId: string,
     newStatus: ContentItem["status"]
   ) {
-    const currentItem = contentItems.find((item) => item.id === contentId);
-
-    if (!currentItem || currentItem.status === newStatus) return;
-
-    setContentItems((previous) =>
-      previous.map((item) =>
-        item.id === contentId
-          ? {
-              ...item,
-              status: newStatus,
-              updatedAt: new Date().toISOString(),
-            }
-          : item
-      )
-    );
-
-    setActivityLogs((previous) => [
-      {
-        id: crypto.randomUUID(),
-        entityType: "content",
-        entityId: contentId,
-        action: "status_changed",
-        previousValue: { status: currentItem.status },
-        newValue: { status: newStatus },
-        changedBy: "user-1",
-        timestamp: new Date().toISOString(),
-      },
-      ...previous,
-    ]);
+    console.log("Status change will be connected to backend next", {
+      contentId,
+      newStatus,
+    });
   }
 
   function handleCreateContent(newContent: ContentItem) {
-    setContentItems((previous) => [newContent, ...previous]);
-
-    setActivityLogs((previous) => [
-      {
-        id: crypto.randomUUID(),
-        entityType: "content",
-        entityId: newContent.id,
-        action: "created",
-        previousValue: null,
-        newValue: {
-          title: newContent.title,
-          status: newContent.status,
-        },
-        changedBy: newContent.createdBy,
-        timestamp: new Date().toISOString(),
-      },
-      ...previous,
-    ]);
+    console.log("Create content will be connected to backend next", newContent);
   }
 
   return (
@@ -145,10 +56,24 @@ export default function ContentPage() {
 
       <ContentFilters filters={filters} onFiltersChange={setFilters} />
 
-      <ContentTable
-        contentItems={filteredContentItems}
-        onStatusChange={handleStatusChange}
-      />
+      {isLoading && (
+        <div className="rounded-xl border bg-background p-6 text-sm text-muted-foreground">
+          Loading content items...
+        </div>
+      )}
+
+      {isError && (
+        <div className="rounded-xl border bg-background p-6 text-sm text-red-500">
+          Failed to load content items.
+        </div>
+      )}
+
+      {!isLoading && !isError && (
+        <ContentTable
+          contentItems={contentItems}
+          onStatusChange={handleStatusChange}
+        />
+      )}
     </div>
   );
 }
