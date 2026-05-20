@@ -29,11 +29,16 @@ export function Sidebar() {
       </div>
 
       <nav className="space-y-2">
-        {navigationItems.map((item) => {
-          const Icon = item.icon;
-          const isActive = pathname === item.href;
+       {navigationItems.map((item) => {
+  const Icon = item.icon;
 
-          return (
+  const isDashboard =
+    item.href === "/dashboard" && pathname === "/";
+
+  const isActive =
+    pathname === item.href || isDashboard;
+
+  return (
             <Link
               key={item.href}
               href={item.href}

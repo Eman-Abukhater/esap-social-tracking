@@ -1,22 +1,19 @@
 "use client";
 
-import { useEffect, useState } from "react";
-
 import { DashboardStats } from "@/components/dashboard/dashboard-stats";
-import { contentItems as initialContentItems } from "@/lib/mock-data";
-import type { ContentItem } from "@/lib/types";
+import { useContentItems } from "@/hooks/use-content-items";
 
 export default function DashboardPage() {
-  const [contentItems, setContentItems] =
-    useState<ContentItem[]>(initialContentItems);
-
-  useEffect(() => {
-    const savedContentItems = localStorage.getItem("esap-content-items");
-
-    if (savedContentItems) {
-      setContentItems(JSON.parse(savedContentItems));
-    }
-  }, []);
+  const {
+    data: contentItems = [],
+    isLoading,
+    isError,
+  } = useContentItems({
+    search: "",
+    productId: "all",
+    status: "all",
+    platform: "all",
+  });
 
   return (
     <div className="space-y-6">
@@ -27,7 +24,21 @@ export default function DashboardPage() {
         </p>
       </div>
 
-      <DashboardStats contentItems={contentItems} />
+      {isLoading && (
+        <div className="rounded-xl border bg-background p-6 text-sm text-muted-foreground">
+          Loading dashboard...
+        </div>
+      )}
+
+      {isError && (
+        <div className="rounded-xl border bg-background p-6 text-sm text-red-500">
+          Failed to load dashboard data.
+        </div>
+      )}
+
+      {!isLoading && !isError && (
+        <DashboardStats contentItems={contentItems} />
+      )}
     </div>
   );
 }

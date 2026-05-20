@@ -1,9 +1,8 @@
 "use client";
 
-import type { ContentItem } from "@/lib/types";
-
+import type { BackendContentItem } from "@/lib/types";
 type DashboardStatsProps = {
-  contentItems: ContentItem[];
+  contentItems: BackendContentItem[];
 };
 
 export function DashboardStats({
