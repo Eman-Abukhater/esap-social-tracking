@@ -65,6 +65,7 @@ export function AddContentDialog({ onCreateContent }: AddContentDialogProps) {
 
   const isFormValid =
     formData.title.trim() !== "" &&
+    formData.description.trim() !== "" &&
     formData.type !== "" &&
     formData.status !== "" &&
     formData.productId !== "" &&
