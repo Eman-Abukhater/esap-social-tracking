@@ -1,7 +1,11 @@
 import { Badge } from "@/components/ui/badge";
-import { users } from "@/lib/mock-data";
+import type { User } from "@/lib/types";
 
-export function TeamList() {
+type TeamListProps = {
+  users: User[];
+};
+
+export function TeamList({ users }: TeamListProps) {
   return (
     <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
       {users.map((user) => (
