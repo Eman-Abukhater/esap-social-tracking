@@ -6,17 +6,55 @@ type ActivityListProps = {
   activityLogs: BackendActivityLog[];
 };
 
+function getObjectValue(
+  value: unknown
+): Record<string, unknown> {
+  if (!value || typeof value !== "object") {
+    return {};
+  }
+
+  return value as Record<string, unknown>;
+}
+
 function getChangedFields(log: BackendActivityLog) {
   if (!log.previousValue || !log.newValue) return [];
 
-  const previousValue = log.previousValue as Record<string, unknown>;
-  const newValue = log.newValue as Record<string, unknown>;
+  const previousValue = getObjectValue(log.previousValue);
+  const newValue = getObjectValue(log.newValue);
 
   return Object.keys(newValue).map((key) => ({
     field: key,
     oldValue: previousValue[key],
     newValue: newValue[key],
   }));
+}
+
+function getContentTitle(log: BackendActivityLog) {
+  const previousValue = getObjectValue(log.previousValue);
+  const newValue = getObjectValue(log.newValue);
+
+  return (
+    log.contentItem?.title ??
+    String(previousValue.title ?? newValue.title ?? "Unknown content")
+  );
+}
+
+function formatFieldName(field: string) {
+  const labels: Record<string, string> = {
+    status: "Status",
+    title: "Title",
+    priority: "Priority",
+    scheduledDate: "Scheduled date",
+    assignedToId: "Assigned user",
+  };
+
+  return labels[field] ?? field;
+}
+
+function formatValue(value: unknown) {
+  if (!value) return "—";
+
+  return String(value);
 }
 
 export function ActivityList({ activityLogs }: ActivityListProps) {
@@ -36,7 +74,7 @@ export function ActivityList({ activityLogs }: ActivityListProps) {
       {activityLogs.map((log) => {
         const changedFields = getChangedFields(log);
         const userName = log.changedBy?.name ?? "Unknown user";
-        const contentTitle = log.contentItem?.title ?? "Unknown content";
+        const contentTitle = getContentTitle(log);
 
         return (
           <div
@@ -57,20 +95,20 @@ export function ActivityList({ activityLogs }: ActivityListProps) {
                   </span>
                 </p>
 
-                {changedFields.length > 0 && (
+                {changedFields.length > 0 && log.action !== "deleted" && (
                   <div className="space-y-1 text-sm text-muted-foreground">
                     {changedFields.map((change) => (
                       <p key={change.field}>
                         <span className="font-medium text-foreground">
-                          {change.field}
+                          {formatFieldName(change.field)}
                         </span>{" "}
                         changed from{" "}
                         <span className="font-medium text-foreground">
-                          {String(change.oldValue ?? "—")}
+                          {formatValue(change.oldValue)}
                         </span>{" "}
                         to{" "}
                         <span className="font-medium text-foreground">
-                          {String(change.newValue ?? "—")}
+                          {formatValue(change.newValue)}
                         </span>
                       </p>
                     ))}

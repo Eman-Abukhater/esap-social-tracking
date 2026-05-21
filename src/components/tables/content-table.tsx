@@ -3,6 +3,9 @@
 import { useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+
 import {
   Select,
   SelectContent,
@@ -10,14 +13,34 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { BackendContentItem, ContentItem } from "@/lib/types";
+
+import type {
+  BackendContentItem,
+  ContentItem,
+  User,
+} from "@/lib/types";
 
 type ContentTableProps = {
   contentItems: BackendContentItem[];
+
+  users: User[];
+
   onStatusChange: (
     contentId: string,
     status: ContentItem["status"]
   ) => void;
+
+  onBulkStatusChange: (
+    contentIds: string[],
+    status: ContentItem["status"]
+  ) => void;
+
+  onBulkAssign: (
+    contentIds: string[],
+    assignedToId: string
+  ) => void;
+
+  onBulkDelete: (contentIds: string[]) => void;
 };
 
 function getStatusLabel(status: string) {
@@ -46,16 +69,44 @@ function formatDate(date?: string) {
 
 export function ContentTable({
   contentItems,
+  users,
   onStatusChange,
+  onBulkStatusChange,
+  onBulkAssign,
+  onBulkDelete,
 }: ContentTableProps) {
   const [localStatuses, setLocalStatuses] = useState<
     Record<string, ContentItem["status"]>
   >({});
 
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+
+  const allSelected =
+    contentItems.length > 0 &&
+    selectedIds.length === contentItems.length;
+
+  function toggleSelectAll() {
+    if (allSelected) {
+      setSelectedIds([]);
+      return;
+    }
+
+    setSelectedIds(contentItems.map((item) => item.id));
+  }
+
+  function toggleSelectOne(contentId: string) {
+    setSelectedIds((previous) =>
+      previous.includes(contentId)
+        ? previous.filter((id) => id !== contentId)
+        : [...previous, contentId]
+    );
+  }
+
   if (contentItems.length === 0) {
     return (
       <div className="rounded-xl border bg-background p-10 text-center shadow-sm">
         <h3 className="font-semibold">No content found</h3>
+
         <p className="mt-1 text-sm text-muted-foreground">
           Create your first content item to start tracking execution.
         </p>
@@ -65,31 +116,121 @@ export function ContentTable({
 
   return (
     <div className="overflow-hidden rounded-xl border bg-background shadow-sm">
+      {selectedIds.length > 0 && (
+        <div className="flex flex-wrap items-center justify-between gap-4 border-b bg-muted/40 px-4 py-3">
+          <div className="flex items-center gap-3">
+            <p className="text-sm font-medium">
+              {selectedIds.length} selected
+            </p>
+
+            <button
+              type="button"
+              className="text-sm text-muted-foreground hover:text-foreground"
+              onClick={() => setSelectedIds([])}
+            >
+              Clear selection
+            </button>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-3">
+            <Select
+              onValueChange={(value) =>
+                onBulkStatusChange(
+                  selectedIds,
+                  value as ContentItem["status"]
+                )
+              }
+            >
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Bulk Status" />
+              </SelectTrigger>
+
+              <SelectContent>
+                <SelectItem value="planned">Planned</SelectItem>
+                <SelectItem value="in_progress">
+                  In Progress
+                </SelectItem>
+                <SelectItem value="review">Review</SelectItem>
+                <SelectItem value="done">Done</SelectItem>
+                <SelectItem value="published">
+                  Published
+                </SelectItem>
+              </SelectContent>
+            </Select>
+
+            <Select
+              onValueChange={(value) =>
+                onBulkAssign(selectedIds, value)
+              }
+            >
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Assign User" />
+              </SelectTrigger>
+
+              <SelectContent>
+                {users.map((user) => (
+                  <SelectItem
+                    key={user.id}
+                    value={user.id}
+                  >
+                    {user.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+         <Button
+  variant="destructive"
+  onClick={() => {
+    onBulkDelete(selectedIds);
+    setSelectedIds([]);
+  }}
+>
+  Delete Selected
+</Button>
+          </div>
+        </div>
+      )}
+
       <div className="overflow-x-auto">
-        <table className="w-full min-w-[1000px]">
+        <table className="w-full min-w-[1080px]">
           <thead className="border-b bg-muted/50">
             <tr>
+              <th className="w-12 px-4 py-3">
+                <Checkbox
+                  checked={allSelected}
+                  onCheckedChange={toggleSelectAll}
+                />
+              </th>
+
               <th className="px-4 py-3 text-left text-xs font-medium uppercase text-muted-foreground">
                 Title
               </th>
+
               <th className="px-4 py-3 text-left text-xs font-medium uppercase text-muted-foreground">
                 Product
               </th>
+
               <th className="px-4 py-3 text-left text-xs font-medium uppercase text-muted-foreground">
                 Platforms
               </th>
+
               <th className="px-4 py-3 text-left text-xs font-medium uppercase text-muted-foreground">
                 Status
               </th>
+
               <th className="px-4 py-3 text-left text-xs font-medium uppercase text-muted-foreground">
                 Assigned To
               </th>
+
               <th className="px-4 py-3 text-left text-xs font-medium uppercase text-muted-foreground">
                 Priority
               </th>
+
               <th className="px-4 py-3 text-left text-xs font-medium uppercase text-muted-foreground">
                 Scheduled
               </th>
+
               <th className="px-4 py-3 text-left text-xs font-medium uppercase text-muted-foreground">
                 Last Updated
               </th>
@@ -98,7 +239,11 @@ export function ContentTable({
 
           <tbody>
             {contentItems.map((item) => {
-              const currentStatus = localStatuses[item.id] ?? item.status;
+              const currentStatus =
+                localStatuses[item.id] ?? item.status;
+
+              const isSelected =
+                selectedIds.includes(item.id);
 
               return (
                 <tr
@@ -106,8 +251,20 @@ export function ContentTable({
                   className="border-b transition hover:bg-muted/40"
                 >
                   <td className="px-4 py-4">
+                    <Checkbox
+                      checked={isSelected}
+                      onCheckedChange={() =>
+                        toggleSelectOne(item.id)
+                      }
+                    />
+                  </td>
+
+                  <td className="px-4 py-4">
                     <div>
-                      <p className="font-medium">{item.title}</p>
+                      <p className="font-medium">
+                        {item.title}
+                      </p>
+
                       <p className="text-sm capitalize text-muted-foreground">
                         {item.type}
                       </p>
@@ -119,11 +276,15 @@ export function ContentTable({
                       <span
                         className="h-2.5 w-2.5 rounded-full"
                         style={{
-                          backgroundColor: item.product?.color ?? "#94a3b8",
+                          backgroundColor:
+                            item.product?.color ??
+                            "#94a3b8",
                         }}
                       />
+
                       <span className="text-sm">
-                        {item.product?.name ?? "Unknown Product"}
+                        {item.product?.name ??
+                          "Unknown Product"}
                       </span>
                     </div>
                   </td>
@@ -131,7 +292,10 @@ export function ContentTable({
                   <td className="px-4 py-4">
                     <div className="flex flex-wrap gap-1">
                       {item.platforms.map((platform) => (
-                        <Badge key={platform} variant="outline">
+                        <Badge
+                          key={platform}
+                          variant="outline"
+                        >
                           {platform}
                         </Badge>
                       ))}
@@ -142,38 +306,63 @@ export function ContentTable({
                     <Select
                       value={currentStatus}
                       onValueChange={(value) => {
-                        const newStatus = value as ContentItem["status"];
+                        const newStatus =
+                          value as ContentItem["status"];
 
                         setLocalStatuses((previous) => ({
                           ...previous,
                           [item.id]: newStatus,
                         }));
 
-                        onStatusChange(item.id, newStatus);
+                        onStatusChange(
+                          item.id,
+                          newStatus
+                        );
                       }}
                     >
                       <SelectTrigger className="w-[160px]">
                         <SelectValue>
-                          {getStatusLabel(currentStatus)}
+                          {getStatusLabel(
+                            currentStatus
+                          )}
                         </SelectValue>
                       </SelectTrigger>
 
                       <SelectContent>
-                        <SelectItem value="planned">Planned</SelectItem>
-                        <SelectItem value="in_progress">In Progress</SelectItem>
-                        <SelectItem value="review">Review</SelectItem>
-                        <SelectItem value="done">Done</SelectItem>
-                        <SelectItem value="published">Published</SelectItem>
+                        <SelectItem value="planned">
+                          Planned
+                        </SelectItem>
+
+                        <SelectItem value="in_progress">
+                          In Progress
+                        </SelectItem>
+
+                        <SelectItem value="review">
+                          Review
+                        </SelectItem>
+
+                        <SelectItem value="done">
+                          Done
+                        </SelectItem>
+
+                        <SelectItem value="published">
+                          Published
+                        </SelectItem>
                       </SelectContent>
                     </Select>
                   </td>
 
                   <td className="px-4 py-4 text-sm">
-                    {item.assignedTo?.name ?? "Unassigned"}
+                    {item.assignedTo?.name ??
+                      "Unassigned"}
                   </td>
 
                   <td className="px-4 py-4">
-                    <Badge variant={getPriorityVariant(item.priority)}>
+                    <Badge
+                      variant={getPriorityVariant(
+                        item.priority
+                      )}
+                    >
                       {item.priority}
                     </Badge>
                   </td>
