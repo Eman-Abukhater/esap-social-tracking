@@ -1,7 +1,11 @@
 "use client";
 
 import { DashboardStats } from "@/components/dashboard/dashboard-stats";
+import { PlatformDistributionChart } from "@/components/dashboard/platform-distribution-chart";
 import { PostsPerProductChart } from "@/components/dashboard/posts-per-product-chart";
+import { ProductCompletionChart } from "@/components/dashboard/product-completion-chart";
+import { StatusBreakdownChart } from "@/components/dashboard/status-breakdown-chart";
+import { WeeklyOutputChart } from "@/components/dashboard/weekly-output-chart";
 
 import { useContentItems } from "@/hooks/use-content-items";
 import { useProducts } from "@/hooks/use-products";
@@ -18,9 +22,7 @@ export default function DashboardPage() {
     platform: "all",
   });
 
-  const {
-    data: products = [],
-  } = useProducts();
+  const { data: products = [] } = useProducts();
 
   return (
     <div className="space-y-6">
@@ -48,10 +50,23 @@ export default function DashboardPage() {
         <>
           <DashboardStats contentItems={contentItems} />
 
-          <PostsPerProductChart
-            products={products}
-            contentItems={contentItems}
-          />
+          <div className="grid gap-6 xl:grid-cols-2">
+            <PostsPerProductChart
+              products={products}
+              contentItems={contentItems}
+            />
+
+            <PlatformDistributionChart contentItems={contentItems} />
+
+            <StatusBreakdownChart contentItems={contentItems} />
+
+            <WeeklyOutputChart contentItems={contentItems} />
+
+            <ProductCompletionChart
+              products={products}
+              contentItems={contentItems}
+            />
+          </div>
         </>
       )}
     </div>

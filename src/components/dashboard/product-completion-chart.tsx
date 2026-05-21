@@ -1,8 +1,8 @@
 "use client";
 
 import {
-  BarChart,
   Bar,
+  BarChart,
   CartesianGrid,
   ResponsiveContainer,
   Tooltip,
@@ -12,35 +12,38 @@ import {
 
 import type { BackendContentItem, Product } from "@/lib/types";
 
-type PostsPerProductChartProps = {
+type Props = {
   products: Product[];
   contentItems: BackendContentItem[];
 };
 
-export function PostsPerProductChart({
-  products,
-  contentItems,
-}: PostsPerProductChartProps) {
+export function ProductCompletionChart({ products, contentItems }: Props) {
   const chartData = products.map((product) => {
-    const totalPosts = contentItems.filter(
+    const productContent = contentItems.filter(
       (item) => item.productId === product.id
+    );
+
+    const published = productContent.filter(
+      (item) => item.status === "published"
     ).length;
+
+    const completion =
+      productContent.length === 0
+        ? 0
+        : Math.round((published / productContent.length) * 100);
 
     return {
       name: product.name,
-      total: totalPosts,
+      completion,
     };
   });
 
   return (
     <div className="rounded-xl border bg-background p-6 shadow-sm">
       <div className="mb-6">
-        <h2 className="text-lg font-semibold">
-          Posts Per Product
-        </h2>
-
+        <h2 className="text-lg font-semibold">Product Completion</h2>
         <p className="text-sm text-muted-foreground">
-          Content distribution across ESAP products
+          Published content percentage per product
         </p>
       </div>
 
@@ -48,26 +51,10 @@ export function PostsPerProductChart({
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={chartData}>
             <CartesianGrid vertical={false} />
-
-            <XAxis
-              dataKey="name"
-              tickLine={false}
-              axisLine={false}
-            />
-
-            <YAxis
-              tickLine={false}
-              axisLine={false}
-              allowDecimals={false}
-            />
-
+            <XAxis dataKey="name" tickLine={false} axisLine={false} />
+            <YAxis tickLine={false} axisLine={false} />
             <Tooltip />
-
-            <Bar
-              dataKey="total"
-              radius={[10, 10, 0, 0]}
-              maxBarSize={120}
-            />
+            <Bar dataKey="completion" radius={[10, 10, 0, 0]} maxBarSize={90} />
           </BarChart>
         </ResponsiveContainer>
       </div>
