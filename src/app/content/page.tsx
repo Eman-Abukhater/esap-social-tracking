@@ -15,6 +15,7 @@ import { useBulkDeleteContent } from "@/hooks/use-bulk-delete-content";
 import { useBulkUpdateStatus } from "@/hooks/use-bulk-update-status";
 import { useContentItems } from "@/hooks/use-content-items";
 import { useCreateContentItem } from "@/hooks/use-create-content-item";
+import { useUpdateContentItem } from "@/hooks/use-update-content-item";
 import { useUpdateContentStatus } from "@/hooks/use-update-content-status";
 import { useUsers } from "@/hooks/use-users";
 
@@ -30,6 +31,7 @@ export default function ContentPage() {
 
   const createContentMutation = useCreateContentItem();
   const updateStatusMutation = useUpdateContentStatus();
+  const updateContentMutation = useUpdateContentItem();
   const bulkUpdateStatusMutation = useBulkUpdateStatus();
   const bulkAssignMutation = useBulkAssignContent();
   const bulkDeleteMutation = useBulkDeleteContent();
@@ -57,6 +59,28 @@ export default function ContentPage() {
         },
         onError: () => {
           toast.error("Failed to update status");
+        },
+      }
+    );
+  }
+
+  function handlePriorityChange(
+    contentId: string,
+    priority: ContentItem["priority"]
+  ) {
+    updateContentMutation.mutate(
+      {
+        contentId,
+        data: {
+          priority,
+        },
+      },
+      {
+        onSuccess: () => {
+          toast.success("Priority updated successfully");
+        },
+        onError: () => {
+          toast.error("Failed to update priority");
         },
       }
     );
@@ -161,6 +185,7 @@ export default function ContentPage() {
           contentItems={contentItems}
           users={users}
           onStatusChange={handleStatusChange}
+          onPriorityChange={handlePriorityChange}
           onBulkStatusChange={handleBulkStatusChange}
           onBulkAssign={handleBulkAssign}
           onBulkDelete={handleBulkDelete}

@@ -20,6 +20,10 @@ type ContentTableProps = {
   contentItems: BackendContentItem[];
   users: User[];
   onStatusChange: (contentId: string, status: ContentItem["status"]) => void;
+  onPriorityChange: (
+    contentId: string,
+    priority: ContentItem["priority"]
+  ) => void;
   onBulkStatusChange: (
     contentIds: string[],
     status: ContentItem["status"]
@@ -40,10 +44,14 @@ function getStatusLabel(status: string) {
   return labels[status] ?? status;
 }
 
-function getPriorityVariant(priority: string) {
-  if (priority === "high") return "destructive";
-  if (priority === "medium") return "secondary";
-  return "outline";
+function getPriorityLabel(priority: string) {
+  const labels: Record<string, string> = {
+    low: "Low",
+    medium: "Medium",
+    high: "High",
+  };
+
+  return labels[priority] ?? priority;
 }
 
 function formatDate(date?: string) {
@@ -55,12 +63,17 @@ export function ContentTable({
   contentItems,
   users,
   onStatusChange,
+  onPriorityChange,
   onBulkStatusChange,
   onBulkAssign,
   onBulkDelete,
 }: ContentTableProps) {
   const [localStatuses, setLocalStatuses] = useState<
     Record<string, ContentItem["status"]>
+  >({});
+
+  const [localPriorities, setLocalPriorities] = useState<
+    Record<string, ContentItem["priority"]>
   >({});
 
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -226,6 +239,8 @@ export function ContentTable({
           <tbody>
             {paginatedItems.map((item) => {
               const currentStatus = localStatuses[item.id] ?? item.status;
+              const currentPriority =
+                localPriorities[item.id] ?? item.priority;
               const isSelected = selectedIds.includes(item.id);
 
               return (
@@ -288,7 +303,9 @@ export function ContentTable({
                       }}
                     >
                       <SelectTrigger className="w-[160px]">
-                        <SelectValue>{getStatusLabel(currentStatus)}</SelectValue>
+                        <SelectValue>
+                          {getStatusLabel(currentStatus)}
+                        </SelectValue>
                       </SelectTrigger>
 
                       <SelectContent>
@@ -306,9 +323,32 @@ export function ContentTable({
                   </td>
 
                   <td className="px-4 py-4">
-                    <Badge variant={getPriorityVariant(item.priority)}>
-                      {item.priority}
-                    </Badge>
+                    <Select
+                      value={currentPriority}
+                      onValueChange={(value) => {
+                        const newPriority =
+                          value as ContentItem["priority"];
+
+                        setLocalPriorities((previous) => ({
+                          ...previous,
+                          [item.id]: newPriority,
+                        }));
+
+                        onPriorityChange(item.id, newPriority);
+                      }}
+                    >
+                      <SelectTrigger className="w-[120px]">
+                        <SelectValue>
+                          {getPriorityLabel(currentPriority)}
+                        </SelectValue>
+                      </SelectTrigger>
+
+                      <SelectContent>
+                        <SelectItem value="low">Low</SelectItem>
+                        <SelectItem value="medium">Medium</SelectItem>
+                        <SelectItem value="high">High</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </td>
 
                   <td className="px-4 py-4 text-sm text-muted-foreground">
