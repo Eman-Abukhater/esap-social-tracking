@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { toast } from "sonner";
 
 import { AddContentDialog } from "@/components/content/add-content-dialog";
 import {
@@ -45,39 +46,86 @@ export default function ContentPage() {
     contentId: string,
     newStatus: ContentItem["status"]
   ) {
-    updateStatusMutation.mutate({
-      contentId,
-      status: newStatus,
-    });
+    updateStatusMutation.mutate(
+      {
+        contentId,
+        status: newStatus,
+      },
+      {
+        onSuccess: () => {
+          toast.success("Status updated successfully");
+        },
+        onError: () => {
+          toast.error("Failed to update status");
+        },
+      }
+    );
   }
 
   function handleCreateContent(
     newContent: Parameters<typeof createContentMutation.mutate>[0]
   ) {
-    createContentMutation.mutate(newContent);
+    createContentMutation.mutate(newContent, {
+      onSuccess: () => {
+        toast.success("Content created successfully");
+      },
+      onError: () => {
+        toast.error("Failed to create content");
+      },
+    });
   }
 
   function handleBulkStatusChange(
     contentIds: string[],
     status: ContentItem["status"]
   ) {
-    bulkUpdateStatusMutation.mutate({
-      contentIds,
-      status,
-    });
+    bulkUpdateStatusMutation.mutate(
+      {
+        contentIds,
+        status,
+      },
+      {
+        onSuccess: () => {
+          toast.success("Bulk status updated");
+        },
+        onError: () => {
+          toast.error("Failed to update selected items");
+        },
+      }
+    );
   }
 
   function handleBulkAssign(contentIds: string[], assignedToId: string) {
-    bulkAssignMutation.mutate({
-      contentIds,
-      assignedToId,
-    });
+    bulkAssignMutation.mutate(
+      {
+        contentIds,
+        assignedToId,
+      },
+      {
+        onSuccess: () => {
+          toast.success("Selected items assigned");
+        },
+        onError: () => {
+          toast.error("Failed to assign selected items");
+        },
+      }
+    );
   }
 
   function handleBulkDelete(contentIds: string[]) {
-    bulkDeleteMutation.mutate({
-      contentIds,
-    });
+    bulkDeleteMutation.mutate(
+      {
+        contentIds,
+      },
+      {
+        onSuccess: () => {
+          toast.success("Selected items deleted");
+        },
+        onError: () => {
+          toast.error("Failed to delete selected items");
+        },
+      }
+    );
   }
 
   return (

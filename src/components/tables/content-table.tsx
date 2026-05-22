@@ -133,14 +133,14 @@ export function ContentTable({
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
-            <Select
-              onValueChange={(value) =>
-                onBulkStatusChange(
-                  selectedIds,
-                  value as ContentItem["status"]
-                )
-              }
-            >
+       <Select
+  onValueChange={(value) =>
+    onBulkStatusChange(
+      selectedIds,
+      value as ContentItem["status"]
+    )
+  }
+>
               <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="Bulk Status" />
               </SelectTrigger>
@@ -158,11 +158,13 @@ export function ContentTable({
               </SelectContent>
             </Select>
 
-            <Select
-              onValueChange={(value) =>
-                onBulkAssign(selectedIds, value)
-              }
-            >
+           <Select
+  onValueChange={(value) => {
+    onBulkAssign(selectedIds, value);
+
+    setSelectedIds([]);
+  }}
+>
               <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="Assign User" />
               </SelectTrigger>
