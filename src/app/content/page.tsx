@@ -64,6 +64,25 @@ export default function ContentPage() {
     );
   }
 
+  function handleTitleChange(contentId: string, title: string) {
+    updateContentMutation.mutate(
+      {
+        contentId,
+        data: {
+          title,
+        },
+      },
+      {
+        onSuccess: () => {
+          toast.success("Title updated successfully");
+        },
+        onError: () => {
+          toast.error("Failed to update title");
+        },
+      }
+    );
+  }
+
   function handlePriorityChange(
     contentId: string,
     priority: ContentItem["priority"]
@@ -185,6 +204,7 @@ export default function ContentPage() {
           contentItems={contentItems}
           users={users}
           onStatusChange={handleStatusChange}
+          onTitleChange={handleTitleChange}
           onPriorityChange={handlePriorityChange}
           onBulkStatusChange={handleBulkStatusChange}
           onBulkAssign={handleBulkAssign}

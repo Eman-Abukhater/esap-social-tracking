@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
 
 import {
   Select,
@@ -20,6 +21,7 @@ type ContentTableProps = {
   contentItems: BackendContentItem[];
   users: User[];
   onStatusChange: (contentId: string, status: ContentItem["status"]) => void;
+  onTitleChange: (contentId: string, title: string) => void;
   onPriorityChange: (
     contentId: string,
     priority: ContentItem["priority"]
@@ -63,6 +65,7 @@ export function ContentTable({
   contentItems,
   users,
   onStatusChange,
+  onTitleChange,
   onPriorityChange,
   onBulkStatusChange,
   onBulkAssign,
@@ -75,6 +78,9 @@ export function ContentTable({
   const [localPriorities, setLocalPriorities] = useState<
     Record<string, ContentItem["priority"]>
   >({});
+
+  const [editingTitleId, setEditingTitleId] = useState<string | null>(null);
+  const [titleDrafts, setTitleDrafts] = useState<Record<string, string>>({});
 
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [page, setPage] = useState(1);
@@ -116,10 +122,40 @@ export function ContentTable({
     setSelectedIds([]);
   }
 
+  function startTitleEdit(item: BackendContentItem) {
+    setEditingTitleId(item.id);
+    setTitleDrafts((previous) => ({
+      ...previous,
+      [item.id]: item.title,
+    }));
+  }
+
+  function cancelTitleEdit(contentId: string) {
+    setEditingTitleId(null);
+    setTitleDrafts((previous) => {
+      const next = { ...previous };
+      delete next[contentId];
+      return next;
+    });
+  }
+
+  function saveTitleEdit(item: BackendContentItem) {
+    const nextTitle = titleDrafts[item.id]?.trim();
+
+    if (!nextTitle || nextTitle === item.title) {
+      cancelTitleEdit(item.id);
+      return;
+    }
+
+    onTitleChange(item.id, nextTitle);
+    setEditingTitleId(null);
+  }
+
   if (contentItems.length === 0) {
     return (
       <div className="rounded-xl border bg-background p-10 text-center shadow-sm">
         <h3 className="font-semibold">No content found</h3>
+
         <p className="mt-1 text-sm text-muted-foreground">
           Create your first content item to start tracking execution.
         </p>
@@ -212,24 +248,31 @@ export function ContentTable({
               <th className="px-4 py-3 text-left text-xs font-medium uppercase text-muted-foreground">
                 Title
               </th>
+
               <th className="px-4 py-3 text-left text-xs font-medium uppercase text-muted-foreground">
                 Product
               </th>
+
               <th className="px-4 py-3 text-left text-xs font-medium uppercase text-muted-foreground">
                 Platforms
               </th>
+
               <th className="px-4 py-3 text-left text-xs font-medium uppercase text-muted-foreground">
                 Status
               </th>
+
               <th className="px-4 py-3 text-left text-xs font-medium uppercase text-muted-foreground">
                 Assigned To
               </th>
+
               <th className="px-4 py-3 text-left text-xs font-medium uppercase text-muted-foreground">
                 Priority
               </th>
+
               <th className="px-4 py-3 text-left text-xs font-medium uppercase text-muted-foreground">
                 Scheduled
               </th>
+
               <th className="px-4 py-3 text-left text-xs font-medium uppercase text-muted-foreground">
                 Last Updated
               </th>
@@ -242,6 +285,7 @@ export function ContentTable({
               const currentPriority =
                 localPriorities[item.id] ?? item.priority;
               const isSelected = selectedIds.includes(item.id);
+              const isEditingTitle = editingTitleId === item.id;
 
               return (
                 <tr
@@ -256,12 +300,46 @@ export function ContentTable({
                   </td>
 
                   <td className="px-4 py-4">
-                    <div>
-                      <p className="font-medium">{item.title}</p>
-                      <p className="text-sm capitalize text-muted-foreground">
-                        {item.type}
-                      </p>
-                    </div>
+                    {isEditingTitle ? (
+                      <div className="space-y-2">
+                        <Input
+                          value={titleDrafts[item.id] ?? item.title}
+                          autoFocus
+                          onChange={(event) =>
+                            setTitleDrafts((previous) => ({
+                              ...previous,
+                              [item.id]: event.target.value,
+                            }))
+                          }
+                          onKeyDown={(event) => {
+                            if (event.key === "Enter") {
+                              saveTitleEdit(item);
+                            }
+
+                            if (event.key === "Escape") {
+                              cancelTitleEdit(item.id);
+                            }
+                          }}
+                          onBlur={() => saveTitleEdit(item)}
+                        />
+
+                        <p className="text-xs text-muted-foreground">
+                          Press Enter to save, Esc to cancel
+                        </p>
+                      </div>
+                    ) : (
+                      <div
+                        className="cursor-text rounded-md px-1 py-1 hover:bg-muted"
+                        onDoubleClick={() => startTitleEdit(item)}
+                        title="Double click to edit title"
+                      >
+                        <p className="font-medium">{item.title}</p>
+
+                        <p className="text-sm capitalize text-muted-foreground">
+                          {item.type}
+                        </p>
+                      </div>
+                    )}
                   </td>
 
                   <td className="px-4 py-4">
@@ -272,6 +350,7 @@ export function ContentTable({
                           backgroundColor: item.product?.color ?? "#94a3b8",
                         }}
                       />
+
                       <span className="text-sm">
                         {item.product?.name ?? "Unknown Product"}
                       </span>
