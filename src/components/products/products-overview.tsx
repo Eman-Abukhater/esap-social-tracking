@@ -1,5 +1,11 @@
+import Link from "next/link";
+
 import { Badge } from "@/components/ui/badge";
-import type { BackendContentItem, Product } from "@/lib/types";
+
+import type {
+  BackendContentItem,
+  Product,
+} from "@/lib/types";
 
 type ProductsOverviewProps = {
   products: Product[];
@@ -24,49 +30,77 @@ export function ProductsOverview({
         const completionRate =
           productContent.length === 0
             ? 0
-            : Math.round((publishedCount / productContent.length) * 100);
+            : Math.round(
+                (publishedCount /
+                  productContent.length) *
+                  100
+              );
 
         return (
-          <div
+          <Link
             key={product.id}
-            className="rounded-xl border bg-background p-6 shadow-sm"
+            href={`/products/${product.id}`}
           >
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <div className="flex items-center gap-2">
-                  <span
-                    className="h-3 w-3 rounded-full"
-                    style={{ backgroundColor: product.color }}
-                  />
+            <div className="cursor-pointer rounded-xl border bg-background p-6 shadow-sm transition hover:shadow-md">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span
+                      className="h-3 w-3 rounded-full"
+                      style={{
+                        backgroundColor:
+                          product.color,
+                      }}
+                    />
 
-                  <h2 className="font-semibold">{product.name}</h2>
+                    <h2 className="font-semibold">
+                      {product.name}
+                    </h2>
+                  </div>
+
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    {product.description}
+                  </p>
                 </div>
 
-                <p className="mt-2 text-sm text-muted-foreground">
-                  {product.description}
-                </p>
+                <Badge variant="outline">
+                  {completionRate}%
+                </Badge>
               </div>
 
-              <Badge variant="outline">{completionRate}%</Badge>
+              <div className="mt-6 grid grid-cols-3 gap-3 text-sm">
+                <div>
+                  <p className="text-muted-foreground">
+                    Total
+                  </p>
+
+                  <p className="text-xl font-bold">
+                    {productContent.length}
+                  </p>
+                </div>
+
+                <div>
+                  <p className="text-muted-foreground">
+                    Published
+                  </p>
+
+                  <p className="text-xl font-bold">
+                    {publishedCount}
+                  </p>
+                </div>
+
+                <div>
+                  <p className="text-muted-foreground">
+                    Completion
+                  </p>
+
+                  <p className="text-xl font-bold">
+                    {completionRate}%
+                  </p>
+                </div>
+              </div>
             </div>
-
-            <div className="mt-6 grid grid-cols-3 gap-3 text-sm">
-              <div>
-                <p className="text-muted-foreground">Total</p>
-                <p className="text-xl font-bold">{productContent.length}</p>
-              </div>
-
-              <div>
-                <p className="text-muted-foreground">Published</p>
-                <p className="text-xl font-bold">{publishedCount}</p>
-              </div>
-
-              <div>
-                <p className="text-muted-foreground">Completion</p>
-                <p className="text-xl font-bold">{completionRate}%</p>
-              </div>
-            </div>
-          </div>
+          </Link>
         );
       })}
     </div>

@@ -29,28 +29,26 @@ export default function ProductsPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold">Products</h1>
+
         <p className="text-muted-foreground">
-          Track content performance across ESAP products.
+          Select a product to see its execution overview.
         </p>
       </div>
 
       {isLoading && (
         <div className="rounded-xl border bg-background p-6 text-sm text-muted-foreground">
-          Loading products overview...
+          Loading products...
         </div>
       )}
 
       {isError && (
         <div className="rounded-xl border bg-background p-6 text-sm text-red-500">
-          Failed to load products overview.
+          Failed to load products.
         </div>
       )}
 
       {!isLoading && !isError && (
-        <ProductsOverview
-          products={products}
-          contentItems={contentItems}
-        />
+        <ProductsOverview products={products} contentItems={contentItems} />
       )}
     </div>
   );
