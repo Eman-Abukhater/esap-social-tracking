@@ -1,8 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiFetch } from "@/lib/api";
+import { useCurrentUser } from "@/providers/auth-provider";
 import type { BackendContentItem, ContentItem, Platform } from "@/lib/types";
-
-const CURRENT_USER_ID = "a8b5b138-9a56-4513-a2c2-ded39ccbf012";
 
 type CreateContentInput = {
   title: string;
@@ -19,16 +18,22 @@ type CreateContentInput = {
 
 export function useCreateContentItem() {
   const queryClient = useQueryClient();
+  const currentUser = useCurrentUser();
 
   return useMutation({
-    mutationFn: (data: CreateContentInput) =>
-      apiFetch<BackendContentItem>("/content", {
+    mutationFn: (data: CreateContentInput) => {
+      if (!currentUser) {
+        throw new Error("You must be signed in to create content");
+      }
+
+      return apiFetch<BackendContentItem>("/content", {
         method: "POST",
         body: {
           ...data,
-          createdById: CURRENT_USER_ID,
+          createdById: currentUser.id,
         },
-      }),
+      });
+    },
 
     onSuccess: () => {
       queryClient.invalidateQueries({

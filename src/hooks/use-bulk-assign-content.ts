@@ -1,8 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiFetch } from "@/lib/api";
+import { useCurrentUser } from "@/providers/auth-provider";
 import type { BackendContentItem, User } from "@/lib/types";
-
-const CURRENT_USER_ID = "a8b5b138-9a56-4513-a2c2-ded39ccbf012";
 
 type Input = {
   contentIds: string[];
@@ -11,17 +10,23 @@ type Input = {
 
 export function useBulkAssignContent() {
   const queryClient = useQueryClient();
+  const currentUser = useCurrentUser();
 
   return useMutation({
-    mutationFn: async ({ contentIds, assignedToId }: Input) =>
-      Promise.all(
+    mutationFn: async ({ contentIds, assignedToId }: Input) => {
+      if (!currentUser) {
+        throw new Error("You must be signed in to assign content");
+      }
+
+      return Promise.all(
         contentIds.map((id) =>
           apiFetch<BackendContentItem>(`/content/${id}/assign`, {
             method: "PATCH",
-            body: { assignedToId, changedById: CURRENT_USER_ID },
+            body: { assignedToId, changedById: currentUser.id },
           })
         )
-      ),
+      );
+    },
 
     onMutate: async ({ contentIds, assignedToId }) => {
       await queryClient.cancelQueries({ queryKey: ["content-items"] });

@@ -1,8 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiFetch } from "@/lib/api";
+import { useCurrentUser } from "@/providers/auth-provider";
 import type { BackendContentItem, ContentItem } from "@/lib/types";
-
-const CURRENT_USER_ID = "a8b5b138-9a56-4513-a2c2-ded39ccbf012";
 
 type UpdateContentInput = {
   contentId: string;
@@ -11,16 +10,22 @@ type UpdateContentInput = {
 
 export function useUpdateContentItem() {
   const queryClient = useQueryClient();
+  const currentUser = useCurrentUser();
 
   return useMutation({
-    mutationFn: ({ contentId, data }: UpdateContentInput) =>
-      apiFetch<BackendContentItem>(`/content/${contentId}`, {
+    mutationFn: ({ contentId, data }: UpdateContentInput) => {
+      if (!currentUser) {
+        throw new Error("You must be signed in to update content");
+      }
+
+      return apiFetch<BackendContentItem>(`/content/${contentId}`, {
         method: "PATCH",
         body: {
           ...data,
-          changedById: CURRENT_USER_ID,
+          changedById: currentUser.id,
         },
-      }),
+      });
+    },
 
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["content-items"] });

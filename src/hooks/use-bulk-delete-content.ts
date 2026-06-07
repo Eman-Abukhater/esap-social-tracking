@@ -1,8 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiFetch } from "@/lib/api";
+import { useCurrentUser } from "@/providers/auth-provider";
 import type { BackendContentItem } from "@/lib/types";
-
-const CURRENT_USER_ID = "a8b5b138-9a56-4513-a2c2-ded39ccbf012";
 
 type Input = {
   contentIds: string[];
@@ -10,17 +9,23 @@ type Input = {
 
 export function useBulkDeleteContent() {
   const queryClient = useQueryClient();
+  const currentUser = useCurrentUser();
 
   return useMutation({
-    mutationFn: async ({ contentIds }: Input) =>
-      Promise.all(
+    mutationFn: async ({ contentIds }: Input) => {
+      if (!currentUser) {
+        throw new Error("You must be signed in to delete content");
+      }
+
+      return Promise.all(
         contentIds.map((id) =>
           apiFetch<{ message: string }>(`/content/${id}`, {
             method: "DELETE",
-            body: { changedById: CURRENT_USER_ID },
+            body: { changedById: currentUser.id },
           })
         )
-      ),
+      );
+    },
 
     onMutate: async ({ contentIds }) => {
       await queryClient.cancelQueries({ queryKey: ["content-items"] });
