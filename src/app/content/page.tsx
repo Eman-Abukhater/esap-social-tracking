@@ -27,6 +27,9 @@ export default function ContentPage() {
     productId: "all",
     status: "all",
     platform: "all",
+    assignedToId: "all",
+    startDate: "",
+    endDate: "",
   });
 
   const createContentMutation = useCreateContentItem();

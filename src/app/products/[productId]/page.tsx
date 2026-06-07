@@ -19,6 +19,9 @@ export default function ProductDetailsPage() {
     productId: "all",
     status: "all",
     platform: "all",
+    assignedToId: "all",
+    startDate: "",
+    endDate: "",
   });
 
   const product = products.find(

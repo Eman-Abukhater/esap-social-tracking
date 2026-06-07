@@ -20,6 +20,9 @@ export default function ProductsPage() {
     productId: "all",
     status: "all",
     platform: "all",
+    assignedToId: "all",
+    startDate: "",
+    endDate: "",
   });
 
   const isLoading = isProductsLoading || isContentLoading;

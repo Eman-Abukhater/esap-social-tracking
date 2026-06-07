@@ -22,6 +22,18 @@ export function useContentItems(filters: ContentFiltersState) {
     params.append("platform", filters.platform);
   }
 
+  if (filters.assignedToId !== "all") {
+    params.append("assignedToId", filters.assignedToId);
+  }
+
+  if (filters.startDate) {
+    params.append("startDate", filters.startDate);
+  }
+
+  if (filters.endDate) {
+    params.append("endDate", filters.endDate);
+  }
+
   return useQuery({
     queryKey: ["content-items", filters],
 

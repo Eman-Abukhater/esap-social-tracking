@@ -20,6 +20,9 @@ export default function DashboardPage() {
     productId: "all",
     status: "all",
     platform: "all",
+    assignedToId: "all",
+    startDate: "",
+    endDate: "",
   });
 
   const { data: products = [] } = useProducts();

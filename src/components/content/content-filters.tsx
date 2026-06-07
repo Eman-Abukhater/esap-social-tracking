@@ -9,6 +9,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useProducts } from "@/hooks/use-products";
+import { useUsers } from "@/hooks/use-users";
 import type { Platform } from "@/lib/types";
 
 export type ContentFiltersState = {
@@ -16,6 +17,9 @@ export type ContentFiltersState = {
   productId: string;
   status: string;
   platform: string;
+  assignedToId: string;
+  startDate: string;
+  endDate: string;
 };
 
 type ContentFiltersProps = {
@@ -37,6 +41,8 @@ export function ContentFilters({
   onFiltersChange,
 }: ContentFiltersProps) {
   const { data: products = [] } = useProducts();
+  const { data: users = [] } = useUsers();
+
   return (
     <div className="grid gap-3 rounded-xl border bg-background p-4 shadow-sm md:grid-cols-4">
       <Input
@@ -118,6 +124,53 @@ export function ContentFilters({
           ))}
         </SelectContent>
       </Select>
+
+      <Select
+        value={filters.assignedToId}
+        onValueChange={(value) =>
+          onFiltersChange({
+            ...filters,
+            assignedToId: value,
+          })
+        }
+      >
+        <SelectTrigger>
+          <SelectValue placeholder="Assigned To" />
+        </SelectTrigger>
+
+        <SelectContent>
+          <SelectItem value="all">All Assignees</SelectItem>
+          {users.map((user) => (
+            <SelectItem key={user.id} value={user.id}>
+              {user.name}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+
+      <Input
+        type="date"
+        aria-label="Scheduled from"
+        value={filters.startDate}
+        onChange={(event) =>
+          onFiltersChange({
+            ...filters,
+            startDate: event.target.value,
+          })
+        }
+      />
+
+      <Input
+        type="date"
+        aria-label="Scheduled to"
+        value={filters.endDate}
+        onChange={(event) =>
+          onFiltersChange({
+            ...filters,
+            endDate: event.target.value,
+          })
+        }
+      />
     </div>
   );
 }
