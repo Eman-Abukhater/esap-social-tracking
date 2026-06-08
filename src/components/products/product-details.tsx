@@ -1,7 +1,10 @@
 import { Badge } from "@/components/ui/badge";
+import { PlatformDistributionChart } from "@/components/dashboard/platform-distribution-chart";
+import { WeeklyOutputChart } from "@/components/dashboard/weekly-output-chart";
 
 import type {
   BackendContentItem,
+  ContentItem,
   Product,
 } from "@/lib/types";
 
@@ -9,6 +12,24 @@ type ProductDetailsProps = {
   product: Product;
   contentItems: BackendContentItem[];
 };
+
+const contentTypes: ContentItem["type"][] = [
+  "post",
+  "video",
+  "reel",
+  "carousel",
+];
+
+function getTypeLabel(type: ContentItem["type"]) {
+  const labels: Record<ContentItem["type"], string> = {
+    post: "Posts",
+    video: "Videos",
+    reel: "Reels",
+    carousel: "Carousels",
+  };
+
+  return labels[type];
+}
 
 export function ProductDetails({
   product,
@@ -37,6 +58,11 @@ export function ProductDetails({
   const publishedCount = productContent.filter(
     (item) => item.status === "published"
   ).length;
+
+  const completionRate =
+    productContent.length === 0
+      ? 0
+      : Math.round((publishedCount / productContent.length) * 100);
 
   return (
     <div className="space-y-6">
@@ -84,6 +110,26 @@ export function ProductDetails({
           title="Published"
           value={publishedCount}
         />
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-5">
+        {contentTypes.map((type) => (
+          <StatCard
+            key={type}
+            title={getTypeLabel(type)}
+            value={productContent.filter((item) => item.type === type).length}
+          />
+        ))}
+
+        <StatCard
+          title="Completion Rate"
+          value={`${completionRate}%`}
+        />
+      </div>
+
+      <div className="grid gap-4 lg:grid-cols-2">
+        <PlatformDistributionChart contentItems={productContent} />
+        <WeeklyOutputChart contentItems={productContent} />
       </div>
 
       <div className="rounded-xl border bg-background">
@@ -153,7 +199,7 @@ function StatCard({
   value,
 }: {
   title: string;
-  value: number;
+  value: number | string;
 }) {
   return (
     <div className="rounded-xl border bg-background p-4">
