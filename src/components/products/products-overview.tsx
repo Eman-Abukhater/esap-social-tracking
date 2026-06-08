@@ -1,40 +1,31 @@
+"use client";
+
 import Link from "next/link";
 
 import { Badge } from "@/components/ui/badge";
 
-import type {
-  BackendContentItem,
-  Product,
-} from "@/lib/types";
+import type { DashboardStats, Product } from "@/lib/types";
 
 type ProductsOverviewProps = {
   products: Product[];
-  contentItems: BackendContentItem[];
+  productCompletion: DashboardStats["productCompletion"];
 };
 
 export function ProductsOverview({
   products,
-  contentItems,
+  productCompletion,
 }: ProductsOverviewProps) {
+  const statsByProductId = new Map(
+    productCompletion.map((entry) => [entry.productId, entry])
+  );
+
   return (
     <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
       {products.map((product) => {
-        const productContent = contentItems.filter(
-          (item) => item.productId === product.id
-        );
-
-        const publishedCount = productContent.filter(
-          (item) => item.status === "published"
-        ).length;
-
-        const completionRate =
-          productContent.length === 0
-            ? 0
-            : Math.round(
-                (publishedCount /
-                  productContent.length) *
-                  100
-              );
+        const stats = statsByProductId.get(product.id);
+        const total = stats?.total ?? 0;
+        const published = stats?.published ?? 0;
+        const completionRate = stats?.completionRate ?? 0;
 
         return (
           <Link
@@ -75,7 +66,7 @@ export function ProductsOverview({
                   </p>
 
                   <p className="text-xl font-bold">
-                    {productContent.length}
+                    {total}
                   </p>
                 </div>
 
@@ -85,7 +76,7 @@ export function ProductsOverview({
                   </p>
 
                   <p className="text-xl font-bold">
-                    {publishedCount}
+                    {published}
                   </p>
                 </div>
 

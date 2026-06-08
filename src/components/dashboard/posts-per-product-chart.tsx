@@ -10,27 +10,17 @@ import {
   YAxis,
 } from "recharts";
 
-import type { BackendContentItem, Product } from "@/lib/types";
+import type { DashboardStats } from "@/lib/types";
 
 type PostsPerProductChartProps = {
-  products: Product[];
-  contentItems: BackendContentItem[];
+  data: DashboardStats["postsPerProduct"];
 };
 
-export function PostsPerProductChart({
-  products,
-  contentItems,
-}: PostsPerProductChartProps) {
-  const chartData = products.map((product) => {
-    const totalPosts = contentItems.filter(
-      (item) => item.productId === product.id
-    ).length;
-
-    return {
-      name: product.name,
-      total: totalPosts,
-    };
-  });
+export function PostsPerProductChart({ data }: PostsPerProductChartProps) {
+  const chartData = data.map((entry) => ({
+    name: entry.productName,
+    total: entry.total,
+  }));
 
   return (
     <div className="rounded-xl border bg-background p-6 shadow-sm">

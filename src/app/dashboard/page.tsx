@@ -7,25 +7,10 @@ import { ProductCompletionChart } from "@/components/dashboard/product-completio
 import { StatusBreakdownChart } from "@/components/dashboard/status-breakdown-chart";
 import { WeeklyOutputChart } from "@/components/dashboard/weekly-output-chart";
 
-import { useContentItems } from "@/hooks/use-content-items";
-import { useProducts } from "@/hooks/use-products";
+import { useDashboardStats } from "@/hooks/use-dashboard-stats";
 
 export default function DashboardPage() {
-  const {
-    data: contentItems = [],
-    isLoading,
-    isError,
-  } = useContentItems({
-    search: "",
-    productId: "all",
-    status: "all",
-    platform: "all",
-    assignedToId: "all",
-    startDate: "",
-    endDate: "",
-  });
-
-  const { data: products = [] } = useProducts();
+  const { data: stats, isLoading, isError } = useDashboardStats();
 
   return (
     <div className="space-y-6">
@@ -49,26 +34,20 @@ export default function DashboardPage() {
         </div>
       )}
 
-      {!isLoading && !isError && (
+      {!isLoading && !isError && stats && (
         <>
-          <DashboardStats contentItems={contentItems} />
+          <DashboardStats totals={stats.totals} />
 
           <div className="grid gap-6 xl:grid-cols-2">
-            <PostsPerProductChart
-              products={products}
-              contentItems={contentItems}
-            />
+            <PostsPerProductChart data={stats.postsPerProduct} />
 
-            <PlatformDistributionChart contentItems={contentItems} />
+            <PlatformDistributionChart data={stats.platformDistribution} />
 
-            <StatusBreakdownChart contentItems={contentItems} />
+            <StatusBreakdownChart data={stats.statusBreakdown} />
 
-            <WeeklyOutputChart contentItems={contentItems} />
+            <WeeklyOutputChart data={stats.weeklyOutput} />
 
-            <ProductCompletionChart
-              products={products}
-              contentItems={contentItems}
-            />
+            <ProductCompletionChart data={stats.productCompletion} />
           </div>
         </>
       )}

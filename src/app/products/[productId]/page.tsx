@@ -16,7 +16,7 @@ export default function ProductDetailsPage() {
 
   const { data: contentItems = [] } = useContentItems({
     search: "",
-    productId: "all",
+    productId,
     status: "all",
     platform: "all",
     assignedToId: "all",

@@ -10,33 +10,17 @@ import {
   YAxis,
 } from "recharts";
 
-import type { BackendContentItem, Product } from "@/lib/types";
+import type { DashboardStats } from "@/lib/types";
 
 type Props = {
-  products: Product[];
-  contentItems: BackendContentItem[];
+  data: DashboardStats["productCompletion"];
 };
 
-export function ProductCompletionChart({ products, contentItems }: Props) {
-  const chartData = products.map((product) => {
-    const productContent = contentItems.filter(
-      (item) => item.productId === product.id
-    );
-
-    const published = productContent.filter(
-      (item) => item.status === "published"
-    ).length;
-
-    const completion =
-      productContent.length === 0
-        ? 0
-        : Math.round((published / productContent.length) * 100);
-
-    return {
-      name: product.name,
-      completion,
-    };
-  });
+export function ProductCompletionChart({ data }: Props) {
+  const chartData = data.map((entry) => ({
+    name: entry.productName,
+    completion: entry.completionRate,
+  }));
 
   return (
     <div className="rounded-xl border bg-background p-6 shadow-sm">

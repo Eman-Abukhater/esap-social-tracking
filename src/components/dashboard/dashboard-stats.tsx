@@ -1,43 +1,28 @@
 "use client";
 
-import type { BackendContentItem } from "@/lib/types";
+import type { DashboardStats as DashboardStatsData } from "@/lib/types";
+
 type DashboardStatsProps = {
-  contentItems: BackendContentItem[];
+  totals: DashboardStatsData["totals"];
 };
 
-export function DashboardStats({
-  contentItems,
-}: DashboardStatsProps) {
-  const totalContent = contentItems.length;
-
-  const publishedCount = contentItems.filter(
-    (item) => item.status === "published"
-  ).length;
-
-  const inProgressCount = contentItems.filter(
-    (item) => item.status === "in_progress"
-  ).length;
-
-  const plannedCount = contentItems.filter(
-    (item) => item.status === "planned"
-  ).length;
-
+export function DashboardStats({ totals }: DashboardStatsProps) {
   const stats = [
     {
       title: "Total Content",
-      value: totalContent,
+      value: totals.totalContent,
     },
     {
       title: "Published",
-      value: publishedCount,
+      value: totals.published,
     },
     {
       title: "In Progress",
-      value: inProgressCount,
+      value: totals.inProgress,
     },
     {
       title: "Planned",
-      value: plannedCount,
+      value: totals.planned,
     },
   ];
 

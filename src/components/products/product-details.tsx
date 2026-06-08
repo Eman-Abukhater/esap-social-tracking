@@ -1,10 +1,14 @@
+"use client";
+
 import { Badge } from "@/components/ui/badge";
 import { PlatformDistributionChart } from "@/components/dashboard/platform-distribution-chart";
 import { WeeklyOutputChart } from "@/components/dashboard/weekly-output-chart";
+import { useDashboardStats } from "@/hooks/use-dashboard-stats";
 
 import type {
   BackendContentItem,
-  ContentItem,
+  ContentStatus,
+  ContentType,
   Product,
 } from "@/lib/types";
 
@@ -13,56 +17,28 @@ type ProductDetailsProps = {
   contentItems: BackendContentItem[];
 };
 
-const contentTypes: ContentItem["type"][] = [
-  "post",
-  "video",
-  "reel",
-  "carousel",
-];
+const statusLabels: Record<ContentStatus, string> = {
+  planned: "Planned",
+  in_progress: "In Progress",
+  review: "Review",
+  done: "Done",
+  published: "Published",
+};
 
-function getTypeLabel(type: ContentItem["type"]) {
-  const labels: Record<ContentItem["type"], string> = {
-    post: "Posts",
-    video: "Videos",
-    reel: "Reels",
-    carousel: "Carousels",
-  };
-
-  return labels[type];
-}
+const typeLabels: Record<ContentType, string> = {
+  post: "Posts",
+  video: "Videos",
+  reel: "Reels",
+  carousel: "Carousels",
+};
 
 export function ProductDetails({
   product,
   contentItems,
 }: ProductDetailsProps) {
-  const productContent = contentItems.filter(
-    (item) => item.productId === product.id
+  const { data: stats, isLoading: isStatsLoading } = useDashboardStats(
+    product.id
   );
-
-  const plannedCount = productContent.filter(
-    (item) => item.status === "planned"
-  ).length;
-
-  const progressCount = productContent.filter(
-    (item) => item.status === "in_progress"
-  ).length;
-
-  const reviewCount = productContent.filter(
-    (item) => item.status === "review"
-  ).length;
-
-  const doneCount = productContent.filter(
-    (item) => item.status === "done"
-  ).length;
-
-  const publishedCount = productContent.filter(
-    (item) => item.status === "published"
-  ).length;
-
-  const completionRate =
-    productContent.length === 0
-      ? 0
-      : Math.round((publishedCount / productContent.length) * 100);
 
   return (
     <div className="space-y-6">
@@ -85,52 +61,45 @@ export function ProductDetails({
         </p>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-5">
-        <StatCard
-          title="Planned"
-          value={plannedCount}
-        />
+      {isStatsLoading && (
+        <div className="rounded-xl border bg-background p-6 text-sm text-muted-foreground">
+          Loading product performance...
+        </div>
+      )}
 
-        <StatCard
-          title="In Progress"
-          value={progressCount}
-        />
+      {stats && (
+        <>
+          <div className="grid gap-4 md:grid-cols-5">
+            {stats.statusBreakdown.map((entry) => (
+              <StatCard
+                key={entry.status}
+                title={statusLabels[entry.status]}
+                value={entry.total}
+              />
+            ))}
+          </div>
 
-        <StatCard
-          title="Review"
-          value={reviewCount}
-        />
+          <div className="grid gap-4 md:grid-cols-5">
+            {stats.typeBreakdown.map((entry) => (
+              <StatCard
+                key={entry.type}
+                title={typeLabels[entry.type]}
+                value={entry.total}
+              />
+            ))}
 
-        <StatCard
-          title="Done"
-          value={doneCount}
-        />
+            <StatCard
+              title="Completion Rate"
+              value={`${stats.completionRate}%`}
+            />
+          </div>
 
-        <StatCard
-          title="Published"
-          value={publishedCount}
-        />
-      </div>
-
-      <div className="grid gap-4 md:grid-cols-5">
-        {contentTypes.map((type) => (
-          <StatCard
-            key={type}
-            title={getTypeLabel(type)}
-            value={productContent.filter((item) => item.type === type).length}
-          />
-        ))}
-
-        <StatCard
-          title="Completion Rate"
-          value={`${completionRate}%`}
-        />
-      </div>
-
-      <div className="grid gap-4 lg:grid-cols-2">
-        <PlatformDistributionChart contentItems={productContent} />
-        <WeeklyOutputChart contentItems={productContent} />
-      </div>
+          <div className="grid gap-4 lg:grid-cols-2">
+            <PlatformDistributionChart data={stats.platformDistribution} />
+            <WeeklyOutputChart data={stats.weeklyOutput} />
+          </div>
+        </>
+      )}
 
       <div className="rounded-xl border bg-background">
         <div className="border-b p-4">
@@ -162,7 +131,7 @@ export function ProductDetails({
             </thead>
 
             <tbody>
-              {productContent.map((item) => (
+              {contentItems.map((item) => (
                 <tr
                   key={item.id}
                   className="border-b"

@@ -1,7 +1,7 @@
 "use client";
 
 import { ProductsOverview } from "@/components/products/products-overview";
-import { useContentItems } from "@/hooks/use-content-items";
+import { useDashboardStats } from "@/hooks/use-dashboard-stats";
 import { useProducts } from "@/hooks/use-products";
 
 export default function ProductsPage() {
@@ -12,21 +12,13 @@ export default function ProductsPage() {
   } = useProducts();
 
   const {
-    data: contentItems = [],
-    isLoading: isContentLoading,
-    isError: isContentError,
-  } = useContentItems({
-    search: "",
-    productId: "all",
-    status: "all",
-    platform: "all",
-    assignedToId: "all",
-    startDate: "",
-    endDate: "",
-  });
+    data: stats,
+    isLoading: isStatsLoading,
+    isError: isStatsError,
+  } = useDashboardStats();
 
-  const isLoading = isProductsLoading || isContentLoading;
-  const isError = isProductsError || isContentError;
+  const isLoading = isProductsLoading || isStatsLoading;
+  const isError = isProductsError || isStatsError;
 
   return (
     <div className="space-y-6">
@@ -50,8 +42,11 @@ export default function ProductsPage() {
         </div>
       )}
 
-      {!isLoading && !isError && (
-        <ProductsOverview products={products} contentItems={contentItems} />
+      {!isLoading && !isError && stats && (
+        <ProductsOverview
+          products={products}
+          productCompletion={stats.productCompletion}
+        />
       )}
     </div>
   );

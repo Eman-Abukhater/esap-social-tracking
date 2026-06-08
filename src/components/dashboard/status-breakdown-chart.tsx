@@ -10,28 +10,20 @@ import {
   YAxis,
 } from "recharts";
 
-import type { BackendContentItem } from "@/lib/types";
+import type { DashboardStats } from "@/lib/types";
 
 type Props = {
-  contentItems: BackendContentItem[];
+  data: DashboardStats["statusBreakdown"];
 };
-
-const statuses = [
-  "planned",
-  "in_progress",
-  "review",
-  "done",
-  "published",
-];
 
 function getStatusLabel(status: string) {
   return status.replace("_", " ");
 }
 
-export function StatusBreakdownChart({ contentItems }: Props) {
-  const chartData = statuses.map((status) => ({
-    name: getStatusLabel(status),
-    total: contentItems.filter((item) => item.status === status).length,
+export function StatusBreakdownChart({ data }: Props) {
+  const chartData = data.map((entry) => ({
+    name: getStatusLabel(entry.status),
+    total: entry.total,
   }));
 
   return (

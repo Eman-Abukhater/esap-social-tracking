@@ -8,32 +8,21 @@ import {
   Tooltip,
 } from "recharts";
 
-import type { BackendContentItem, Platform } from "@/lib/types";
+import type { DashboardStats } from "@/lib/types";
 
 type PlatformDistributionChartProps = {
-  contentItems: BackendContentItem[];
+  data: DashboardStats["platformDistribution"];
 };
 
-const platforms: Platform[] = [
-  "LinkedIn",
-  "X",
-  "Instagram",
-  "TikTok",
-  "YouTube",
-  "Facebook",
-];
-
 export function PlatformDistributionChart({
-  contentItems,
+  data,
 }: PlatformDistributionChartProps) {
-  const chartData = platforms
-    .map((platform) => ({
-      name: platform,
-      value: contentItems.filter((item) =>
-        item.platforms.includes(platform)
-      ).length,
-    }))
-    .filter((item) => item.value > 0);
+  const chartData = data
+    .filter((entry) => entry.total > 0)
+    .map((entry) => ({
+      name: entry.platform,
+      value: entry.total,
+    }));
 
   return (
     <div className="rounded-xl border bg-background p-6 shadow-sm">

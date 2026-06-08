@@ -87,3 +87,25 @@ export type ActivityLog = {
   changedBy: string;
   timestamp: string;
 };
+
+export type DashboardStats = {
+  totals: {
+    totalContent: number;
+    published: number;
+    inProgress: number;
+    planned: number;
+  };
+  completionRate: number;
+  statusBreakdown: { status: ContentStatus; total: number }[];
+  typeBreakdown: { type: ContentType; total: number }[];
+  postsPerProduct: { productId: string; productName: string; total: number }[];
+  productCompletion: {
+    productId: string;
+    productName: string;
+    total: number;
+    published: number;
+    completionRate: number;
+  }[];
+  platformDistribution: { platform: Platform; total: number }[];
+  weeklyOutput: { date: string; total: number }[];
+};
