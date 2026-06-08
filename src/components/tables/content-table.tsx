@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
+import { useCurrentUser } from "@/providers/auth-provider";
 
 import {
   Select,
@@ -85,6 +86,10 @@ export function ContentTable({
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+
+  const currentUser = useCurrentUser();
+  const canManageContent =
+    currentUser?.role === "admin" || currentUser?.role === "manager";
 
   const totalPages = Math.max(1, Math.ceil(contentItems.length / rowsPerPage));
 
@@ -202,34 +207,38 @@ export function ContentTable({
               </SelectContent>
             </Select>
 
-            <Select
-              onValueChange={(value) => {
-                onBulkAssign(selectedIds, value);
-                clearSelection();
-              }}
-            >
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Assign User" />
-              </SelectTrigger>
+            {canManageContent && (
+              <Select
+                onValueChange={(value) => {
+                  onBulkAssign(selectedIds, value);
+                  clearSelection();
+                }}
+              >
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Assign User" />
+                </SelectTrigger>
 
-              <SelectContent>
-                {users.map((user) => (
-                  <SelectItem key={user.id} value={user.id}>
-                    {user.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+                <SelectContent>
+                  {users.map((user) => (
+                    <SelectItem key={user.id} value={user.id}>
+                      {user.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
 
-            <Button
-              variant="destructive"
-              onClick={() => {
-                onBulkDelete(selectedIds);
-                clearSelection();
-              }}
-            >
-              Delete Selected
-            </Button>
+            {canManageContent && (
+              <Button
+                variant="destructive"
+                onClick={() => {
+                  onBulkDelete(selectedIds);
+                  clearSelection();
+                }}
+              >
+                Delete Selected
+              </Button>
+            )}
           </div>
         </div>
       )}
