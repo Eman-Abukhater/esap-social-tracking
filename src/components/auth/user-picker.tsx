@@ -10,8 +10,8 @@ export function UserPicker() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-muted/30 p-6">
-      <div className="w-full max-w-sm space-y-6 rounded-xl border bg-background p-6 shadow-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 p-6 backdrop-blur-sm">
+      <div className="w-full max-w-sm space-y-6 rounded-xl border bg-background p-6 shadow-lg">
         <div>
           <h1 className="text-xl font-bold">Who are you?</h1>
 
