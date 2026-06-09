@@ -4,6 +4,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 import { AddContentDialog } from "@/components/content/add-content-dialog";
+import { ContentDetailSheet } from "@/components/content/content-detail-sheet";
 import {
   ContentFilters,
   type ContentFiltersState,
@@ -20,7 +21,7 @@ import { useUpdateContentItem } from "@/hooks/use-update-content-item";
 import { useUpdateContentStatus } from "@/hooks/use-update-content-status";
 import { useUsers } from "@/hooks/use-users";
 
-import type { ContentItem } from "@/lib/types";
+import type { BackendContentItem, ContentItem } from "@/lib/types";
 
 const EMPTY_PAGE = { items: [], total: 0, page: 1, pageSize: 10, totalPages: 0 };
 
@@ -36,6 +37,8 @@ export default function ContentPage() {
   });
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  const [detailItem, setDetailItem] = useState<BackendContentItem | null>(null);
+  const [isDetailOpen, setIsDetailOpen] = useState(false);
 
   function handleFiltersChange(newFilters: ContentFiltersState) {
     setFilters(newFilters);
@@ -202,6 +205,11 @@ export default function ContentPage() {
     );
   }
 
+  function handleOpenDetails(item: BackendContentItem) {
+    setDetailItem(item);
+    setIsDetailOpen(true);
+  }
+
   function handleBulkDelete(contentIds: string[]) {
     bulkDeleteMutation.mutate(
       {
@@ -266,8 +274,16 @@ export default function ContentPage() {
           onBulkStatusChange={handleBulkStatusChange}
           onBulkAssign={handleBulkAssign}
           onBulkDelete={handleBulkDelete}
+          onOpenDetails={handleOpenDetails}
         />
       )}
+
+      <ContentDetailSheet
+        key={detailItem?.id ?? "empty"}
+        item={detailItem}
+        open={isDetailOpen}
+        onOpenChange={setIsDetailOpen}
+      />
     </div>
   );
 }

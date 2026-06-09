@@ -18,6 +18,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
+import { PanelRight } from "lucide-react";
 import type { BackendContentItem, ContentItem, Platform, User } from "@/lib/types";
 
 const ALL_PLATFORMS: Platform[] = ["LinkedIn", "X", "Instagram", "TikTok", "YouTube", "Facebook"];
@@ -47,6 +48,7 @@ type ContentTableProps = {
   onAssignChange: (contentId: string, assignedToId: string) => void;
   onBulkAssign: (contentIds: string[], assignedToId: string) => void;
   onBulkDelete: (contentIds: string[]) => void;
+  onOpenDetails: (item: BackendContentItem) => void;
 };
 
 function getStatusLabel(status: string) {
@@ -95,6 +97,7 @@ export function ContentTable({
   onAssignChange,
   onBulkAssign,
   onBulkDelete,
+  onOpenDetails,
 }: ContentTableProps) {
   const [localStatuses, setLocalStatuses] = useState<
     Record<string, ContentItem["status"]>
@@ -322,6 +325,8 @@ export function ContentTable({
               <th className="px-4 py-3 text-left text-xs font-medium uppercase text-muted-foreground">
                 Last Updated
               </th>
+
+              <th className="w-12 px-4 py-3" />
             </tr>
           </thead>
 
@@ -584,6 +589,17 @@ export function ContentTable({
 
                   <td className="px-4 py-4 text-sm text-muted-foreground">
                     {formatDate(item.updatedAt)}
+                  </td>
+
+                  <td className="px-4 py-4">
+                    <button
+                      type="button"
+                      title="View details"
+                      className="text-muted-foreground hover:text-foreground"
+                      onClick={() => onOpenDetails(item)}
+                    >
+                      <PanelRight className="h-4 w-4" />
+                    </button>
                   </td>
                 </tr>
               );

@@ -5,7 +5,7 @@ import type { BackendContentItem, ContentItem, PaginatedContentItems } from "@/l
 
 type UpdateContentInput = {
   contentId: string;
-  data: Partial<Pick<ContentItem, "title" | "type" | "priority" | "platforms" | "scheduledDate">>;
+  data: Partial<Pick<ContentItem, "title" | "type" | "priority" | "platforms" | "scheduledDate" | "description" | "notes" | "mediaUrl" | "tags">>;
 };
 
 export function useUpdateContentItem() {
