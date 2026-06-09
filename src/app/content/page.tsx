@@ -13,13 +13,15 @@ import { ContentTable } from "@/components/tables/content-table";
 import { useBulkAssignContent } from "@/hooks/use-bulk-assign-content";
 import { useBulkDeleteContent } from "@/hooks/use-bulk-delete-content";
 import { useBulkUpdateStatus } from "@/hooks/use-bulk-update-status";
-import { useContentItems } from "@/hooks/use-content-items";
+import { usePaginatedContentItems } from "@/hooks/use-paginated-content-items";
 import { useCreateContentItem } from "@/hooks/use-create-content-item";
 import { useUpdateContentItem } from "@/hooks/use-update-content-item";
 import { useUpdateContentStatus } from "@/hooks/use-update-content-status";
 import { useUsers } from "@/hooks/use-users";
 
 import type { ContentItem } from "@/lib/types";
+
+const EMPTY_PAGE = { items: [], total: 0, page: 1, pageSize: 10, totalPages: 0 };
 
 export default function ContentPage() {
   const [filters, setFilters] = useState<ContentFiltersState>({
@@ -31,6 +33,13 @@ export default function ContentPage() {
     startDate: "",
     endDate: "",
   });
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+
+  function handleFiltersChange(newFilters: ContentFiltersState) {
+    setFilters(newFilters);
+    setPage(1);
+  }
 
   const createContentMutation = useCreateContentItem();
   const updateStatusMutation = useUpdateContentStatus();
@@ -40,10 +49,12 @@ export default function ContentPage() {
   const bulkDeleteMutation = useBulkDeleteContent();
 
   const {
-    data: contentItems = [],
+    data: paginatedData = EMPTY_PAGE,
     isLoading,
     isError,
-  } = useContentItems(filters);
+  } = usePaginatedContentItems(filters, page, pageSize);
+
+  const { items: contentItems, total, totalPages } = paginatedData;
 
   const { data: users = [] } = useUsers();
 
@@ -188,7 +199,7 @@ export default function ContentPage() {
         <AddContentDialog onCreateContent={handleCreateContent} />
       </div>
 
-      <ContentFilters filters={filters} onFiltersChange={setFilters} />
+      <ContentFilters filters={filters} onFiltersChange={handleFiltersChange} />
 
       {isLoading && (
         <div className="rounded-xl border bg-background p-6 text-sm text-muted-foreground">
@@ -205,6 +216,12 @@ export default function ContentPage() {
       {!isLoading && !isError && (
         <ContentTable
           contentItems={contentItems}
+          total={total}
+          page={page}
+          pageSize={pageSize}
+          totalPages={totalPages}
+          onPageChange={setPage}
+          onPageSizeChange={(size) => { setPageSize(size); setPage(1); }}
           users={users}
           onStatusChange={handleStatusChange}
           onTitleChange={handleTitleChange}

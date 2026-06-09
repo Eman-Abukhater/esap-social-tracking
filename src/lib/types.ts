@@ -62,6 +62,14 @@ export type BackendContentItem = Omit<
   assignedTo: User;
   createdBy: User;
 };
+export type PaginatedContentItems = {
+  items: BackendContentItem[];
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+};
+
 export type BackendActivityLog = Omit<
   ActivityLog,
   "changedBy"

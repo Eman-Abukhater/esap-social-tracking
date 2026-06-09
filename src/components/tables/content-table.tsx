@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -20,6 +20,12 @@ import type { BackendContentItem, ContentItem, User } from "@/lib/types";
 
 type ContentTableProps = {
   contentItems: BackendContentItem[];
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+  onPageChange: (page: number) => void;
+  onPageSizeChange: (pageSize: number) => void;
   users: User[];
   onStatusChange: (contentId: string, status: ContentItem["status"]) => void;
   onTitleChange: (contentId: string, title: string) => void;
@@ -64,6 +70,12 @@ function formatDate(date?: string) {
 
 export function ContentTable({
   contentItems,
+  total,
+  page,
+  pageSize,
+  totalPages,
+  onPageChange,
+  onPageSizeChange,
   users,
   onStatusChange,
   onTitleChange,
@@ -84,26 +96,27 @@ export function ContentTable({
   const [titleDrafts, setTitleDrafts] = useState<Record<string, string>>({});
 
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const [page, setPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const currentUser = useCurrentUser();
   const canManageContent =
     currentUser?.role === "admin" || currentUser?.role === "manager";
 
-  const totalPages = Math.max(1, Math.ceil(contentItems.length / rowsPerPage));
+  function handlePageChange(newPage: number) {
+    setSelectedIds([]);
+    onPageChange(newPage);
+  }
 
-  const paginatedItems = useMemo(() => {
-    const startIndex = (page - 1) * rowsPerPage;
-    return contentItems.slice(startIndex, startIndex + rowsPerPage);
-  }, [contentItems, page, rowsPerPage]);
+  function handlePageSizeChange(newSize: number) {
+    setSelectedIds([]);
+    onPageSizeChange(newSize);
+  }
 
   const allSelected =
-    paginatedItems.length > 0 &&
-    paginatedItems.every((item) => selectedIds.includes(item.id));
+    contentItems.length > 0 &&
+    contentItems.every((item) => selectedIds.includes(item.id));
 
   function toggleSelectAll() {
-    const pageIds = paginatedItems.map((item) => item.id);
+    const pageIds = contentItems.map((item) => item.id);
 
     if (allSelected) {
       setSelectedIds((previous) =>
@@ -289,7 +302,7 @@ export function ContentTable({
           </thead>
 
           <tbody>
-            {paginatedItems.map((item) => {
+            {contentItems.map((item) => {
               const currentStatus = localStatuses[item.id] ?? item.status;
               const currentPriority =
                 localPriorities[item.id] ?? item.priority;
@@ -455,19 +468,14 @@ export function ContentTable({
 
       <div className="flex flex-wrap items-center justify-between gap-4 border-t px-4 py-3">
         <p className="text-sm text-muted-foreground">
-          Showing {(page - 1) * rowsPerPage + 1}-
-          {Math.min(page * rowsPerPage, contentItems.length)} of{" "}
-          {contentItems.length}
+          Showing {total === 0 ? 0 : (page - 1) * pageSize + 1}–
+          {Math.min(page * pageSize, total)} of {total}
         </p>
 
         <div className="flex items-center gap-3">
           <Select
-            value={String(rowsPerPage)}
-            onValueChange={(value) => {
-              setRowsPerPage(Number(value));
-              setPage(1);
-              clearSelection();
-            }}
+            value={String(pageSize)}
+            onValueChange={(value) => handlePageSizeChange(Number(value))}
           >
             <SelectTrigger className="w-[120px]">
               <SelectValue />
@@ -483,25 +491,19 @@ export function ContentTable({
           <Button
             variant="outline"
             disabled={page === 1}
-            onClick={() => {
-              setPage((previous) => Math.max(1, previous - 1));
-              clearSelection();
-            }}
+            onClick={() => handlePageChange(page - 1)}
           >
             Previous
           </Button>
 
           <span className="text-sm text-muted-foreground">
-            Page {page} of {totalPages}
+            Page {page} of {Math.max(1, totalPages)}
           </span>
 
           <Button
             variant="outline"
-            disabled={page === totalPages}
-            onClick={() => {
-              setPage((previous) => Math.min(totalPages, previous + 1));
-              clearSelection();
-            }}
+            disabled={page >= totalPages}
+            onClick={() => handlePageChange(page + 1)}
           >
             Next
           </Button>
