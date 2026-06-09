@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { UserAvatar } from "@/components/user-avatar";
 import { useCurrentUser } from "@/providers/auth-provider";
 
 import {
@@ -496,29 +497,48 @@ export function ContentTable({
                   </td>
 
                   <td className="px-4 py-4">
-                    {canManageContent ? (
-                      <Select
-                        value={localAssignedToIds[item.id] ?? item.assignedTo?.id ?? ""}
-                        onValueChange={(value) => {
-                          setLocalAssignedToIds((prev) => ({ ...prev, [item.id]: value }));
-                          onAssignChange(item.id, value);
-                        }}
-                      >
-                        <SelectTrigger className="w-[140px]">
-                          <SelectValue placeholder="Unassigned" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {users.map((user) => (
-                            <SelectItem key={user.id} value={user.id}>
-                              {user.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    ) : (
-                      <span className="text-sm">
-                        {item.assignedTo?.name ?? "Unassigned"}
-                      </span>
+                    {canManageContent ? (() => {
+                      const currentAssigneeId = localAssignedToIds[item.id] ?? item.assignedTo?.id ?? "";
+                      const currentAssignee = users.find((u) => u.id === currentAssigneeId);
+                      return (
+                        <Select
+                          value={currentAssigneeId}
+                          onValueChange={(value) => {
+                            setLocalAssignedToIds((prev) => ({ ...prev, [item.id]: value }));
+                            onAssignChange(item.id, value);
+                          }}
+                        >
+                          <SelectTrigger className="w-[160px]">
+                            <div className="flex items-center gap-2 overflow-hidden">
+                              {currentAssignee ? (
+                                <>
+                                  <UserAvatar user={currentAssignee} size="sm" />
+                                  <span className="truncate text-sm">{currentAssignee.name}</span>
+                                </>
+                              ) : (
+                                <span className="text-sm text-muted-foreground">Unassigned</span>
+                              )}
+                            </div>
+                          </SelectTrigger>
+                          <SelectContent>
+                            {users.map((user) => (
+                              <SelectItem key={user.id} value={user.id}>
+                                <div className="flex items-center gap-2">
+                                  <UserAvatar user={user} size="sm" />
+                                  {user.name}
+                                </div>
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      );
+                    })() : (
+                      <div className="flex items-center gap-2">
+                        {item.assignedTo && <UserAvatar user={item.assignedTo} size="sm" />}
+                        <span className="text-sm">
+                          {item.assignedTo?.name ?? "Unassigned"}
+                        </span>
+                      </div>
                     )}
                   </td>
 

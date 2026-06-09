@@ -1,4 +1,5 @@
 import { Badge } from "@/components/ui/badge";
+import { UserAvatar } from "@/components/user-avatar";
 import type { User } from "@/lib/types";
 
 type TeamListProps = {
@@ -14,12 +15,15 @@ export function TeamList({ users }: TeamListProps) {
           className="rounded-xl border bg-background p-6 shadow-sm"
         >
           <div className="flex items-center justify-between gap-4">
-            <div>
-              <h2 className="font-semibold">{user.name}</h2>
-              <p className="text-sm text-muted-foreground">{user.email}</p>
+            <div className="flex items-center gap-3">
+              <UserAvatar user={user} size="lg" />
+              <div>
+                <h2 className="font-semibold">{user.name}</h2>
+                <p className="text-sm text-muted-foreground">{user.email}</p>
+              </div>
             </div>
 
-            <Badge variant="outline">{user.role}</Badge>
+            <Badge variant="outline" className="capitalize">{user.role}</Badge>
           </div>
         </div>
       ))}
