@@ -13,8 +13,9 @@ export function useDashboardStats(productId?: string) {
 
   return useQuery({
     queryKey: ["dashboard-stats", productId ?? "all"],
-
     queryFn: () =>
       apiFetch<DashboardStats>(`/dashboard/stats${query ? `?${query}` : ""}`),
+    staleTime: 5 * 60_000,
+    gcTime: 10 * 60_000,
   });
 }
