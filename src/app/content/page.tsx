@@ -104,19 +104,40 @@ export default function ContentPage() {
     priority: ContentItem["priority"]
   ) {
     updateContentMutation.mutate(
+      { contentId, data: { priority } },
       {
-        contentId,
-        data: {
-          priority,
-        },
-      },
+        onSuccess: () => toast.success("Priority updated"),
+        onError: () => toast.error("Failed to update priority"),
+      }
+    );
+  }
+
+  function handleTypeChange(contentId: string, type: ContentItem["type"]) {
+    updateContentMutation.mutate(
+      { contentId, data: { type } },
       {
-        onSuccess: () => {
-          toast.success("Priority updated successfully");
-        },
-        onError: () => {
-          toast.error("Failed to update priority");
-        },
+        onSuccess: () => toast.success("Type updated"),
+        onError: () => toast.error("Failed to update type"),
+      }
+    );
+  }
+
+  function handleScheduledDateChange(contentId: string, date: string) {
+    updateContentMutation.mutate(
+      { contentId, data: { scheduledDate: date } },
+      {
+        onSuccess: () => toast.success("Date updated"),
+        onError: () => toast.error("Failed to update date"),
+      }
+    );
+  }
+
+  function handlePlatformsChange(contentId: string, platforms: import("@/lib/types").Platform[]) {
+    updateContentMutation.mutate(
+      { contentId, data: { platforms } },
+      {
+        onSuccess: () => toast.success("Platforms updated"),
+        onError: () => toast.error("Failed to update platforms"),
       }
     );
   }
@@ -237,7 +258,10 @@ export default function ContentPage() {
           users={users}
           onStatusChange={handleStatusChange}
           onTitleChange={handleTitleChange}
+          onTypeChange={handleTypeChange}
           onPriorityChange={handlePriorityChange}
+          onScheduledDateChange={handleScheduledDateChange}
+          onPlatformsChange={handlePlatformsChange}
           onAssignChange={handleAssignChange}
           onBulkStatusChange={handleBulkStatusChange}
           onBulkAssign={handleBulkAssign}

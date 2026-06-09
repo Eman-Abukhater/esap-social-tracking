@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useCurrentUser } from "@/providers/auth-provider";
 
 import {
@@ -16,7 +17,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import type { BackendContentItem, ContentItem, User } from "@/lib/types";
+import type { BackendContentItem, ContentItem, Platform, User } from "@/lib/types";
+
+const ALL_PLATFORMS: Platform[] = ["LinkedIn", "X", "Instagram", "TikTok", "YouTube", "Facebook"];
 
 type ContentTableProps = {
   contentItems: BackendContentItem[];
@@ -29,10 +32,13 @@ type ContentTableProps = {
   users: User[];
   onStatusChange: (contentId: string, status: ContentItem["status"]) => void;
   onTitleChange: (contentId: string, title: string) => void;
+  onTypeChange: (contentId: string, type: ContentItem["type"]) => void;
   onPriorityChange: (
     contentId: string,
     priority: ContentItem["priority"]
   ) => void;
+  onScheduledDateChange: (contentId: string, date: string) => void;
+  onPlatformsChange: (contentId: string, platforms: Platform[]) => void;
   onBulkStatusChange: (
     contentIds: string[],
     status: ContentItem["status"]
@@ -80,7 +86,10 @@ export function ContentTable({
   users,
   onStatusChange,
   onTitleChange,
+  onTypeChange,
   onPriorityChange,
+  onScheduledDateChange,
+  onPlatformsChange,
   onBulkStatusChange,
   onAssignChange,
   onBulkAssign,
@@ -96,6 +105,14 @@ export function ContentTable({
 
   const [localAssignedToIds, setLocalAssignedToIds] = useState<
     Record<string, string>
+  >({});
+
+  const [localTypes, setLocalTypes] = useState<
+    Record<string, ContentItem["type"]>
+  >({});
+
+  const [localPlatforms, setLocalPlatforms] = useState<
+    Record<string, Platform[]>
   >({});
 
   const [editingTitleId, setEditingTitleId] = useState<string | null>(null);
@@ -310,8 +327,9 @@ export function ContentTable({
           <tbody>
             {contentItems.map((item) => {
               const currentStatus = localStatuses[item.id] ?? item.status;
-              const currentPriority =
-                localPriorities[item.id] ?? item.priority;
+              const currentPriority = localPriorities[item.id] ?? item.priority;
+              const currentType = localTypes[item.id] ?? item.type;
+              const currentPlatforms = localPlatforms[item.id] ?? item.platforms;
               const isSelected = selectedIds.includes(item.id);
               const isEditingTitle = editingTitleId === item.id;
 
@@ -356,16 +374,32 @@ export function ContentTable({
                         </p>
                       </div>
                     ) : (
-                      <div
-                        className="cursor-text rounded-md px-1 py-1 hover:bg-muted"
-                        onDoubleClick={() => startTitleEdit(item)}
-                        title="Double click to edit title"
-                      >
-                        <p className="font-medium">{item.title}</p>
-
-                        <p className="text-sm capitalize text-muted-foreground">
-                          {item.type}
-                        </p>
+                      <div className="space-y-1">
+                        <div
+                          className="cursor-text rounded-md px-1 py-1 hover:bg-muted"
+                          onDoubleClick={() => startTitleEdit(item)}
+                          title="Double click to edit title"
+                        >
+                          <p className="font-medium">{item.title}</p>
+                        </div>
+                        <Select
+                          value={currentType}
+                          onValueChange={(value) => {
+                            const newType = value as ContentItem["type"];
+                            setLocalTypes((prev) => ({ ...prev, [item.id]: newType }));
+                            onTypeChange(item.id, newType);
+                          }}
+                        >
+                          <SelectTrigger className="h-6 w-[110px] border-0 px-1 text-xs text-muted-foreground shadow-none hover:bg-muted focus:ring-0">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="post">Post</SelectItem>
+                            <SelectItem value="video">Video</SelectItem>
+                            <SelectItem value="reel">Reel</SelectItem>
+                            <SelectItem value="carousel">Carousel</SelectItem>
+                          </SelectContent>
+                        </Select>
                       </div>
                     )}
                   </td>
@@ -386,13 +420,49 @@ export function ContentTable({
                   </td>
 
                   <td className="px-4 py-4">
-                    <div className="flex flex-wrap gap-1">
-                      {item.platforms.map((platform) => (
-                        <Badge key={platform} variant="outline">
-                          {platform}
-                        </Badge>
-                      ))}
-                    </div>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <button
+                          type="button"
+                          className="flex flex-wrap gap-1 rounded-md px-1 py-1 hover:bg-muted"
+                        >
+                          {currentPlatforms.length === 0 ? (
+                            <span className="text-xs text-muted-foreground">None</span>
+                          ) : (
+                            currentPlatforms.map((p) => (
+                              <Badge key={p} variant="outline" className="text-xs">
+                                {p}
+                              </Badge>
+                            ))
+                          )}
+                        </button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-44">
+                        <div className="space-y-1">
+                          {ALL_PLATFORMS.map((platform) => {
+                            const checked = currentPlatforms.includes(platform);
+                            return (
+                              <label
+                                key={platform}
+                                className="flex cursor-pointer items-center gap-2 rounded px-2 py-1 text-sm hover:bg-muted"
+                              >
+                                <Checkbox
+                                  checked={checked}
+                                  onCheckedChange={(value) => {
+                                    const next = value
+                                      ? [...currentPlatforms, platform]
+                                      : currentPlatforms.filter((p) => p !== platform);
+                                    setLocalPlatforms((prev) => ({ ...prev, [item.id]: next }));
+                                    onPlatformsChange(item.id, next);
+                                  }}
+                                />
+                                {platform}
+                              </label>
+                            );
+                          })}
+                        </div>
+                      </PopoverContent>
+                    </Popover>
                   </td>
 
                   <td className="px-4 py-4">
@@ -481,8 +551,15 @@ export function ContentTable({
                     </Select>
                   </td>
 
-                  <td className="px-4 py-4 text-sm text-muted-foreground">
-                    {formatDate(item.scheduledDate)}
+                  <td className="px-4 py-4">
+                    <input
+                      type="date"
+                      className="rounded-md border-0 bg-transparent px-1 py-1 text-sm text-muted-foreground hover:bg-muted focus:bg-background focus:outline-none focus:ring-1 focus:ring-ring"
+                      value={item.scheduledDate ? item.scheduledDate.slice(0, 10) : ""}
+                      onChange={(e) => {
+                        if (e.target.value) onScheduledDateChange(item.id, e.target.value);
+                      }}
+                    />
                   </td>
 
                   <td className="px-4 py-4 text-sm text-muted-foreground">
