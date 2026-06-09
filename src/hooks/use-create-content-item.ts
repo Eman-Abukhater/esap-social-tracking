@@ -36,13 +36,9 @@ export function useCreateContentItem() {
     },
 
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["content-items"],
-      });
-
-      queryClient.invalidateQueries({
-        queryKey: ["activity-logs"],
-      });
+      queryClient.invalidateQueries({ queryKey: ["content-items"] });
+      queryClient.invalidateQueries({ queryKey: ["content-items-paginated"] });
+      queryClient.invalidateQueries({ queryKey: ["activity-logs"] });
     },
   });
 }

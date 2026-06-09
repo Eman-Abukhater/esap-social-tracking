@@ -10,6 +10,7 @@ import {
 } from "@/components/content/content-filters";
 import { ContentTable } from "@/components/tables/content-table";
 
+import { useAssignContentItem } from "@/hooks/use-assign-content-item";
 import { useBulkAssignContent } from "@/hooks/use-bulk-assign-content";
 import { useBulkDeleteContent } from "@/hooks/use-bulk-delete-content";
 import { useBulkUpdateStatus } from "@/hooks/use-bulk-update-status";
@@ -44,6 +45,7 @@ export default function ContentPage() {
   const createContentMutation = useCreateContentItem();
   const updateStatusMutation = useUpdateContentStatus();
   const updateContentMutation = useUpdateContentItem();
+  const assignMutation = useAssignContentItem();
   const bulkUpdateStatusMutation = useBulkUpdateStatus();
   const bulkAssignMutation = useBulkAssignContent();
   const bulkDeleteMutation = useBulkDeleteContent();
@@ -152,6 +154,16 @@ export default function ContentPage() {
     );
   }
 
+  function handleAssignChange(contentId: string, assignedToId: string) {
+    assignMutation.mutate(
+      { contentId, assignedToId },
+      {
+        onSuccess: () => toast.success("Assignee updated"),
+        onError: () => toast.error("Failed to update assignee"),
+      }
+    );
+  }
+
   function handleBulkAssign(contentIds: string[], assignedToId: string) {
     bulkAssignMutation.mutate(
       {
@@ -226,6 +238,7 @@ export default function ContentPage() {
           onStatusChange={handleStatusChange}
           onTitleChange={handleTitleChange}
           onPriorityChange={handlePriorityChange}
+          onAssignChange={handleAssignChange}
           onBulkStatusChange={handleBulkStatusChange}
           onBulkAssign={handleBulkAssign}
           onBulkDelete={handleBulkDelete}

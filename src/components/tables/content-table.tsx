@@ -37,6 +37,7 @@ type ContentTableProps = {
     contentIds: string[],
     status: ContentItem["status"]
   ) => void;
+  onAssignChange: (contentId: string, assignedToId: string) => void;
   onBulkAssign: (contentIds: string[], assignedToId: string) => void;
   onBulkDelete: (contentIds: string[]) => void;
 };
@@ -81,6 +82,7 @@ export function ContentTable({
   onTitleChange,
   onPriorityChange,
   onBulkStatusChange,
+  onAssignChange,
   onBulkAssign,
   onBulkDelete,
 }: ContentTableProps) {
@@ -90,6 +92,10 @@ export function ContentTable({
 
   const [localPriorities, setLocalPriorities] = useState<
     Record<string, ContentItem["priority"]>
+  >({});
+
+  const [localAssignedToIds, setLocalAssignedToIds] = useState<
+    Record<string, string>
   >({});
 
   const [editingTitleId, setEditingTitleId] = useState<string | null>(null);
@@ -419,8 +425,31 @@ export function ContentTable({
                     </Select>
                   </td>
 
-                  <td className="px-4 py-4 text-sm">
-                    {item.assignedTo?.name ?? "Unassigned"}
+                  <td className="px-4 py-4">
+                    {canManageContent ? (
+                      <Select
+                        value={localAssignedToIds[item.id] ?? item.assignedTo?.id ?? ""}
+                        onValueChange={(value) => {
+                          setLocalAssignedToIds((prev) => ({ ...prev, [item.id]: value }));
+                          onAssignChange(item.id, value);
+                        }}
+                      >
+                        <SelectTrigger className="w-[140px]">
+                          <SelectValue placeholder="Unassigned" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {users.map((user) => (
+                            <SelectItem key={user.id} value={user.id}>
+                              {user.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    ) : (
+                      <span className="text-sm">
+                        {item.assignedTo?.name ?? "Unassigned"}
+                      </span>
+                    )}
                   </td>
 
                   <td className="px-4 py-4">
