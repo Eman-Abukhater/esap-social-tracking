@@ -7,11 +7,14 @@ import {
   FileText,
   LayoutDashboard,
   LogOut,
+  Moon,
   Package,
+  Sun,
   Users,
 } from "lucide-react";
 
 import { useAuth } from "@/providers/auth-provider";
+import { useTheme } from "@/providers/theme-provider";
 
 const navigationItems = [
   { title: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -24,25 +27,38 @@ const navigationItems = [
 export function Sidebar() {
   const pathname = usePathname();
   const { currentUser, logout } = useAuth();
+  const { toggleTheme } = useTheme();
 
   return (
     <aside className="fixed left-0 top-0 z-40 flex h-screen w-64 flex-col border-r bg-background px-4 py-6">
-      <div className="mb-8">
-        <h1 className="text-xl font-bold">ESAP</h1>
-        <p className="text-sm text-muted-foreground">Social Tracking</p>
+      <div className="mb-8 flex items-center justify-between">
+        <div>
+          <h1 className="text-xl font-bold">ESAP</h1>
+          <p className="text-sm text-muted-foreground">Social Tracking</p>
+        </div>
+
+        {/* Sun shown in dark mode (click → switch to light); Moon shown in light mode (click → switch to dark) */}
+        <button
+          type="button"
+          onClick={toggleTheme}
+          title="Toggle theme"
+          className="rounded-md p-2 text-muted-foreground transition hover:bg-muted hover:text-foreground"
+        >
+          <Sun className="h-4 w-4 hidden dark:block" />
+          <Moon className="h-4 w-4 dark:hidden" />
+        </button>
       </div>
 
-      <nav className="flex-1 space-y-2">
-       {navigationItems.map((item) => {
-  const Icon = item.icon;
+      <nav className="flex-1 space-y-1">
+        {navigationItems.map((item) => {
+          const Icon = item.icon;
 
-  const isDashboard =
-    item.href === "/dashboard" && pathname === "/";
+          const isDashboard =
+            item.href === "/dashboard" && pathname === "/";
 
-  const isActive =
-    pathname === item.href || isDashboard;
+          const isActive = pathname === item.href || isDashboard;
 
-  return (
+          return (
             <Link
               key={item.href}
               href={item.href}
