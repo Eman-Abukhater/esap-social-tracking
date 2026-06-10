@@ -51,6 +51,7 @@ export type ContentItem = {
   tags: string[];
   mediaUrl?: string;
   notes?: string;
+  order: number;
   createdAt: string;
   updatedAt: string;
 };

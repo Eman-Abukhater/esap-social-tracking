@@ -205,6 +205,15 @@ export default function ContentPage() {
     );
   }
 
+  function handleReorder(contentId: string, newOrder: number) {
+    updateContentMutation.mutate(
+      { contentId, data: { order: newOrder } },
+      {
+        onError: () => toast.error("Failed to save order"),
+      }
+    );
+  }
+
   function handleOpenDetails(item: BackendContentItem) {
     setDetailItem(item);
     setIsDetailOpen(true);
@@ -275,6 +284,7 @@ export default function ContentPage() {
           onBulkAssign={handleBulkAssign}
           onBulkDelete={handleBulkDelete}
           onOpenDetails={handleOpenDetails}
+          onReorder={handleReorder}
         />
       )}
 
