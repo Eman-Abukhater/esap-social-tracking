@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiFetch } from "@/lib/api";
 import { useCurrentUser } from "@/providers/auth-provider";
-import type { BackendContentItem, User } from "@/lib/types";
+import type { BackendContentItem, PaginatedContentItems, User } from "@/lib/types";
 
 type Input = {
   contentIds: string[];
@@ -30,35 +30,41 @@ export function useBulkAssignContent() {
 
     onMutate: async ({ contentIds, assignedToId }) => {
       await queryClient.cancelQueries({ queryKey: ["content-items"] });
+      await queryClient.cancelQueries({ queryKey: ["content-items-paginated"] });
 
-      const previousContentItems =
-        queryClient.getQueriesData<BackendContentItem[]>({
-          queryKey: ["content-items"],
-        });
+      const previousContentItems = queryClient.getQueriesData<BackendContentItem[]>({
+        queryKey: ["content-items"],
+      });
+      const previousPaginatedItems = queryClient.getQueriesData<PaginatedContentItems>({
+        queryKey: ["content-items-paginated"],
+      });
 
       const users = queryClient.getQueryData<User[]>(["users"]) ?? [];
       const assignedUser = users.find((user) => user.id === assignedToId);
+      const patch = (item: BackendContentItem) => ({
+        ...item,
+        assignedToId,
+        assignedTo: assignedUser ?? item.assignedTo,
+        updatedAt: new Date().toISOString(),
+      });
 
       queryClient.setQueriesData<BackendContentItem[]>(
         { queryKey: ["content-items"] },
-        (oldItems) =>
-          oldItems?.map((item) =>
-            contentIds.includes(item.id)
-              ? {
-                  ...item,
-                  assignedToId,
-                  assignedTo: assignedUser ?? item.assignedTo,
-                  updatedAt: new Date().toISOString(),
-                }
-              : item
-          )
+        (old) => old?.map((item) => contentIds.includes(item.id) ? patch(item) : item)
+      );
+      queryClient.setQueriesData<PaginatedContentItems>(
+        { queryKey: ["content-items-paginated"] },
+        (old) => old ? { ...old, items: old.items.map((item) => contentIds.includes(item.id) ? patch(item) : item) } : old
       );
 
-      return { previousContentItems };
+      return { previousContentItems, previousPaginatedItems };
     },
 
     onError: (_error, _variables, context) => {
       context?.previousContentItems.forEach(([queryKey, data]) => {
+        queryClient.setQueryData(queryKey, data);
+      });
+      context?.previousPaginatedItems.forEach(([queryKey, data]) => {
         queryClient.setQueryData(queryKey, data);
       });
     },

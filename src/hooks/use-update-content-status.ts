@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiFetch } from "@/lib/api";
 import { useCurrentUser } from "@/providers/auth-provider";
-import type { BackendContentItem, ContentItem } from "@/lib/types";
+import type { BackendContentItem, ContentItem, PaginatedContentItems } from "@/lib/types";
 
 type UpdateStatusInput = {
   contentId: string;
@@ -28,37 +28,35 @@ export function useUpdateContentStatus() {
     },
 
     onMutate: async ({ contentId, status }) => {
-      await queryClient.cancelQueries({
+      await queryClient.cancelQueries({ queryKey: ["content-items"] });
+      await queryClient.cancelQueries({ queryKey: ["content-items-paginated"] });
+
+      const previousContentItems = queryClient.getQueriesData<BackendContentItem[]>({
         queryKey: ["content-items"],
       });
+      const previousPaginatedItems = queryClient.getQueriesData<PaginatedContentItems>({
+        queryKey: ["content-items-paginated"],
+      });
 
-      const previousContentItems =
-        queryClient.getQueriesData<BackendContentItem[]>({
-          queryKey: ["content-items"],
-        });
+      const patch = { status, updatedAt: new Date().toISOString() };
 
       queryClient.setQueriesData<BackendContentItem[]>(
         { queryKey: ["content-items"] },
-        (oldItems) => {
-          if (!oldItems) return oldItems;
-
-          return oldItems.map((item) =>
-            item.id === contentId
-              ? {
-                  ...item,
-                  status,
-                  updatedAt: new Date().toISOString(),
-                }
-              : item
-          );
-        }
+        (old) => old?.map((item) => item.id === contentId ? { ...item, ...patch } : item)
+      );
+      queryClient.setQueriesData<PaginatedContentItems>(
+        { queryKey: ["content-items-paginated"] },
+        (old) => old ? { ...old, items: old.items.map((item) => item.id === contentId ? { ...item, ...patch } : item) } : old
       );
 
-      return { previousContentItems };
+      return { previousContentItems, previousPaginatedItems };
     },
 
     onError: (_error, _variables, context) => {
       context?.previousContentItems.forEach(([queryKey, data]) => {
+        queryClient.setQueryData(queryKey, data);
+      });
+      context?.previousPaginatedItems.forEach(([queryKey, data]) => {
         queryClient.setQueryData(queryKey, data);
       });
     },
@@ -67,6 +65,7 @@ export function useUpdateContentStatus() {
       queryClient.invalidateQueries({ queryKey: ["content-items"] });
       queryClient.invalidateQueries({ queryKey: ["content-items-paginated"] });
       queryClient.invalidateQueries({ queryKey: ["activity-logs"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard-stats"] });
     },
   });
 }

@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiFetch } from "@/lib/api";
 import { useCurrentUser } from "@/providers/auth-provider";
-import type { BackendContentItem, ContentItem, Platform, Product, User } from "@/lib/types";
+import type { BackendContentItem, ContentItem, PaginatedContentItems, Platform, Product, User } from "@/lib/types";
 
 type CreateContentInput = {
   title: string;
@@ -34,9 +34,13 @@ export function useCreateContentItem() {
 
     onMutate: async (data) => {
       await queryClient.cancelQueries({ queryKey: ["content-items"] });
+      await queryClient.cancelQueries({ queryKey: ["content-items-paginated"] });
 
       const previousItems = queryClient.getQueriesData<BackendContentItem[]>({
         queryKey: ["content-items"],
+      });
+      const previousPaginatedItems = queryClient.getQueriesData<PaginatedContentItems>({
+        queryKey: ["content-items-paginated"],
       });
 
       if (currentUser) {
@@ -63,6 +67,7 @@ export function useCreateContentItem() {
             tags: data.tags,
             mediaUrl: undefined,
             notes: undefined,
+            order: 0,
             createdAt: now,
             updatedAt: now,
             product,
@@ -72,14 +77,23 @@ export function useCreateContentItem() {
             { queryKey: ["content-items"] },
             (old) => (old ? [tempItem, ...old] : [tempItem])
           );
+          queryClient.setQueriesData<PaginatedContentItems>(
+            { queryKey: ["content-items-paginated"] },
+            (old) => old
+              ? { ...old, items: [tempItem, ...old.items], total: old.total + 1, totalPages: Math.ceil((old.total + 1) / old.pageSize) }
+              : old
+          );
         }
       }
 
-      return { previousItems };
+      return { previousItems, previousPaginatedItems };
     },
 
     onError: (_error, _variables, context) => {
       context?.previousItems.forEach(([queryKey, data]) => {
+        queryClient.setQueryData(queryKey, data);
+      });
+      context?.previousPaginatedItems.forEach(([queryKey, data]) => {
         queryClient.setQueryData(queryKey, data);
       });
     },
@@ -88,6 +102,7 @@ export function useCreateContentItem() {
       queryClient.invalidateQueries({ queryKey: ["content-items"] });
       queryClient.invalidateQueries({ queryKey: ["content-items-paginated"] });
       queryClient.invalidateQueries({ queryKey: ["activity-logs"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard-stats"] });
     },
   });
 }
