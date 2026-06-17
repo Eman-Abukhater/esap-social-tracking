@@ -37,23 +37,9 @@ import {
 } from "@/components/ui/select";
 
 import type { BackendContentItem, ContentItem, Platform, User } from "@/lib/types";
-
-const ALL_PLATFORMS: Platform[] = ["LinkedIn", "X", "Instagram", "TikTok", "YouTube", "Facebook"];
+import { PLATFORMS, STATUS_LABELS, PRIORITY_LABELS } from "@/lib/constants";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
-
-function getStatusLabel(status: string) {
-  const labels: Record<string, string> = {
-    planned: "Planned", in_progress: "In Progress", review: "Review",
-    done: "Done", published: "Published",
-  };
-  return labels[status] ?? status;
-}
-
-function getPriorityLabel(priority: string) {
-  const labels: Record<string, string> = { low: "Low", medium: "Medium", high: "High" };
-  return labels[priority] ?? priority;
-}
 
 function formatDate(date?: string) {
   if (!date) return "—";
@@ -94,12 +80,6 @@ function SortableRow({ item, ...h }: { item: BackendContentItem } & RowHandlers)
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
     useSortable({ id: item.id });
 
-  const [localStatus, setLocalStatus] = useState<ContentItem["status"]>(item.status);
-  const [localPriority, setLocalPriority] = useState<ContentItem["priority"]>(item.priority);
-  const [localType, setLocalType] = useState<ContentItem["type"]>(item.type);
-  const [localPlatforms, setLocalPlatforms] = useState<Platform[]>(item.platforms);
-  const [localAssignedToId, setLocalAssignedToId] = useState<string>(item.assignedTo?.id ?? "");
-
   const [editingTitle, setEditingTitle] = useState(false);
   const [titleDraft, setTitleDraft] = useState(item.title);
 
@@ -121,7 +101,7 @@ function SortableRow({ item, ...h }: { item: BackendContentItem } & RowHandlers)
     setEditingTitle(false);
   }
 
-  const currentAssignee = h.users.find((u) => u.id === localAssignedToId);
+  const currentAssignee = h.users.find((u) => u.id === (item.assignedTo?.id ?? ""));
 
   return (
     <tr
@@ -174,11 +154,9 @@ function SortableRow({ item, ...h }: { item: BackendContentItem } & RowHandlers)
               <p className="font-medium">{item.title}</p>
             </div>
             <Select
-              value={localType}
+              value={item.type}
               onValueChange={(v) => {
-                const t = v as ContentItem["type"];
-                setLocalType(t);
-                h.onTypeChange(item.id, t);
+                h.onTypeChange(item.id, v as ContentItem["type"]);
               }}
             >
               <SelectTrigger className="h-6 w-[110px] border-0 px-1 text-xs text-muted-foreground shadow-none hover:bg-muted focus:ring-0">
@@ -208,24 +186,23 @@ function SortableRow({ item, ...h }: { item: BackendContentItem } & RowHandlers)
         <Popover>
           <PopoverTrigger asChild>
             <button type="button" className="flex flex-wrap gap-1 rounded-md px-1 py-1 hover:bg-muted">
-              {localPlatforms.length === 0 ? (
+              {item.platforms.length === 0 ? (
                 <span className="text-xs text-muted-foreground">None</span>
               ) : (
-                localPlatforms.map((p) => <Badge key={p} variant="outline" className="text-xs">{p}</Badge>)
+                item.platforms.map((p) => <Badge key={p} variant="outline" className="text-xs">{p}</Badge>)
               )}
             </button>
           </PopoverTrigger>
           <PopoverContent className="w-44">
             <div className="space-y-1">
-              {ALL_PLATFORMS.map((platform) => (
+              {PLATFORMS.map((platform) => (
                 <label key={platform} className="flex cursor-pointer items-center gap-2 rounded px-2 py-1 text-sm hover:bg-muted">
                   <Checkbox
-                    checked={localPlatforms.includes(platform)}
+                    checked={item.platforms.includes(platform)}
                     onCheckedChange={(checked) => {
                       const next = checked
-                        ? [...localPlatforms, platform]
-                        : localPlatforms.filter((p) => p !== platform);
-                      setLocalPlatforms(next);
+                        ? [...item.platforms, platform]
+                        : item.platforms.filter((p) => p !== platform);
                       h.onPlatformsChange(item.id, next);
                     }}
                   />
@@ -240,15 +217,13 @@ function SortableRow({ item, ...h }: { item: BackendContentItem } & RowHandlers)
       {/* Status */}
       <td className="px-4 py-4">
         <Select
-          value={localStatus}
+          value={item.status}
           onValueChange={(v) => {
-            const s = v as ContentItem["status"];
-            setLocalStatus(s);
-            h.onStatusChange(item.id, s);
+            h.onStatusChange(item.id, v as ContentItem["status"]);
           }}
         >
           <SelectTrigger className="w-[160px]">
-            <SelectValue>{getStatusLabel(localStatus)}</SelectValue>
+            <SelectValue>{STATUS_LABELS[item.status] ?? item.status}</SelectValue>
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="planned">Planned</SelectItem>
@@ -264,9 +239,8 @@ function SortableRow({ item, ...h }: { item: BackendContentItem } & RowHandlers)
       <td className="px-4 py-4">
         {h.canManageContent ? (
           <Select
-            value={localAssignedToId}
+            value={item.assignedTo?.id ?? ""}
             onValueChange={(v) => {
-              setLocalAssignedToId(v);
               h.onAssignChange(item.id, v);
             }}
           >
@@ -304,15 +278,13 @@ function SortableRow({ item, ...h }: { item: BackendContentItem } & RowHandlers)
       {/* Priority */}
       <td className="px-4 py-4">
         <Select
-          value={localPriority}
+          value={item.priority}
           onValueChange={(v) => {
-            const p = v as ContentItem["priority"];
-            setLocalPriority(p);
-            h.onPriorityChange(item.id, p);
+            h.onPriorityChange(item.id, v as ContentItem["priority"]);
           }}
         >
           <SelectTrigger className="w-[120px]">
-            <SelectValue>{getPriorityLabel(localPriority)}</SelectValue>
+            <SelectValue>{PRIORITY_LABELS[item.priority] ?? item.priority}</SelectValue>
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="low">Low</SelectItem>

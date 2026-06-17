@@ -11,18 +11,15 @@ import {
 } from "recharts";
 
 import type { DashboardStats } from "@/lib/types";
+import { STATUS_LABELS } from "@/lib/constants";
 
 type Props = {
   data: DashboardStats["statusBreakdown"];
 };
 
-function getStatusLabel(status: string) {
-  return status.replace("_", " ");
-}
-
 export function StatusBreakdownChart({ data }: Props) {
   const chartData = data.map((entry) => ({
-    name: getStatusLabel(entry.status),
+    name: STATUS_LABELS[entry.status] ?? entry.status,
     total: entry.total,
   }));
 
@@ -42,7 +39,7 @@ export function StatusBreakdownChart({ data }: Props) {
             <XAxis dataKey="name" tickLine={false} axisLine={false} />
             <YAxis tickLine={false} axisLine={false} allowDecimals={false} />
             <Tooltip />
-            <Bar dataKey="total" radius={[10, 10, 0, 0]} maxBarSize={80} />
+            <Bar dataKey="total" radius={[10, 10, 0, 0]} maxBarSize={80} fill="var(--chart-1)" />
           </BarChart>
         </ResponsiveContainer>
       </div>

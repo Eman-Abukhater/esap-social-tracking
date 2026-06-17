@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/select";
 import { useProducts } from "@/hooks/use-products";
 import { useUsers } from "@/hooks/use-users";
-import type { Platform } from "@/lib/types";
+import { PLATFORMS } from "@/lib/constants";
 
 export type ContentFiltersState = {
   search: string;
@@ -26,15 +26,6 @@ type ContentFiltersProps = {
   filters: ContentFiltersState;
   onFiltersChange: (filters: ContentFiltersState) => void;
 };
-
-const platforms: Platform[] = [
-  "LinkedIn",
-  "X",
-  "Instagram",
-  "TikTok",
-  "YouTube",
-  "Facebook",
-];
 
 export function ContentFilters({
   filters,
@@ -117,7 +108,7 @@ export function ContentFilters({
 
         <SelectContent>
           <SelectItem value="all">All Platforms</SelectItem>
-          {platforms.map((platform) => (
+          {PLATFORMS.map((platform) => (
             <SelectItem key={platform} value={platform}>
               {platform}
             </SelectItem>

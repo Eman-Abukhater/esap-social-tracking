@@ -4,20 +4,11 @@ import { useMemo } from "react";
 import { Badge } from "@/components/ui/badge";
 import { UserAvatar } from "@/components/user-avatar";
 import type { BackendContentItem, ContentStatus, User } from "@/lib/types";
+import { STATUSES, STATUS_LABELS } from "@/lib/constants";
 
 type Props = {
   users: User[];
   contentItems: BackendContentItem[];
-};
-
-const STATUSES: ContentStatus[] = ["planned", "in_progress", "review", "done", "published"];
-
-const STATUS_LABELS: Record<ContentStatus, string> = {
-  planned: "Planned",
-  in_progress: "In Progress",
-  review: "Review",
-  done: "Done",
-  published: "Published",
 };
 
 const STATUS_COLORS: Record<ContentStatus, string> = {

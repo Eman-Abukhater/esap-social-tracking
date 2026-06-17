@@ -17,6 +17,7 @@ import { useActivityLogs } from "@/hooks/use-activity-logs";
 import { useUpdateContentItem } from "@/hooks/use-update-content-item";
 
 import type { BackendActivityLog, BackendContentItem } from "@/lib/types";
+import { TYPE_LABELS, getChangedFields } from "@/lib/constants";
 
 type Props = {
   item: BackendContentItem | null;
@@ -38,10 +39,6 @@ const PRIORITY_STYLES: Record<string, { badge: string }> = {
   low:    { badge: "border-slate-200 bg-slate-50 text-slate-600" },
   medium: { badge: "border-amber-200 bg-amber-50 text-amber-700" },
   high:   { badge: "border-red-200 bg-red-50 text-red-700" },
-};
-
-const TYPE_LABELS: Record<string, string> = {
-  post: "Post", video: "Video", reel: "Reel", carousel: "Carousel",
 };
 
 const ACTION_LABELS: Record<string, string> = {
@@ -68,13 +65,6 @@ function timeAgo(iso: string) {
   if (hours < 24) return `${hours}h ago`;
   const days = Math.floor(hours / 24);
   return `${days}d ago`;
-}
-
-function getChangedFields(log: BackendActivityLog) {
-  if (!log.previousValue || !log.newValue || typeof log.newValue !== "object") return [];
-  const prev = log.previousValue as Record<string, unknown>;
-  const next = log.newValue as Record<string, unknown>;
-  return Object.keys(next).map((k) => ({ field: k, from: prev[k], to: next[k] }));
 }
 
 function parseTags(input: string): string[] {

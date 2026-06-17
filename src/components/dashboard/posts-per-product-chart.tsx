@@ -1,8 +1,9 @@
 "use client";
 
 import {
-  BarChart,
   Bar,
+  BarChart,
+  Cell,
   CartesianGrid,
   ResponsiveContainer,
   Tooltip,
@@ -53,11 +54,11 @@ export function PostsPerProductChart({ data }: PostsPerProductChartProps) {
 
             <Tooltip />
 
-            <Bar
-              dataKey="total"
-              radius={[10, 10, 0, 0]}
-              maxBarSize={120}
-            />
+            <Bar dataKey="total" radius={[10, 10, 0, 0]} maxBarSize={120}>
+              {chartData.map((_entry, index) => (
+                <Cell key={index} fill={`var(--chart-${(index % 5) + 1})`} />
+              ))}
+            </Bar>
           </BarChart>
         </ResponsiveContainer>
       </div>

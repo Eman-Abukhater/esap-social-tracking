@@ -23,6 +23,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useProducts } from "@/hooks/use-products";
 import { useUsers } from "@/hooks/use-users";
 import type { ContentItem, Platform } from "@/lib/types";
+import { PLATFORMS } from "@/lib/constants";
 
 type AddContentDialogProps = {
 onCreateContent: (content: {
@@ -37,15 +38,6 @@ onCreateContent: (content: {
   priority: ContentItem["priority"];
   tags: string[];
 }) => void;};
-
-const platforms: Platform[] = [
-  "LinkedIn",
-  "X",
-  "Instagram",
-  "TikTok",
-  "YouTube",
-  "Facebook",
-];
 
 export function AddContentDialog({ onCreateContent }: AddContentDialogProps) {
   const [open, setOpen] = useState(false);
@@ -284,7 +276,7 @@ export function AddContentDialog({ onCreateContent }: AddContentDialogProps) {
             <label className="text-sm font-medium">Platforms</label>
 
             <div className="grid gap-3 rounded-lg border p-4 sm:grid-cols-2">
-              {platforms.map((platform) => (
+              {PLATFORMS.map((platform) => (
                 <label
                   key={platform}
                   className="flex cursor-pointer items-center gap-2 text-sm"

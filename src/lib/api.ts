@@ -1,5 +1,11 @@
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 
+if (!API_BASE_URL) {
+  throw new Error(
+    "NEXT_PUBLIC_API_BASE_URL is not set. Add it to .env.local before starting the app."
+  );
+}
+
 type ApiOptions = {
   method?: "GET" | "POST" | "PATCH" | "DELETE";
   body?: unknown;
@@ -21,6 +27,10 @@ export async function apiFetch<T>(
     const errorData = await response.json().catch(() => null);
 
     throw new Error(errorData?.message ?? "API request failed");
+  }
+
+  if (response.status === 204 || response.headers.get("content-length") === "0") {
+    return undefined as T;
   }
 
   return response.json();

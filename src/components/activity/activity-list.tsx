@@ -1,33 +1,11 @@
 "use client";
 
 import type { BackendActivityLog } from "@/lib/types";
+import { getChangedFields } from "@/lib/constants";
 
 type ActivityListProps = {
   activityLogs: BackendActivityLog[];
 };
-
-function getObjectValue(
-  value: unknown
-): Record<string, unknown> {
-  if (!value || typeof value !== "object") {
-    return {};
-  }
-
-  return value as Record<string, unknown>;
-}
-
-function getChangedFields(log: BackendActivityLog) {
-  if (!log.previousValue || !log.newValue) return [];
-
-  const previousValue = getObjectValue(log.previousValue);
-  const newValue = getObjectValue(log.newValue);
-
-  return Object.keys(newValue).map((key) => ({
-    field: key,
-    oldValue: previousValue[key],
-    newValue: newValue[key],
-  }));
-}
 
 function getContentTitle(log: BackendActivityLog) {
   const previousValue = getObjectValue(log.previousValue);
@@ -104,11 +82,11 @@ export function ActivityList({ activityLogs }: ActivityListProps) {
                         </span>{" "}
                         changed from{" "}
                         <span className="font-medium text-foreground">
-                          {formatValue(change.oldValue)}
+                          {formatValue(change.from)}
                         </span>{" "}
                         to{" "}
                         <span className="font-medium text-foreground">
-                          {formatValue(change.newValue)}
+                          {formatValue(change.to)}
                         </span>
                       </p>
                     ))}

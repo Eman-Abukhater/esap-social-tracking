@@ -42,6 +42,7 @@ export function WeeklyOutputChart({ data }: Props) {
               type="monotone"
               dataKey="total"
               strokeWidth={3}
+              stroke="var(--chart-1)"
               dot
             />
           </LineChart>

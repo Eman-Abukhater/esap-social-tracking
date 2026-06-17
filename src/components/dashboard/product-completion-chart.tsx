@@ -3,6 +3,7 @@
 import {
   Bar,
   BarChart,
+  Cell,
   CartesianGrid,
   ResponsiveContainer,
   Tooltip,
@@ -38,7 +39,11 @@ export function ProductCompletionChart({ data }: Props) {
             <XAxis dataKey="name" tickLine={false} axisLine={false} />
             <YAxis tickLine={false} axisLine={false} />
             <Tooltip />
-            <Bar dataKey="completion" radius={[10, 10, 0, 0]} maxBarSize={90} />
+            <Bar dataKey="completion" radius={[10, 10, 0, 0]} maxBarSize={90}>
+              {chartData.map((_entry, index) => (
+                <Cell key={index} fill={`var(--chart-${(index % 5) + 1})`} />
+              ))}
+            </Bar>
           </BarChart>
         </ResponsiveContainer>
       </div>

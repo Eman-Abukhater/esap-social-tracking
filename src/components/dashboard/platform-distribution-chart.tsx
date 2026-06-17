@@ -46,8 +46,8 @@ export function PlatformDistributionChart({
               outerRadius={110}
               label
             >
-              {chartData.map((entry) => (
-                <Cell key={entry.name} />
+              {chartData.map((entry, index) => (
+                <Cell key={entry.name} fill={`var(--chart-${(index % 5) + 1})`} />
               ))}
             </Pie>
 
