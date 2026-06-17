@@ -53,10 +53,7 @@ export function Sidebar() {
         {navigationItems.map((item) => {
           const Icon = item.icon;
 
-          const isDashboard =
-            item.href === "/dashboard" && pathname === "/";
-
-          const isActive = pathname === item.href || isDashboard;
+          const isActive = pathname === item.href;
 
           return (
             <Link

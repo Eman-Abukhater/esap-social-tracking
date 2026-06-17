@@ -29,7 +29,7 @@ export default function DashboardPage() {
       )}
 
       {isError && (
-        <div className="rounded-xl border bg-background p-6 text-sm text-red-500">
+        <div role="alert" className="rounded-xl border bg-background p-6 text-sm text-destructive">
           Failed to load dashboard data.
         </div>
       )}

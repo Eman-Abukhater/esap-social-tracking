@@ -116,7 +116,6 @@ function SortableRow({ item, ...h }: { item: BackendContentItem } & RowHandlers)
           {...listeners}
           type="button"
           className="cursor-grab touch-none text-muted-foreground/40 hover:text-muted-foreground active:cursor-grabbing"
-          tabIndex={-1}
           aria-label="Drag to reorder"
         >
           <GripVertical className="h-4 w-4" />
@@ -311,7 +310,7 @@ function SortableRow({ item, ...h }: { item: BackendContentItem } & RowHandlers)
       <td className="px-4 py-4">
         <button
           type="button"
-          title="View details"
+          aria-label="View details"
           className="text-muted-foreground hover:text-foreground"
           onClick={() => h.onOpenDetails(item)}
         >

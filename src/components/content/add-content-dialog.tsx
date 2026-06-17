@@ -129,8 +129,9 @@ export function AddContentDialog({ onCreateContent }: AddContentDialogProps) {
 
         <div className="space-y-5 py-2">
           <div className="space-y-2">
-            <label className="text-sm font-medium">Title</label>
+            <label htmlFor="add-content-title" className="text-sm font-medium">Title</label>
             <Input
+              id="add-content-title"
               placeholder="Enter content title"
               value={formData.title}
               onChange={(event) =>
@@ -140,8 +141,9 @@ export function AddContentDialog({ onCreateContent }: AddContentDialogProps) {
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium">Description</label>
+            <label htmlFor="add-content-description" className="text-sm font-medium">Description</label>
             <Textarea
+              id="add-content-description"
               placeholder="Write content description..."
               value={formData.description}
               onChange={(event) =>
@@ -258,8 +260,9 @@ export function AddContentDialog({ onCreateContent }: AddContentDialogProps) {
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium">Scheduled Date</label>
+              <label htmlFor="add-content-date" className="text-sm font-medium">Scheduled Date</label>
               <Input
+                id="add-content-date"
                 type="date"
                 value={formData.scheduledDate}
                 onChange={(event) =>

@@ -73,6 +73,46 @@
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
   --radius: 0.625rem;
+
+  /* Status indicator dots */
+  --status-planned:     oklch(0.63 0.006 247);
+  --status-in-progress: oklch(0.62 0.214 260);
+  --status-review:      oklch(0.77 0.159 79);
+  --status-done:        oklch(0.70 0.171 162);
+  --status-published:   oklch(0.63 0.194 150);
+
+  /* Status badge: bg / border / fg */
+  --status-badge-planned-bg:            oklch(0.984 0 0);
+  --status-badge-planned-border:        oklch(0.929 0 0);
+  --status-badge-planned-fg:            oklch(0.372 0.011 247);
+  --status-badge-in-progress-bg:        oklch(0.972 0.028 264);
+  --status-badge-in-progress-border:    oklch(0.882 0.059 254);
+  --status-badge-in-progress-fg:        oklch(0.488 0.163 264);
+  --status-badge-review-bg:             oklch(0.987 0.022 95);
+  --status-badge-review-border:         oklch(0.924 0.075 82);
+  --status-badge-review-fg:             oklch(0.555 0.163 68);
+  --status-badge-done-bg:               oklch(0.979 0.021 166);
+  --status-badge-done-border:           oklch(0.905 0.063 164);
+  --status-badge-done-fg:               oklch(0.495 0.129 162);
+  --status-badge-published-bg:          oklch(0.982 0.018 156);
+  --status-badge-published-border:      oklch(0.906 0.064 152);
+  --status-badge-published-fg:          oklch(0.527 0.154 150);
+
+  /* Priority badge: bg / border / fg */
+  --priority-badge-low-bg:              oklch(0.984 0 0);
+  --priority-badge-low-border:          oklch(0.929 0 0);
+  --priority-badge-low-fg:              oklch(0.444 0.011 247);
+  --priority-badge-medium-bg:           oklch(0.987 0.022 95);
+  --priority-badge-medium-border:       oklch(0.924 0.075 82);
+  --priority-badge-medium-fg:           oklch(0.555 0.163 68);
+  --priority-badge-high-bg:             oklch(0.971 0.013 17);
+  --priority-badge-high-border:         oklch(0.885 0.067 16);
+  --priority-badge-high-fg:             oklch(0.505 0.213 27);
+
+  /* Activity timeline action dot colors */
+  --action-created: oklch(0.70 0.171 162);
+  --action-deleted: oklch(0.577 0.245 27.325);
+  --action-default: oklch(0.62 0.214 260);
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
   --sidebar-primary: oklch(0.205 0 0);
@@ -107,6 +147,47 @@
   --chart-3: oklch(0.439 0 0);
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
+
+  /* Status indicator dots */
+  --status-planned:     oklch(0.70 0.008 247);
+  --status-in-progress: oklch(0.68 0.18 260);
+  --status-review:      oklch(0.80 0.14 79);
+  --status-done:        oklch(0.75 0.15 162);
+  --status-published:   oklch(0.70 0.16 150);
+
+  /* Status badge: bg / border / fg */
+  --status-badge-planned-bg:            oklch(0.22 0 0);
+  --status-badge-planned-border:        oklch(0.35 0 0);
+  --status-badge-planned-fg:            oklch(0.78 0 0);
+  --status-badge-in-progress-bg:        oklch(0.20 0.04 264);
+  --status-badge-in-progress-border:    oklch(0.34 0.09 264);
+  --status-badge-in-progress-fg:        oklch(0.75 0.15 264);
+  --status-badge-review-bg:             oklch(0.22 0.04 80);
+  --status-badge-review-border:         oklch(0.37 0.09 80);
+  --status-badge-review-fg:             oklch(0.85 0.13 72);
+  --status-badge-done-bg:               oklch(0.21 0.04 162);
+  --status-badge-done-border:           oklch(0.36 0.09 162);
+  --status-badge-done-fg:               oklch(0.77 0.13 162);
+  --status-badge-published-bg:          oklch(0.20 0.05 150);
+  --status-badge-published-border:      oklch(0.35 0.10 150);
+  --status-badge-published-fg:          oklch(0.75 0.14 148);
+
+  /* Priority badge: bg / border / fg */
+  --priority-badge-low-bg:              oklch(0.22 0 0);
+  --priority-badge-low-border:          oklch(0.35 0 0);
+  --priority-badge-low-fg:              oklch(0.78 0 0);
+  --priority-badge-medium-bg:           oklch(0.22 0.04 80);
+  --priority-badge-medium-border:       oklch(0.37 0.09 80);
+  --priority-badge-medium-fg:           oklch(0.85 0.13 72);
+  --priority-badge-high-bg:             oklch(0.22 0.04 27);
+  --priority-badge-high-border:         oklch(0.38 0.09 27);
+  --priority-badge-high-fg:             oklch(0.82 0.17 27);
+
+  /* Activity timeline action dot colors */
+  --action-created: oklch(0.75 0.15 162);
+  --action-deleted: oklch(0.704 0.191 22.216);
+  --action-default: oklch(0.68 0.18 260);
+
   --sidebar: oklch(0.205 0 0);
   --sidebar-foreground: oklch(0.985 0 0);
   --sidebar-primary: oklch(0.488 0.243 264.376);

@@ -12,11 +12,11 @@ type Props = {
 };
 
 const STATUS_COLORS: Record<ContentStatus, string> = {
-  planned: "bg-slate-400",
-  in_progress: "bg-blue-500",
-  review: "bg-yellow-500",
-  done: "bg-emerald-500",
-  published: "bg-green-600",
+  planned:     "bg-[var(--status-planned)]",
+  in_progress: "bg-[var(--status-in-progress)]",
+  review:      "bg-[var(--status-review)]",
+  done:        "bg-[var(--status-done)]",
+  published:   "bg-[var(--status-published)]",
 };
 
 export function TeamWorkload({ users, contentItems }: Props) {

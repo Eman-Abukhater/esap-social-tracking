@@ -5,12 +5,14 @@ import { toast } from "sonner";
 import { CalendarDays, Link2, Tag, FileText, StickyNote, User } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Sheet,
   SheetContent,
   SheetTitle,
 } from "@/components/ui/sheet";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
 import { UserAvatar } from "@/components/user-avatar";
 
 import { useActivityLogs } from "@/hooks/use-activity-logs";
@@ -28,17 +30,17 @@ type Props = {
 // ── Color maps ────────────────────────────────────────────────────────────────
 
 const STATUS_STYLES: Record<string, { dot: string; badge: string }> = {
-  planned:     { dot: "bg-slate-400",   badge: "border-slate-200 bg-slate-50 text-slate-700" },
-  in_progress: { dot: "bg-blue-500",    badge: "border-blue-200 bg-blue-50 text-blue-700" },
-  review:      { dot: "bg-amber-500",   badge: "border-amber-200 bg-amber-50 text-amber-700" },
-  done:        { dot: "bg-emerald-500", badge: "border-emerald-200 bg-emerald-50 text-emerald-700" },
-  published:   { dot: "bg-green-600",   badge: "border-green-200 bg-green-50 text-green-700" },
+  planned:     { dot: "bg-[var(--status-planned)]",     badge: "border-[var(--status-badge-planned-border)] bg-[var(--status-badge-planned-bg)] text-[var(--status-badge-planned-fg)]" },
+  in_progress: { dot: "bg-[var(--status-in-progress)]", badge: "border-[var(--status-badge-in-progress-border)] bg-[var(--status-badge-in-progress-bg)] text-[var(--status-badge-in-progress-fg)]" },
+  review:      { dot: "bg-[var(--status-review)]",      badge: "border-[var(--status-badge-review-border)] bg-[var(--status-badge-review-bg)] text-[var(--status-badge-review-fg)]" },
+  done:        { dot: "bg-[var(--status-done)]",        badge: "border-[var(--status-badge-done-border)] bg-[var(--status-badge-done-bg)] text-[var(--status-badge-done-fg)]" },
+  published:   { dot: "bg-[var(--status-published)]",   badge: "border-[var(--status-badge-published-border)] bg-[var(--status-badge-published-bg)] text-[var(--status-badge-published-fg)]" },
 };
 
 const PRIORITY_STYLES: Record<string, { badge: string }> = {
-  low:    { badge: "border-slate-200 bg-slate-50 text-slate-600" },
-  medium: { badge: "border-amber-200 bg-amber-50 text-amber-700" },
-  high:   { badge: "border-red-200 bg-red-50 text-red-700" },
+  low:    { badge: "border-[var(--priority-badge-low-border)] bg-[var(--priority-badge-low-bg)] text-[var(--priority-badge-low-fg)]" },
+  medium: { badge: "border-[var(--priority-badge-medium-border)] bg-[var(--priority-badge-medium-bg)] text-[var(--priority-badge-medium-fg)]" },
+  high:   { badge: "border-[var(--priority-badge-high-border)] bg-[var(--priority-badge-high-bg)] text-[var(--priority-badge-high-fg)]" },
 };
 
 const ACTION_LABELS: Record<string, string> = {
@@ -127,10 +129,10 @@ function ActivityTimeline({ logs, isLoading }: { logs: BackendActivityLog[]; isL
           return (
             <div key={log.id} className="relative flex gap-3 pl-1">
               <div className={`relative z-10 mt-1.5 h-3 w-3 shrink-0 rounded-full border-2 border-background ${
-                log.action === "created" ? "bg-emerald-500" :
-                log.action === "deleted" ? "bg-red-500" :
+                log.action === "created" ? "bg-[var(--action-created)]" :
+                log.action === "deleted" ? "bg-[var(--action-deleted)]" :
                 log.action === "status_changed" ? status.dot :
-                "bg-blue-500"
+                "bg-[var(--action-default)]"
               }`} />
 
               <div className="min-w-0 flex-1 pb-1">
@@ -293,12 +295,13 @@ export function ContentDetailSheet({ item, open, onOpenChange }: Props) {
 
                 {/* Description */}
                 <div className="space-y-1.5">
-                  <label className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  <label htmlFor="detail-description" className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                     <FileText className="h-3.5 w-3.5" />
                     Description
                   </label>
-                  <textarea
-                    className="w-full resize-none rounded-lg border bg-muted/30 px-3 py-2.5 text-sm leading-relaxed placeholder:text-muted-foreground/60 focus:bg-background focus:outline-none focus:ring-1 focus:ring-ring transition-colors"
+                  <Textarea
+                    id="detail-description"
+                    className="resize-none bg-muted/30 leading-relaxed focus:bg-background"
                     rows={4}
                     placeholder="Add a description…"
                     value={description}
@@ -308,12 +311,13 @@ export function ContentDetailSheet({ item, open, onOpenChange }: Props) {
 
                 {/* Notes */}
                 <div className="space-y-1.5">
-                  <label className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  <label htmlFor="detail-notes" className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                     <StickyNote className="h-3.5 w-3.5" />
                     Internal Notes
                   </label>
-                  <textarea
-                    className="w-full resize-none rounded-lg border bg-muted/30 px-3 py-2.5 text-sm leading-relaxed placeholder:text-muted-foreground/60 focus:bg-background focus:outline-none focus:ring-1 focus:ring-ring transition-colors"
+                  <Textarea
+                    id="detail-notes"
+                    className="resize-none bg-muted/30 leading-relaxed focus:bg-background"
                     rows={3}
                     placeholder="Internal notes visible to the team…"
                     value={notes}
@@ -323,14 +327,15 @@ export function ContentDetailSheet({ item, open, onOpenChange }: Props) {
 
                 {/* Media URL */}
                 <div className="space-y-1.5">
-                  <label className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  <label htmlFor="detail-media-url" className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                     <Link2 className="h-3.5 w-3.5" />
                     Media URL
                   </label>
                   <div className="flex gap-2">
-                    <input
+                    <Input
+                      id="detail-media-url"
                       type="url"
-                      className="min-w-0 flex-1 rounded-lg border bg-muted/30 px-3 py-2 text-sm placeholder:text-muted-foreground/60 focus:bg-background focus:outline-none focus:ring-1 focus:ring-ring transition-colors"
+                      className="min-w-0 flex-1 bg-muted/30 focus:bg-background"
                       placeholder="https://…"
                       value={mediaUrl}
                       onChange={(e) => setMediaUrl(e.target.value)}
@@ -340,8 +345,8 @@ export function ContentDetailSheet({ item, open, onOpenChange }: Props) {
                         href={mediaUrl}
                         target="_blank"
                         rel="noopener noreferrer"
+                        aria-label="Open media link"
                         className="flex items-center rounded-lg border bg-muted/30 px-2.5 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
-                        title="Open link"
                       >
                         <Link2 className="h-4 w-4" />
                       </a>
@@ -351,7 +356,7 @@ export function ContentDetailSheet({ item, open, onOpenChange }: Props) {
 
                 {/* Tags */}
                 <div className="space-y-1.5">
-                  <label className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                  <label htmlFor="detail-tags" className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                     <Tag className="h-3.5 w-3.5" />
                     Tags
                   </label>
@@ -369,9 +374,10 @@ export function ContentDetailSheet({ item, open, onOpenChange }: Props) {
                     </div>
                   )}
 
-                  <input
+                  <Input
+                    id="detail-tags"
                     type="text"
-                    className="w-full rounded-lg border bg-muted/30 px-3 py-2 text-sm placeholder:text-muted-foreground/60 focus:bg-background focus:outline-none focus:ring-1 focus:ring-ring transition-colors"
+                    className="bg-muted/30 focus:bg-background"
                     placeholder="brand, launch, q2 — comma-separated"
                     value={tagsInput}
                     onChange={(e) => setTagsInput(e.target.value)}

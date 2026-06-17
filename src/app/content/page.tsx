@@ -21,7 +21,7 @@ import { useUpdateContentItem } from "@/hooks/use-update-content-item";
 import { useUpdateContentStatus } from "@/hooks/use-update-content-status";
 import { useUsers } from "@/hooks/use-users";
 
-import type { BackendContentItem, ContentItem } from "@/lib/types";
+import type { BackendContentItem, ContentItem, Platform } from "@/lib/types";
 
 const EMPTY_PAGE = { items: [], total: 0, page: 1, pageSize: 10, totalPages: 0 };
 
@@ -135,7 +135,7 @@ export default function ContentPage() {
     );
   }
 
-  function handlePlatformsChange(contentId: string, platforms: import("@/lib/types").Platform[]) {
+  function handlePlatformsChange(contentId: string, platforms: Platform[]) {
     updateContentMutation.mutate(
       { contentId, data: { platforms } },
       {
@@ -258,7 +258,7 @@ export default function ContentPage() {
       )}
 
       {isError && (
-        <div className="rounded-xl border bg-background p-6 text-sm text-red-500">
+        <div role="alert" className="rounded-xl border bg-background p-6 text-sm text-destructive">
           Failed to load content items.
         </div>
       )}
