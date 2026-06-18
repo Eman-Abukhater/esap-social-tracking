@@ -18,7 +18,7 @@ import {
   useSortable,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import { GripVertical, PanelRight } from "lucide-react";
+import { GripVertical, PanelRight, Trash2 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -72,6 +72,7 @@ type RowHandlers = {
   onPlatformsChange: (id: string, platforms: Platform[]) => void;
   onAssignChange: (id: string, assignedToId: string) => void;
   onOpenDetails: (item: BackendContentItem) => void;
+  onDelete: (id: string) => void;
 };
 
 // ── SortableRow ───────────────────────────────────────────────────────────────
@@ -306,16 +307,28 @@ function SortableRow({ item, ...h }: { item: BackendContentItem } & RowHandlers)
       {/* Last Updated */}
       <td className="px-4 py-4 text-sm text-muted-foreground">{formatDate(item.updatedAt)}</td>
 
-      {/* Details button */}
+      {/* Actions */}
       <td className="px-4 py-4">
-        <button
-          type="button"
-          aria-label="View details"
-          className="text-muted-foreground hover:text-foreground"
-          onClick={() => h.onOpenDetails(item)}
-        >
-          <PanelRight className="h-4 w-4" />
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            aria-label="View details"
+            className="text-muted-foreground hover:text-foreground"
+            onClick={() => h.onOpenDetails(item)}
+          >
+            <PanelRight className="h-4 w-4" />
+          </button>
+          {h.canManageContent && (
+            <button
+              type="button"
+              aria-label="Delete"
+              className="text-muted-foreground hover:text-destructive"
+              onClick={() => h.onDelete(item.id)}
+            >
+              <Trash2 className="h-4 w-4" />
+            </button>
+          )}
+        </div>
       </td>
     </tr>
   );
@@ -434,6 +447,7 @@ export function ContentTable({
     onPlatformsChange,
     onAssignChange,
     onOpenDetails,
+    onDelete: (id: string) => onBulkDelete([id]),
   };
 
   return (

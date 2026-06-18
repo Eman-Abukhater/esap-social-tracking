@@ -36,7 +36,7 @@ export default function DashboardPage() {
 
       {!isLoading && !isError && stats && (
         <>
-          <DashboardStats totals={stats.totals} />
+          <DashboardStats totals={stats.totals} typeBreakdown={stats.typeBreakdown} />
 
           <div className="grid gap-6 xl:grid-cols-2">
             <PostsPerProductChart data={stats.postsPerProduct} />

@@ -4,13 +4,20 @@ import type { DashboardStats as DashboardStatsData } from "@/lib/types";
 
 type DashboardStatsProps = {
   totals: DashboardStatsData["totals"];
+  typeBreakdown: DashboardStatsData["typeBreakdown"];
 };
 
-export function DashboardStats({ totals }: DashboardStatsProps) {
+export function DashboardStats({ totals, typeBreakdown }: DashboardStatsProps) {
+  const totalVideos = typeBreakdown.find((t) => t.type === "video")?.total ?? 0;
+
   const stats = [
     {
       title: "Total Content",
       value: totals.totalContent,
+    },
+    {
+      title: "Total Videos",
+      value: totalVideos,
     },
     {
       title: "Published",
@@ -27,7 +34,7 @@ export function DashboardStats({ totals }: DashboardStatsProps) {
   ];
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
       {stats.map((stat) => (
         <div
           key={stat.title}
