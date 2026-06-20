@@ -22,7 +22,7 @@ export function useBulkAssignContent() {
         contentIds.map((id) =>
           apiFetch<BackendContentItem>(`/content/${id}/assign`, {
             method: "PATCH",
-            body: { assignedToId, changedById: currentUser.id },
+            body: { assignedToId },
           })
         )
       );

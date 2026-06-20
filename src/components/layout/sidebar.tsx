@@ -83,8 +83,8 @@ export function Sidebar() {
 
           <button
             type="button"
-            onClick={logout}
-            title="Switch user"
+            onClick={() => logout()}
+            title="Logout"
             className="rounded-md p-2 text-muted-foreground transition hover:bg-muted hover:text-foreground"
           >
             <LogOut className="h-4 w-4" />

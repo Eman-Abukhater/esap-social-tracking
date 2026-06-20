@@ -14,7 +14,7 @@ export function useAssignContentItem() {
       if (!currentUser) throw new Error("You must be signed in to assign content");
       return apiFetch<BackendContentItem>(`/content/${contentId}/assign`, {
         method: "PATCH",
-        body: { assignedToId, changedById: currentUser.id },
+        body: { assignedToId },
       });
     },
 

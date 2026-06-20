@@ -28,7 +28,7 @@ export function useCreateContentItem() {
 
       return apiFetch<BackendContentItem>("/content", {
         method: "POST",
-        body: { ...data, createdById: currentUser.id },
+        body: data,
       });
     },
 

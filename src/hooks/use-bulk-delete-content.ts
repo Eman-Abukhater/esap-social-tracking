@@ -21,7 +21,6 @@ export function useBulkDeleteContent() {
         contentIds.map((id) =>
           apiFetch<{ message: string }>(`/content/${id}`, {
             method: "DELETE",
-            body: { changedById: currentUser.id },
           })
         )
       );

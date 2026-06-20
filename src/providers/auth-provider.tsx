@@ -1,68 +1,68 @@
 "use client";
 
-import { createContext, useContext, useSyncExternalStore } from "react";
+import { createContext, useCallback, useContext } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import { useUsers } from "@/hooks/use-users";
+import { apiFetch } from "@/lib/api";
 import type { User } from "@/lib/types";
-
-const STORAGE_KEY = "esap-current-user-id";
-
-const listeners = new Set<() => void>();
-
-function subscribe(callback: () => void) {
-  listeners.add(callback);
-  return () => listeners.delete(callback);
-}
-
-function getSnapshot() {
-  return localStorage.getItem(STORAGE_KEY);
-}
-
-function getServerSnapshot() {
-  return null;
-}
-
-function setStoredUserId(userId: string | null) {
-  if (userId) {
-    localStorage.setItem(STORAGE_KEY, userId);
-  } else {
-    localStorage.removeItem(STORAGE_KEY);
-  }
-
-  listeners.forEach((listener) => listener());
-}
 
 type AuthContextValue = {
   currentUser: User | null;
-  users: User[];
   isLoading: boolean;
-  selectUser: (userId: string) => void;
-  logout: () => void;
+  login: (email: string, password: string) => Promise<User>;
+  logout: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const { data: users = [], isLoading: isUsersLoading } = useUsers();
+  const queryClient = useQueryClient();
 
-  const currentUserId = useSyncExternalStore(
-    subscribe,
-    getSnapshot,
-    getServerSnapshot
+  const { data: currentUser = null, isLoading } = useQuery<User | null>({
+    queryKey: ["auth-me"],
+    queryFn: async () => {
+      try {
+        return await apiFetch<User>("/auth/me");
+      } catch {
+        return null;
+      }
+    },
+    staleTime: 5 * 60 * 1000,
+    retry: false,
+  });
+
+  const loginMutation = useMutation({
+    mutationFn: ({ email, password }: { email: string; password: string }) =>
+      apiFetch<User>("/auth/login", {
+        method: "POST",
+        body: { email, password },
+      }),
+    onSuccess: (user) => {
+      queryClient.setQueryData(["auth-me"], user);
+    },
+  });
+
+  const logoutMutation = useMutation({
+    mutationFn: () =>
+      apiFetch<void>("/auth/logout", { method: "POST" }),
+    onSuccess: () => {
+      queryClient.setQueryData(["auth-me"], null);
+      queryClient.clear();
+    },
+  });
+
+  const login = useCallback(
+    (email: string, password: string) => loginMutation.mutateAsync({ email, password }),
+    [loginMutation]
   );
 
-  const currentUser = users.find((user) => user.id === currentUserId) ?? null;
+  const logout = useCallback(
+    () => logoutMutation.mutateAsync(),
+    [logoutMutation]
+  );
 
   return (
-    <AuthContext.Provider
-      value={{
-        currentUser,
-        users,
-        isLoading: isUsersLoading,
-        selectUser: (userId) => setStoredUserId(userId),
-        logout: () => setStoredUserId(null),
-      }}
-    >
+    <AuthContext.Provider value={{ currentUser, isLoading, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

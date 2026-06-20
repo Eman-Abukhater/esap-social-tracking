@@ -20,7 +20,7 @@ export function useUpdateContentItem() {
 
       return apiFetch<BackendContentItem>(`/content/${contentId}`, {
         method: "PATCH",
-        body: { ...data, changedById: currentUser.id },
+        body: data,
       });
     },
 

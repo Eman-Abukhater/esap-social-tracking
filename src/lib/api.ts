@@ -20,6 +20,7 @@ export async function apiFetch<T>(
     headers: {
       "Content-Type": "application/json",
     },
+    credentials: "include",
     body: options.body ? JSON.stringify(options.body) : undefined,
   });
 

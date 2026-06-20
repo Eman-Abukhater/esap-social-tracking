@@ -22,7 +22,7 @@ export function useBulkUpdateStatus() {
         contentIds.map((id) =>
           apiFetch<BackendContentItem>(`/content/${id}/status`, {
             method: "PATCH",
-            body: { status, changedById: currentUser.id },
+            body: { status },
           })
         )
       );

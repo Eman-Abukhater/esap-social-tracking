@@ -20,10 +20,7 @@ export function useUpdateContentStatus() {
 
       return apiFetch<BackendContentItem>(`/content/${contentId}/status`, {
         method: "PATCH",
-        body: {
-          status,
-          changedById: currentUser.id,
-        },
+        body: { status },
       });
     },
 
