@@ -232,5 +232,7 @@
   "common.cancel": "إلغاء",
   "common.delete": "حذف",
   "common.viewDetails": "عرض التفاصيل",
-  "common.platforms": "المنصات"
+  "common.platforms": "المنصات",
+  "common.permissionDenied": "ليس لديك صلاحية لتنفيذ هذا الإجراء",
+  "common.permissionDeniedOwnership": "يمكنك فقط تعديل المحتوى الذي أنشأته أو المُسند إليك"
 }

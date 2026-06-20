@@ -27,8 +27,21 @@ import type { BackendContentItem, ContentItem, Platform } from "@/lib/types";
 
 const EMPTY_PAGE = { items: [], total: 0, page: 1, pageSize: 10, totalPages: 0 };
 
+function isPermissionError(error: unknown): boolean {
+  return error instanceof Error &&
+    error.message.toLowerCase().includes("permission");
+}
+
 export default function ContentPage() {
   const t = useTranslation();
+
+  function showError(error: unknown, fallbackKey: string) {
+    if (isPermissionError(error)) {
+      toast.warning(t("common.permissionDeniedOwnership"));
+    } else {
+      toast.error(t(fallbackKey));
+    }
+  }
   const [filters, setFilters] = useState<ContentFiltersState>({
     search: "",
     productId: "all",
@@ -79,8 +92,8 @@ export default function ContentPage() {
         onSuccess: () => {
           toast.success(t("content.toast.statusUpdated"));
         },
-        onError: () => {
-          toast.error(t("content.toast.statusFailed"));
+        onError: (error) => {
+          showError(error, "content.toast.statusFailed");
         },
       }
     );
@@ -98,8 +111,8 @@ export default function ContentPage() {
         onSuccess: () => {
           toast.success(t("content.toast.titleUpdated"));
         },
-        onError: () => {
-          toast.error(t("content.toast.titleFailed"));
+        onError: (error) => {
+          showError(error, "content.toast.titleFailed");
         },
       }
     );
@@ -113,7 +126,7 @@ export default function ContentPage() {
       { contentId, data: { priority } },
       {
         onSuccess: () => toast.success(t("content.toast.priorityUpdated")),
-        onError: () => toast.error(t("content.toast.priorityFailed")),
+        onError: (error) => showError(error, "content.toast.priorityFailed"),
       }
     );
   }
@@ -123,7 +136,7 @@ export default function ContentPage() {
       { contentId, data: { type } },
       {
         onSuccess: () => toast.success(t("content.toast.typeUpdated")),
-        onError: () => toast.error(t("content.toast.typeFailed")),
+        onError: (error) => showError(error, "content.toast.typeFailed"),
       }
     );
   }
@@ -133,7 +146,7 @@ export default function ContentPage() {
       { contentId, data: { scheduledDate: date } },
       {
         onSuccess: () => toast.success(t("content.toast.dateUpdated")),
-        onError: () => toast.error(t("content.toast.dateFailed")),
+        onError: (error) => showError(error, "content.toast.dateFailed"),
       }
     );
   }
@@ -143,7 +156,7 @@ export default function ContentPage() {
       { contentId, data: { platforms } },
       {
         onSuccess: () => toast.success(t("content.toast.platformsUpdated")),
-        onError: () => toast.error(t("content.toast.platformsFailed")),
+        onError: (error) => showError(error, "content.toast.platformsFailed"),
       }
     );
   }
@@ -155,8 +168,8 @@ export default function ContentPage() {
       onSuccess: () => {
         toast.success(t("content.toast.created"));
       },
-      onError: () => {
-        toast.error(t("content.toast.createFailed"));
+      onError: (error) => {
+        showError(error, "content.toast.createFailed");
       },
     });
   }
@@ -174,8 +187,8 @@ export default function ContentPage() {
         onSuccess: () => {
           toast.success(t("content.toast.bulkStatusUpdated"));
         },
-        onError: () => {
-          toast.error(t("content.toast.bulkStatusFailed"));
+        onError: (error) => {
+          showError(error, "content.toast.bulkStatusFailed");
         },
       }
     );
@@ -186,7 +199,7 @@ export default function ContentPage() {
       { contentId, assignedToId },
       {
         onSuccess: () => toast.success(t("content.toast.assigneeUpdated")),
-        onError: () => toast.error(t("content.toast.assigneeFailed")),
+        onError: (error) => showError(error, "content.toast.assigneeFailed"),
       }
     );
   }
@@ -201,8 +214,8 @@ export default function ContentPage() {
         onSuccess: () => {
           toast.success(t("content.toast.bulkAssigned"));
         },
-        onError: () => {
-          toast.error(t("content.toast.bulkAssignFailed"));
+        onError: (error) => {
+          showError(error, "content.toast.bulkAssignFailed");
         },
       }
     );
@@ -212,7 +225,7 @@ export default function ContentPage() {
     updateContentMutation.mutate(
       { contentId, data: { order: newOrder } },
       {
-        onError: () => toast.error(t("content.toast.orderFailed")),
+        onError: (error) => showError(error, "content.toast.orderFailed"),
       }
     );
   }
@@ -231,8 +244,8 @@ export default function ContentPage() {
         onSuccess: () => {
           toast.success(t("content.toast.deleted"));
         },
-        onError: () => {
-          toast.error(t("content.toast.deleteFailed"));
+        onError: (error) => {
+          showError(error, "content.toast.deleteFailed");
         },
       }
     );

@@ -232,5 +232,7 @@
   "common.cancel": "Cancel",
   "common.delete": "Delete",
   "common.viewDetails": "View details",
-  "common.platforms": "Platforms"
+  "common.platforms": "Platforms",
+  "common.permissionDenied": "You don't have permission to perform this action",
+  "common.permissionDeniedOwnership": "You can only edit content you created or are assigned to"
 }
