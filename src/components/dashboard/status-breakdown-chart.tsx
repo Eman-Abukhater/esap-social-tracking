@@ -10,6 +10,7 @@ import {
   YAxis,
 } from "recharts";
 
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import type { DashboardStats } from "@/lib/types";
 import { STATUS_LABELS } from "@/lib/constants";
 import { useTranslation } from "@/providers/language-provider";
@@ -26,25 +27,24 @@ export function StatusBreakdownChart({ data }: Props) {
   }));
 
   return (
-    <div className="rounded-xl border bg-background p-6 shadow-sm">
-      <div className="mb-6">
-        <h2 className="text-lg font-semibold">{t("dashboard.statusBreakdown")}</h2>
-        <p className="text-sm text-muted-foreground">
-          {t("dashboard.statusBreakdownDesc")}
-        </p>
-      </div>
-
-      <div className="h-[320px]">
-        <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={chartData}>
-            <CartesianGrid vertical={false} />
-            <XAxis dataKey="name" tickLine={false} axisLine={false} />
-            <YAxis tickLine={false} axisLine={false} allowDecimals={false} />
-            <Tooltip />
-            <Bar dataKey="total" radius={[10, 10, 0, 0]} maxBarSize={80} fill="var(--chart-1)" />
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
-    </div>
+    <Card>
+      <CardHeader>
+        <CardTitle>{t("dashboard.statusBreakdown")}</CardTitle>
+        <CardDescription>{t("dashboard.statusBreakdownDesc")}</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="h-[320px]">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={chartData}>
+              <CartesianGrid vertical={false} />
+              <XAxis dataKey="name" tickLine={false} axisLine={false} />
+              <YAxis tickLine={false} axisLine={false} allowDecimals={false} />
+              <Tooltip />
+              <Bar dataKey="total" radius={[10, 10, 0, 0]} maxBarSize={80} fill="var(--chart-1)" />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </CardContent>
+    </Card>
   );
 }

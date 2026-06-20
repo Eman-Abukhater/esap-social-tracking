@@ -1,5 +1,6 @@
 "use client";
 
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Select,
   SelectContent,
@@ -43,7 +44,8 @@ export function ActivityFilters({
   const { data: contentItems = [] } = useContentItems(allContentFilters);
 
   return (
-    <div className="grid gap-3 rounded-xl border bg-background p-4 shadow-sm md:grid-cols-3">
+    <Card>
+      <CardContent className="grid gap-3 md:grid-cols-3">
       <Select
         value={filters.userId}
         onValueChange={(value) =>
@@ -112,6 +114,7 @@ export function ActivityFilters({
           ))}
         </SelectContent>
       </Select>
-    </div>
+      </CardContent>
+    </Card>
   );
 }

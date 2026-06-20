@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslation } from "@/providers/language-provider";
+import { Card, CardContent } from "@/components/ui/card";
 import { DashboardStats } from "@/components/dashboard/dashboard-stats";
 import { PlatformDistributionChart } from "@/components/dashboard/platform-distribution-chart";
 import { PostsPerProductChart } from "@/components/dashboard/posts-per-product-chart";
@@ -25,15 +26,19 @@ export default function DashboardPage() {
       </div>
 
       {isLoading && (
-        <div className="rounded-xl border bg-background p-6 text-sm text-muted-foreground">
-          {t("dashboard.loading")}
-        </div>
+        <Card>
+          <CardContent className="text-sm text-muted-foreground">
+            {t("dashboard.loading")}
+          </CardContent>
+        </Card>
       )}
 
       {isError && (
-        <div role="alert" className="rounded-xl border bg-background p-6 text-sm text-destructive">
-          {t("dashboard.error")}
-        </div>
+        <Card>
+          <CardContent role="alert" className="text-sm text-destructive">
+            {t("dashboard.error")}
+          </CardContent>
+        </Card>
       )}
 
       {!isLoading && !isError && stats && (

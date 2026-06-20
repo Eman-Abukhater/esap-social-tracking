@@ -10,6 +10,7 @@ import {
   YAxis,
 } from "recharts";
 
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import type { DashboardStats } from "@/lib/types";
 import { useTranslation } from "@/providers/language-provider";
 
@@ -25,31 +26,30 @@ export function WeeklyOutputChart({ data }: Props) {
   }));
 
   return (
-    <div className="rounded-xl border bg-background p-6 shadow-sm">
-      <div className="mb-6">
-        <h2 className="text-lg font-semibold">{t("dashboard.weeklyOutput")}</h2>
-        <p className="text-sm text-muted-foreground">
-          {t("dashboard.weeklyOutputDesc")}
-        </p>
-      </div>
-
-      <div className="h-[320px]">
-        <ResponsiveContainer width="100%" height="100%">
-          <LineChart data={chartData}>
-            <CartesianGrid vertical={false} />
-            <XAxis dataKey="date" tickLine={false} axisLine={false} />
-            <YAxis tickLine={false} axisLine={false} allowDecimals={false} />
-            <Tooltip />
-            <Line
-              type="monotone"
-              dataKey="total"
-              strokeWidth={3}
-              stroke="var(--chart-1)"
-              dot
-            />
-          </LineChart>
-        </ResponsiveContainer>
-      </div>
-    </div>
+    <Card>
+      <CardHeader>
+        <CardTitle>{t("dashboard.weeklyOutput")}</CardTitle>
+        <CardDescription>{t("dashboard.weeklyOutputDesc")}</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="h-[320px]">
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={chartData}>
+              <CartesianGrid vertical={false} />
+              <XAxis dataKey="date" tickLine={false} axisLine={false} />
+              <YAxis tickLine={false} axisLine={false} allowDecimals={false} />
+              <Tooltip />
+              <Line
+                type="monotone"
+                dataKey="total"
+                strokeWidth={3}
+                stroke="var(--chart-1)"
+                dot
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      </CardContent>
+    </Card>
   );
 }

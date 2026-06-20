@@ -3,6 +3,7 @@
 import { toast } from "sonner";
 
 import { useTranslation } from "@/providers/language-provider";
+import { Card, CardContent } from "@/components/ui/card";
 import { AddProductDialog } from "@/components/products/add-product-dialog";
 import { ProductsOverview } from "@/components/products/products-overview";
 import { useCreateProduct } from "@/hooks/use-create-product";
@@ -49,15 +50,19 @@ export default function ProductsPage() {
       </div>
 
       {isLoading && (
-        <div className="rounded-xl border bg-background p-6 text-sm text-muted-foreground">
-          {t("products.loading")}
-        </div>
+        <Card>
+          <CardContent className="text-sm text-muted-foreground">
+            {t("products.loading")}
+          </CardContent>
+        </Card>
       )}
 
       {isError && (
-        <div role="alert" className="rounded-xl border bg-background p-6 text-sm text-destructive">
-          {t("products.error")}
-        </div>
+        <Card>
+          <CardContent role="alert" className="text-sm text-destructive">
+            {t("products.error")}
+          </CardContent>
+        </Card>
       )}
 
       {!isLoading && !isError && stats && (

@@ -14,6 +14,7 @@ import {
   Users,
 } from "lucide-react";
 
+import { Button } from "@/components/ui/button";
 import { useAuth } from "@/providers/auth-provider";
 import { useLanguage, useTranslation } from "@/providers/language-provider";
 import { useTheme } from "@/providers/theme-provider";
@@ -42,24 +43,26 @@ export function Sidebar() {
         </div>
 
         <div className="flex items-center gap-1">
-          <button
-            type="button"
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={toggleLanguage}
             title={t("nav.toggleLanguage")}
-            className="rounded-md p-2 text-xs font-medium text-muted-foreground transition hover:bg-muted hover:text-foreground"
+            className="text-muted-foreground"
           >
             <Languages className="h-4 w-4" />
-          </button>
+          </Button>
 
-          <button
-            type="button"
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={toggleTheme}
             title={t("nav.toggleTheme")}
-            className="rounded-md p-2 text-muted-foreground transition hover:bg-muted hover:text-foreground"
+            className="text-muted-foreground"
           >
             <Sun className="h-4 w-4 hidden dark:block" />
             <Moon className="h-4 w-4 dark:hidden" />
-          </button>
+          </Button>
         </div>
       </div>
 
@@ -94,14 +97,15 @@ export function Sidebar() {
             </p>
           </div>
 
-          <button
-            type="button"
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={() => logout()}
             title={t("nav.logout")}
-            className="rounded-md p-2 text-muted-foreground transition hover:bg-muted hover:text-foreground"
+            className="text-muted-foreground"
           >
             <LogOut className="h-4 w-4" />
-          </button>
+          </Button>
         </div>
       )}
     </aside>

@@ -1,5 +1,6 @@
 "use client";
 
+import { Card, CardContent } from "@/components/ui/card";
 import type { BackendActivityLog } from "@/lib/types";
 import { getChangedFields } from "@/lib/constants";
 import { useTranslation } from "@/providers/language-provider";
@@ -48,12 +49,14 @@ export function ActivityList({ activityLogs }: ActivityListProps) {
 
   if (activityLogs.length === 0) {
     return (
-      <div className="rounded-xl border bg-background p-10 text-center shadow-sm">
-        <h3 className="font-semibold">{t("activity.noActivity")}</h3>
-        <p className="mt-1 text-sm text-muted-foreground">
-          {t("activity.noActivityDesc")}
-        </p>
-      </div>
+      <Card>
+        <CardContent className="p-10 text-center">
+          <h3 className="font-semibold">{t("activity.noActivity")}</h3>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {t("activity.noActivityDesc")}
+          </p>
+        </CardContent>
+      </Card>
     );
   }
 
@@ -65,50 +68,49 @@ export function ActivityList({ activityLogs }: ActivityListProps) {
         const contentTitle = getContentTitle(log, t("activity.unknownContent"));
 
         return (
-          <div
-            key={log.id}
-            className="rounded-xl border bg-background p-4 shadow-sm"
-          >
-            <div className="flex items-start justify-between gap-4">
-              <div className="space-y-2">
-                <p className="font-medium">
-                  {userName}{" "}
-                  {log.action === "created" && t("activity.action.created")}
-                  {log.action === "updated" && t("activity.action.updated")}
-                  {log.action === "status_changed" && t("activity.action.statusChanged")}
-                  {log.action === "assigned" && t("activity.action.assigned")}
-                  {log.action === "deleted" && t("activity.action.deleted")}{" "}
-                  <span className="font-semibold">
-                    &ldquo;{contentTitle}&rdquo;
-                  </span>
+          <Card key={log.id}>
+            <CardContent>
+              <div className="flex items-start justify-between gap-4">
+                <div className="space-y-2">
+                  <p className="font-medium">
+                    {userName}{" "}
+                    {log.action === "created" && t("activity.action.created")}
+                    {log.action === "updated" && t("activity.action.updated")}
+                    {log.action === "status_changed" && t("activity.action.statusChanged")}
+                    {log.action === "assigned" && t("activity.action.assigned")}
+                    {log.action === "deleted" && t("activity.action.deleted")}{" "}
+                    <span className="font-semibold">
+                      &ldquo;{contentTitle}&rdquo;
+                    </span>
+                  </p>
+
+                  {changedFields.length > 0 && log.action !== "deleted" && (
+                    <div className="space-y-1 text-sm text-muted-foreground">
+                      {changedFields.map((change) => (
+                        <p key={change.field}>
+                          <span className="font-medium text-foreground">
+                            {formatFieldName(change.field)}
+                          </span>{" "}
+                          {t("activity.changedFrom")}{" "}
+                          <span className="font-medium text-foreground">
+                            {formatValue(change.from)}
+                          </span>{" "}
+                          {t("activity.to")}{" "}
+                          <span className="font-medium text-foreground">
+                            {formatValue(change.to)}
+                          </span>
+                        </p>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                <p className="text-xs text-muted-foreground">
+                  {new Date(log.timestamp).toLocaleString()}
                 </p>
-
-                {changedFields.length > 0 && log.action !== "deleted" && (
-                  <div className="space-y-1 text-sm text-muted-foreground">
-                    {changedFields.map((change) => (
-                      <p key={change.field}>
-                        <span className="font-medium text-foreground">
-                          {formatFieldName(change.field)}
-                        </span>{" "}
-                        {t("activity.changedFrom")}{" "}
-                        <span className="font-medium text-foreground">
-                          {formatValue(change.from)}
-                        </span>{" "}
-                        {t("activity.to")}{" "}
-                        <span className="font-medium text-foreground">
-                          {formatValue(change.to)}
-                        </span>
-                      </p>
-                    ))}
-                  </div>
-                )}
               </div>
-
-              <p className="text-xs text-muted-foreground">
-                {new Date(log.timestamp).toLocaleString()}
-              </p>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
         );
       })}
     </div>

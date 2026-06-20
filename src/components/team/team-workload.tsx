@@ -2,6 +2,7 @@
 
 import { useMemo } from "react";
 import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { UserAvatar } from "@/components/user-avatar";
 import type { BackendContentItem, ContentStatus, User } from "@/lib/types";
 import { STATUSES } from "@/lib/constants";
@@ -43,13 +44,13 @@ export function TeamWorkload({ users, contentItems }: Props) {
   }, [users, contentItems]);
 
   return (
-    <div className="rounded-xl border bg-background shadow-sm">
-      <div className="border-b px-6 py-4">
-        <h2 className="font-semibold">{t("team.workload")}</h2>
-        <p className="text-sm text-muted-foreground">{t("team.workloadDesc")}</p>
-      </div>
-
-      <div className="divide-y">
+    <Card>
+      <CardHeader className="border-b">
+        <CardTitle>{t("team.workload")}</CardTitle>
+        <CardDescription>{t("team.workloadDesc")}</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="divide-y">
         {users.map((user) => {
           const counts = workloadByUser.get(user.id)!;
           const total = STATUSES.reduce((sum, s) => sum + counts[s], 0);
@@ -106,7 +107,8 @@ export function TeamWorkload({ users, contentItems }: Props) {
             </div>
           );
         })}
-      </div>
-    </div>
+        </div>
+      </CardContent>
+    </Card>
   );
 }

@@ -1,6 +1,8 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { PlatformDistributionChart } from "@/components/dashboard/platform-distribution-chart";
 import { WeeklyOutputChart } from "@/components/dashboard/weekly-output-chart";
 import { useDashboardStats } from "@/hooks/use-dashboard-stats";
@@ -44,34 +46,30 @@ export function ProductDetails({
 
   return (
     <div className="space-y-6">
-      <div className="rounded-xl border bg-background p-6">
-        <div className="flex items-center gap-3">
-          <span
-            className="h-4 w-4 rounded-full"
-            style={{
-              backgroundColor: product.color,
-            }}
-          />
-
-          <h1 className="text-3xl font-bold">
-            {product.name}
-          </h1>
-        </div>
-
-        <p className="mt-3 text-muted-foreground">
-          {product.description}
-        </p>
-      </div>
+      <Card>
+        <CardHeader>
+          <div className="flex items-center gap-3">
+            <span
+              className="h-4 w-4 rounded-full"
+              style={{ backgroundColor: product.color }}
+            />
+            <CardTitle className="text-3xl font-bold">{product.name}</CardTitle>
+          </div>
+          <CardDescription>{product.description}</CardDescription>
+        </CardHeader>
+      </Card>
 
       {isStatsLoading && (
-        <div className="rounded-xl border bg-background p-6 text-sm text-muted-foreground">
-          {t("products.loadingPerformance")}
-        </div>
+        <Card>
+          <CardContent className="text-sm text-muted-foreground">
+            {t("products.loadingPerformance")}
+          </CardContent>
+        </Card>
       )}
 
       {stats && (
         <>
-          <div className="grid gap-4 md:grid-cols-5">
+          <div className="grid gap-4 xl:grid-cols-5">
             {stats.statusBreakdown.map((entry) => (
               <StatCard
                 key={entry.status}
@@ -81,7 +79,7 @@ export function ProductDetails({
             ))}
           </div>
 
-          <div className="grid gap-4 md:grid-cols-5">
+          <div className="grid gap-4 xl:grid-cols-5">
             {stats.typeBreakdown.map((entry) => (
               <StatCard
                 key={entry.type}
@@ -96,71 +94,42 @@ export function ProductDetails({
             />
           </div>
 
-          <div className="grid gap-4 lg:grid-cols-2">
+          <div className="grid gap-4 xl:grid-cols-2">
             <PlatformDistributionChart data={stats.platformDistribution} />
             <WeeklyOutputChart data={stats.weeklyOutput} />
           </div>
         </>
       )}
 
-      <div className="rounded-xl border bg-background">
-        <div className="border-b p-4">
-          <h2 className="font-semibold">
-            {t("products.productContent")}
-          </h2>
-        </div>
-
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b">
-                <th className="px-4 py-3 text-left">
-                  {t("content.col.title")}
-                </th>
-
-                <th className="px-4 py-3 text-left">
-                  {t("content.col.status")}
-                </th>
-
-                <th className="px-4 py-3 text-left">
-                  {t("content.col.assignedTo")}
-                </th>
-
-                <th className="px-4 py-3 text-left">
-                  {t("content.col.priority")}
-                </th>
-              </tr>
-            </thead>
-
-            <tbody>
+      <Card>
+        <CardHeader className="border-b">
+          <CardTitle>{t("products.productContent")}</CardTitle>
+        </CardHeader>
+        <CardContent className="p-0">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>{t("content.col.title")}</TableHead>
+                <TableHead>{t("content.col.status")}</TableHead>
+                <TableHead>{t("content.col.assignedTo")}</TableHead>
+                <TableHead>{t("content.col.priority")}</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {contentItems.map((item) => (
-                <tr
-                  key={item.id}
-                  className="border-b"
-                >
-                  <td className="px-4 py-3">
-                    {item.title}
-                  </td>
-
-                  <td className="px-4 py-3">
-                    {item.status}
-                  </td>
-
-                  <td className="px-4 py-3">
-                    {item.assignedTo?.name}
-                  </td>
-
-                  <td className="px-4 py-3">
-                    <Badge variant="outline">
-                      {item.priority}
-                    </Badge>
-                  </td>
-                </tr>
+                <TableRow key={item.id}>
+                  <TableCell>{item.title}</TableCell>
+                  <TableCell>{item.status}</TableCell>
+                  <TableCell>{item.assignedTo?.name}</TableCell>
+                  <TableCell>
+                    <Badge variant="outline">{item.priority}</Badge>
+                  </TableCell>
+                </TableRow>
               ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
     </div>
   );
 }
@@ -173,14 +142,13 @@ function StatCard({
   value: number | string;
 }) {
   return (
-    <div className="rounded-xl border bg-background p-4">
-      <p className="text-sm text-muted-foreground">
-        {title}
-      </p>
-
-      <p className="mt-2 text-3xl font-bold">
-        {value}
-      </p>
-    </div>
+    <Card size="sm">
+      <CardHeader>
+        <CardDescription>{title}</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <p className="text-3xl font-bold">{value}</p>
+      </CardContent>
+    </Card>
   );
 }

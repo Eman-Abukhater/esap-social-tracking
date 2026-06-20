@@ -22,6 +22,7 @@ import { GripVertical, PanelRight, Trash2 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -430,12 +431,14 @@ export function ContentTable({
 
   if (contentItems.length === 0) {
     return (
-      <div className="rounded-xl border bg-background p-10 text-center shadow-sm">
-        <h3 className="font-semibold">{t("content.noContent")}</h3>
-        <p className="mt-1 text-sm text-muted-foreground">
-          {t("content.noContentDesc")}
-        </p>
-      </div>
+      <Card>
+        <CardContent className="p-10 text-center">
+          <h3 className="font-semibold">{t("content.noContent")}</h3>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {t("content.noContentDesc")}
+          </p>
+        </CardContent>
+      </Card>
     );
   }
 
@@ -454,7 +457,7 @@ export function ContentTable({
   };
 
   return (
-    <div className="overflow-hidden rounded-xl border bg-background shadow-sm">
+    <Card className="overflow-hidden">
       {/* Bulk action bar */}
       {selectedIds.length > 0 && (
         <div className="flex flex-wrap items-center justify-between gap-4 border-b bg-muted/40 px-4 py-3">
@@ -605,6 +608,6 @@ export function ContentTable({
           </Button>
         </div>
       </div>
-    </div>
+    </Card>
   );
 }

@@ -12,6 +12,7 @@ import {
 } from "@/components/content/content-filters";
 import { ContentTable } from "@/components/tables/content-table";
 
+import { Card, CardContent } from "@/components/ui/card";
 import { useAssignContentItem } from "@/hooks/use-assign-content-item";
 import { useBulkAssignContent } from "@/hooks/use-bulk-assign-content";
 import { useBulkDeleteContent } from "@/hooks/use-bulk-delete-content";
@@ -254,15 +255,19 @@ export default function ContentPage() {
       <ContentFilters filters={filters} onFiltersChange={handleFiltersChange} />
 
       {isLoading && (
-        <div className="rounded-xl border bg-background p-6 text-sm text-muted-foreground">
-          {t("content.loading")}
-        </div>
+        <Card>
+          <CardContent className="text-sm text-muted-foreground">
+            {t("content.loading")}
+          </CardContent>
+        </Card>
       )}
 
       {isError && (
-        <div role="alert" className="rounded-xl border bg-background p-6 text-sm text-destructive">
-          {t("content.error")}
-        </div>
+        <Card>
+          <CardContent role="alert" className="text-sm text-destructive">
+            {t("content.error")}
+          </CardContent>
+        </Card>
       )}
 
       {!isLoading && !isError && (

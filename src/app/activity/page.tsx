@@ -3,6 +3,7 @@
 import { useState } from "react";
 
 import { useTranslation } from "@/providers/language-provider";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   ActivityFilters,
   type ActivityFiltersState,
@@ -37,15 +38,19 @@ export default function ActivityPage() {
       <ActivityFilters filters={filters} onFiltersChange={setFilters} />
 
       {isLoading && (
-        <div className="rounded-xl border bg-background p-6 text-sm text-muted-foreground">
-          {t("activity.loading")}
-        </div>
+        <Card>
+          <CardContent className="text-sm text-muted-foreground">
+            {t("activity.loading")}
+          </CardContent>
+        </Card>
       )}
 
       {isError && (
-        <div role="alert" className="rounded-xl border bg-background p-6 text-sm text-destructive">
-          {t("activity.error")}
-        </div>
+        <Card>
+          <CardContent role="alert" className="text-sm text-destructive">
+            {t("activity.error")}
+          </CardContent>
+        </Card>
       )}
 
       {!isLoading && !isError && (

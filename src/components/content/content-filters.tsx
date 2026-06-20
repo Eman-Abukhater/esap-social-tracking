@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslation } from "@/providers/language-provider";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -37,7 +38,8 @@ export function ContentFilters({
   const { data: users = [] } = useUsers();
 
   return (
-    <div className="grid gap-3 rounded-xl border bg-background p-4 shadow-sm md:grid-cols-4">
+    <Card>
+      <CardContent className="grid gap-3 md:grid-cols-4">
       <Input
         placeholder={t("filters.searchByTitle")}
         value={filters.search}
@@ -164,6 +166,7 @@ export function ContentFilters({
           })
         }
       />
-    </div>
+      </CardContent>
+    </Card>
   );
 }

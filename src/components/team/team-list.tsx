@@ -1,4 +1,5 @@
 import { Badge } from "@/components/ui/badge";
+import { Card, CardAction, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { UserAvatar } from "@/components/user-avatar";
 import type { User } from "@/lib/types";
 
@@ -10,22 +11,20 @@ export function TeamList({ users }: TeamListProps) {
   return (
     <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
       {users.map((user) => (
-        <div
-          key={user.id}
-          className="rounded-xl border bg-background p-6 shadow-sm"
-        >
-          <div className="flex items-center justify-between gap-4">
+        <Card key={user.id}>
+          <CardHeader>
             <div className="flex items-center gap-3">
               <UserAvatar user={user} size="lg" />
               <div>
-                <h2 className="font-semibold">{user.name}</h2>
-                <p className="text-sm text-muted-foreground">{user.email}</p>
+                <CardTitle>{user.name}</CardTitle>
+                <CardDescription>{user.email}</CardDescription>
               </div>
             </div>
-
-            <Badge variant="outline" className="capitalize">{user.role}</Badge>
-          </div>
-        </div>
+            <CardAction>
+              <Badge variant="outline" className="capitalize">{user.role}</Badge>
+            </CardAction>
+          </CardHeader>
+        </Card>
       ))}
     </div>
   );

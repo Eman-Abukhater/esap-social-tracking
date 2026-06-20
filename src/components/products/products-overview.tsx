@@ -3,6 +3,7 @@
 import Link from "next/link";
 
 import { Badge } from "@/components/ui/badge";
+import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useTranslation } from "@/providers/language-provider";
 
 import type { DashboardStats, Product } from "@/lib/types";
@@ -34,65 +35,37 @@ export function ProductsOverview({
             key={product.id}
             href={`/products/${product.id}`}
           >
-            <div className="cursor-pointer rounded-xl border bg-background p-6 shadow-sm transition hover:shadow-md">
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span
-                      className="h-3 w-3 rounded-full"
-                      style={{
-                        backgroundColor:
-                          product.color,
-                      }}
-                    />
-
-                    <h2 className="font-semibold">
-                      {product.name}
-                    </h2>
+            <Card className="cursor-pointer transition hover:shadow-md">
+              <CardHeader>
+                <div className="flex items-center gap-2">
+                  <span
+                    className="h-3 w-3 rounded-full"
+                    style={{ backgroundColor: product.color }}
+                  />
+                  <CardTitle className="font-semibold">{product.name}</CardTitle>
+                </div>
+                <CardDescription>{product.description}</CardDescription>
+                <CardAction>
+                  <Badge variant="outline">{completionRate}%</Badge>
+                </CardAction>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-3 gap-3 text-sm">
+                  <div>
+                    <p className="text-muted-foreground">{t("products.total")}</p>
+                    <p className="text-xl font-bold">{total}</p>
                   </div>
-
-                  <p className="mt-2 text-sm text-muted-foreground">
-                    {product.description}
-                  </p>
+                  <div>
+                    <p className="text-muted-foreground">{t("products.published")}</p>
+                    <p className="text-xl font-bold">{published}</p>
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground">{t("products.completion")}</p>
+                    <p className="text-xl font-bold">{completionRate}%</p>
+                  </div>
                 </div>
-
-                <Badge variant="outline">
-                  {completionRate}%
-                </Badge>
-              </div>
-
-              <div className="mt-6 grid grid-cols-3 gap-3 text-sm">
-                <div>
-                  <p className="text-muted-foreground">
-                    {t("products.total")}
-                  </p>
-
-                  <p className="text-xl font-bold">
-                    {total}
-                  </p>
-                </div>
-
-                <div>
-                  <p className="text-muted-foreground">
-                    {t("products.published")}
-                  </p>
-
-                  <p className="text-xl font-bold">
-                    {published}
-                  </p>
-                </div>
-
-                <div>
-                  <p className="text-muted-foreground">
-                    {t("products.completion")}
-                  </p>
-
-                  <p className="text-xl font-bold">
-                    {completionRate}%
-                  </p>
-                </div>
-              </div>
-            </div>
+              </CardContent>
+            </Card>
           </Link>
         );
       })}

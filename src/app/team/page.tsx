@@ -1,6 +1,7 @@
 "use client";
 
 import { useTranslation } from "@/providers/language-provider";
+import { Card, CardContent } from "@/components/ui/card";
 import { TeamList } from "@/components/team/team-list";
 import { TeamWorkload } from "@/components/team/team-workload";
 import { useContentItems } from "@/hooks/use-content-items";
@@ -34,15 +35,19 @@ export default function TeamPage() {
       </div>
 
       {isLoading && (
-        <div className="rounded-xl border bg-background p-6 text-sm text-muted-foreground">
-          {t("team.loading")}
-        </div>
+        <Card>
+          <CardContent className="text-sm text-muted-foreground">
+            {t("team.loading")}
+          </CardContent>
+        </Card>
       )}
 
       {isError && (
-        <div role="alert" className="rounded-xl border bg-background p-6 text-sm text-destructive">
-          {t("team.error")}
-        </div>
+        <Card>
+          <CardContent role="alert" className="text-sm text-destructive">
+            {t("team.error")}
+          </CardContent>
+        </Card>
       )}
 
       {!isLoading && !isError && (

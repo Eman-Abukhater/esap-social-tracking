@@ -8,6 +8,7 @@ import {
   Tooltip,
 } from "recharts";
 
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import type { DashboardStats } from "@/lib/types";
 import { useTranslation } from "@/providers/language-provider";
 
@@ -27,36 +28,31 @@ export function PlatformDistributionChart({
     }));
 
   return (
-    <div className="rounded-xl border bg-background p-6 shadow-sm">
-      <div className="mb-6">
-        <h2 className="text-lg font-semibold">
-          {t("dashboard.platformDistribution")}
-        </h2>
-
-        <p className="text-sm text-muted-foreground">
-          {t("dashboard.platformDistributionDesc")}
-        </p>
-      </div>
-
-      <div className="h-[320px]">
-        <ResponsiveContainer width="100%" height="100%">
-          <PieChart>
-            <Pie
-              data={chartData}
-              dataKey="value"
-              nameKey="name"
-              outerRadius={110}
-              label
-            >
-              {chartData.map((entry, index) => (
-                <Cell key={entry.name} fill={`var(--chart-${(index % 5) + 1})`} />
-              ))}
-            </Pie>
-
-            <Tooltip />
-          </PieChart>
-        </ResponsiveContainer>
-      </div>
-    </div>
+    <Card>
+      <CardHeader>
+        <CardTitle>{t("dashboard.platformDistribution")}</CardTitle>
+        <CardDescription>{t("dashboard.platformDistributionDesc")}</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="h-[320px]">
+          <ResponsiveContainer width="100%" height="100%">
+            <PieChart>
+              <Pie
+                data={chartData}
+                dataKey="value"
+                nameKey="name"
+                outerRadius={110}
+                label
+              >
+                {chartData.map((entry, index) => (
+                  <Cell key={entry.name} fill={`var(--chart-${(index % 5) + 1})`} />
+                ))}
+              </Pie>
+              <Tooltip />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
+      </CardContent>
+    </Card>
   );
 }

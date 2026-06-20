@@ -3,6 +3,7 @@
 import { useParams } from "next/navigation";
 
 import { useTranslation } from "@/providers/language-provider";
+import { Card, CardContent } from "@/components/ui/card";
 import { useProducts } from "@/hooks/use-products";
 import { useContentItems } from "@/hooks/use-content-items";
 
@@ -32,9 +33,9 @@ export default function ProductDetailsPage() {
 
   if (!product) {
     return (
-      <div className="rounded-xl border bg-background p-6">
-        {t("products.notFound")}
-      </div>
+      <Card>
+        <CardContent>{t("products.notFound")}</CardContent>
+      </Card>
     );
   }
 

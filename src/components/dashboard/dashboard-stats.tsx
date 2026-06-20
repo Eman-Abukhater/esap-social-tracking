@@ -1,5 +1,6 @@
 "use client";
 
+import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card";
 import type { DashboardStats as DashboardStatsData } from "@/lib/types";
 import { useTranslation } from "@/providers/language-provider";
 
@@ -38,18 +39,14 @@ export function DashboardStats({ totals, typeBreakdown }: DashboardStatsProps) {
   return (
     <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
       {stats.map((stat) => (
-        <div
-          key={stat.title}
-          className="rounded-xl border bg-background p-6 shadow-sm"
-        >
-          <p className="text-sm text-muted-foreground">
-            {stat.title}
-          </p>
-
-          <h2 className="mt-2 text-3xl font-bold">
-            {stat.value}
-          </h2>
-        </div>
+        <Card key={stat.title}>
+          <CardHeader>
+            <CardDescription>{stat.title}</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p className="text-3xl font-bold">{stat.value}</p>
+          </CardContent>
+        </Card>
       ))}
     </div>
   );
