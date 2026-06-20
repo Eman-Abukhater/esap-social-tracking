@@ -179,7 +179,7 @@ function SortableRow({ item, ...h }: { item: BackendContentItem } & RowHandlers)
       {/* Product */}
       <td className="px-4 py-4">
         <div className="flex items-center gap-2">
-          <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: item.product?.color ?? "#94a3b8" }} />
+          <span className="inline-block h-2.5 w-2.5 shrink-0 rounded-full" style={{ backgroundColor: item.product?.color ?? "#94a3b8" }} />
           <span className="text-sm">{item.product?.name ?? "—"}</span>
         </div>
       </td>

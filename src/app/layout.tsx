@@ -43,7 +43,7 @@ export default function RootLayout({
                 <AuthGate>
                   <Sidebar />
 
-                  <main className="min-h-screen bg-muted/30 p-6 ms-64">
+                  <main className="min-h-screen bg-muted/30 p-4 pt-16 md:p-6 md:ms-64">
                     {children}
                   </main>
 

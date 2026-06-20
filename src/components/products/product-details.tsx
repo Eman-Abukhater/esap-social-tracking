@@ -50,7 +50,7 @@ export function ProductDetails({
         <CardHeader>
           <div className="flex items-center gap-3">
             <span
-              className="h-4 w-4 rounded-full"
+              className="inline-block h-4 w-4 shrink-0 rounded-full"
               style={{ backgroundColor: product.color }}
             />
             <CardTitle className="text-3xl font-bold">{product.name}</CardTitle>

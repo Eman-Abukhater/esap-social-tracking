@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -8,10 +9,12 @@ import {
   Languages,
   LayoutDashboard,
   LogOut,
+  Menu,
   Moon,
   Package,
   Sun,
   Users,
+  X,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -33,9 +36,10 @@ export function Sidebar() {
   const { toggleTheme } = useTheme();
   const { toggleLanguage } = useLanguage();
   const t = useTranslation();
+  const [mobileOpen, setMobileOpen] = useState(false);
 
-  return (
-    <aside className="fixed inset-y-0 start-0 z-40 flex w-64 flex-col border-e bg-background px-4 py-6">
+  const sidebarContent = (
+    <>
       <div className="mb-8 flex items-center justify-between">
         <div>
           <h1 className="text-xl font-bold">{t("app.name")}</h1>
@@ -63,6 +67,15 @@ export function Sidebar() {
             <Sun className="h-4 w-4 hidden dark:block" />
             <Moon className="h-4 w-4 dark:hidden" />
           </Button>
+
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setMobileOpen(false)}
+            className="text-muted-foreground md:hidden"
+          >
+            <X className="h-4 w-4" />
+          </Button>
         </div>
       </div>
 
@@ -75,6 +88,7 @@ export function Sidebar() {
             <Link
               key={item.href}
               href={item.href}
+              onClick={() => setMobileOpen(false)}
               className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition ${
                 isActive
                   ? "bg-primary text-primary-foreground"
@@ -108,6 +122,43 @@ export function Sidebar() {
           </Button>
         </div>
       )}
-    </aside>
+    </>
+  );
+
+  return (
+    <>
+      {/* Mobile hamburger */}
+      <div className="fixed start-4 top-4 z-50 md:hidden">
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => setMobileOpen(true)}
+        >
+          <Menu className="h-5 w-5" />
+        </Button>
+      </div>
+
+      {/* Mobile overlay */}
+      {mobileOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/40 md:hidden"
+          onClick={() => setMobileOpen(false)}
+        />
+      )}
+
+      {/* Mobile sidebar */}
+      <aside
+        className={`fixed inset-y-0 start-0 z-50 flex w-64 flex-col border-e bg-background px-4 py-6 transition-transform md:hidden ${
+          mobileOpen ? "translate-x-0" : "-translate-x-full rtl:translate-x-full"
+        }`}
+      >
+        {sidebarContent}
+      </aside>
+
+      {/* Desktop sidebar */}
+      <aside className="fixed inset-y-0 start-0 z-40 hidden w-64 flex-col border-e bg-background px-4 py-6 md:flex">
+        {sidebarContent}
+      </aside>
+    </>
   );
 }

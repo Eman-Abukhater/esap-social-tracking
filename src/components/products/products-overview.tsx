@@ -39,7 +39,7 @@ export function ProductsOverview({
               <CardHeader>
                 <div className="flex items-center gap-2">
                   <span
-                    className="h-3 w-3 rounded-full"
+                    className="inline-block h-3 w-3 shrink-0 rounded-full"
                     style={{ backgroundColor: product.color }}
                   />
                   <CardTitle className="font-semibold">{product.name}</CardTitle>
