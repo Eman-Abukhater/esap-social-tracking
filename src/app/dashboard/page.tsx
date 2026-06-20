@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslation } from "@/providers/language-provider";
 import { DashboardStats } from "@/components/dashboard/dashboard-stats";
 import { PlatformDistributionChart } from "@/components/dashboard/platform-distribution-chart";
 import { PostsPerProductChart } from "@/components/dashboard/posts-per-product-chart";
@@ -10,27 +11,28 @@ import { WeeklyOutputChart } from "@/components/dashboard/weekly-output-chart";
 import { useDashboardStats } from "@/hooks/use-dashboard-stats";
 
 export default function DashboardPage() {
+  const t = useTranslation();
   const { data: stats, isLoading, isError } = useDashboardStats();
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold">Dashboard</h1>
+        <h1 className="text-3xl font-bold">{t("dashboard.title")}</h1>
 
         <p className="text-muted-foreground">
-          Social media execution overview.
+          {t("dashboard.description")}
         </p>
       </div>
 
       {isLoading && (
         <div className="rounded-xl border bg-background p-6 text-sm text-muted-foreground">
-          Loading dashboard...
+          {t("dashboard.loading")}
         </div>
       )}
 
       {isError && (
         <div role="alert" className="rounded-xl border bg-background p-6 text-sm text-destructive">
-          Failed to load dashboard data.
+          {t("dashboard.error")}
         </div>
       )}
 

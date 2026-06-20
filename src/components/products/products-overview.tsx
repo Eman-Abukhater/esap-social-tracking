@@ -3,6 +3,7 @@
 import Link from "next/link";
 
 import { Badge } from "@/components/ui/badge";
+import { useTranslation } from "@/providers/language-provider";
 
 import type { DashboardStats, Product } from "@/lib/types";
 
@@ -15,6 +16,7 @@ export function ProductsOverview({
   products,
   productCompletion,
 }: ProductsOverviewProps) {
+  const t = useTranslation();
   const statsByProductId = new Map(
     productCompletion.map((entry) => [entry.productId, entry])
   );
@@ -62,7 +64,7 @@ export function ProductsOverview({
               <div className="mt-6 grid grid-cols-3 gap-3 text-sm">
                 <div>
                   <p className="text-muted-foreground">
-                    Total
+                    {t("products.total")}
                   </p>
 
                   <p className="text-xl font-bold">
@@ -72,7 +74,7 @@ export function ProductsOverview({
 
                 <div>
                   <p className="text-muted-foreground">
-                    Published
+                    {t("products.published")}
                   </p>
 
                   <p className="text-xl font-bold">
@@ -82,7 +84,7 @@ export function ProductsOverview({
 
                 <div>
                   <p className="text-muted-foreground">
-                    Completion
+                    {t("products.completion")}
                   </p>
 
                   <p className="text-xl font-bold">

@@ -12,12 +12,14 @@ import {
 } from "recharts";
 
 import type { DashboardStats } from "@/lib/types";
+import { useTranslation } from "@/providers/language-provider";
 
 type PostsPerProductChartProps = {
   data: DashboardStats["postsPerProduct"];
 };
 
 export function PostsPerProductChart({ data }: PostsPerProductChartProps) {
+  const t = useTranslation();
   const chartData = data.map((entry) => ({
     name: entry.productName,
     total: entry.total,
@@ -27,11 +29,11 @@ export function PostsPerProductChart({ data }: PostsPerProductChartProps) {
     <div className="rounded-xl border bg-background p-6 shadow-sm">
       <div className="mb-6">
         <h2 className="text-lg font-semibold">
-          Posts Per Product
+          {t("dashboard.postsPerProduct")}
         </h2>
 
         <p className="text-sm text-muted-foreground">
-          Content distribution across ESAP products
+          {t("dashboard.postsPerProductDesc")}
         </p>
       </div>
 

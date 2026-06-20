@@ -4,9 +4,11 @@ import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/providers/auth-provider";
+import { useTranslation } from "@/providers/language-provider";
 
 export function LoginForm() {
   const { login } = useAuth();
+  const t = useTranslation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -20,7 +22,7 @@ export function LoginForm() {
     try {
       await login(email, password);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Login failed");
+      setError(err instanceof Error ? err.message : t("auth.loginFailed"));
     } finally {
       setIsSubmitting(false);
     }
@@ -30,16 +32,16 @@ export function LoginForm() {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 p-6 backdrop-blur-sm">
       <div className="w-full max-w-sm space-y-6 rounded-xl border bg-background p-6 shadow-lg">
         <div>
-          <h1 className="text-xl font-bold">Sign in</h1>
+          <h1 className="text-xl font-bold">{t("auth.signIn")}</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Enter your credentials to access the dashboard.
+            {t("auth.signInDescription")}
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <label htmlFor="email" className="text-sm font-medium">
-              Email
+              {t("auth.email")}
             </label>
             <input
               id="email"
@@ -49,13 +51,13 @@ export function LoginForm() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-              placeholder="you@esap.ai"
+              placeholder={t("auth.emailPlaceholder")}
             />
           </div>
 
           <div className="space-y-2">
             <label htmlFor="password" className="text-sm font-medium">
-              Password
+              {t("auth.password")}
             </label>
             <input
               id="password"
@@ -73,7 +75,7 @@ export function LoginForm() {
           )}
 
           <Button type="submit" className="w-full" disabled={isSubmitting}>
-            {isSubmitting ? "Signing in..." : "Sign in"}
+            {isSubmitting ? t("auth.signingIn") : t("auth.signIn")}
           </Button>
         </form>
       </div>

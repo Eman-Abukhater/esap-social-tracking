@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { PlatformDistributionChart } from "@/components/dashboard/platform-distribution-chart";
 import { WeeklyOutputChart } from "@/components/dashboard/weekly-output-chart";
 import { useDashboardStats } from "@/hooks/use-dashboard-stats";
+import { useTranslation } from "@/providers/language-provider";
 
 import type {
   BackendContentItem,
@@ -17,28 +18,29 @@ type ProductDetailsProps = {
   contentItems: BackendContentItem[];
 };
 
-const statusLabels: Record<ContentStatus, string> = {
-  planned: "Planned",
-  in_progress: "In Progress",
-  review: "Review",
-  done: "Done",
-  published: "Published",
-};
-
-const typeLabels: Record<ContentType, string> = {
-  post: "Posts",
-  video: "Videos",
-  reel: "Reels",
-  carousel: "Carousels",
-};
-
 export function ProductDetails({
   product,
   contentItems,
 }: ProductDetailsProps) {
+  const t = useTranslation();
   const { data: stats, isLoading: isStatsLoading } = useDashboardStats(
     product.id
   );
+
+  const statusLabels: Record<ContentStatus, string> = {
+    planned: t("status.planned"),
+    in_progress: t("status.in_progress"),
+    review: t("status.review"),
+    done: t("status.done"),
+    published: t("status.published"),
+  };
+
+  const typeLabels: Record<ContentType, string> = {
+    post: t("products.posts"),
+    video: t("products.videos"),
+    reel: t("products.reels"),
+    carousel: t("products.carousels"),
+  };
 
   return (
     <div className="space-y-6">
@@ -63,7 +65,7 @@ export function ProductDetails({
 
       {isStatsLoading && (
         <div className="rounded-xl border bg-background p-6 text-sm text-muted-foreground">
-          Loading product performance...
+          {t("products.loadingPerformance")}
         </div>
       )}
 
@@ -89,7 +91,7 @@ export function ProductDetails({
             ))}
 
             <StatCard
-              title="Completion Rate"
+              title={t("products.completionRate")}
               value={`${stats.completionRate}%`}
             />
           </div>
@@ -104,7 +106,7 @@ export function ProductDetails({
       <div className="rounded-xl border bg-background">
         <div className="border-b p-4">
           <h2 className="font-semibold">
-            Product Content
+            {t("products.productContent")}
           </h2>
         </div>
 
@@ -113,19 +115,19 @@ export function ProductDetails({
             <thead>
               <tr className="border-b">
                 <th className="px-4 py-3 text-left">
-                  Title
+                  {t("content.col.title")}
                 </th>
 
                 <th className="px-4 py-3 text-left">
-                  Status
+                  {t("content.col.status")}
                 </th>
 
                 <th className="px-4 py-3 text-left">
-                  Assigned To
+                  {t("content.col.assignedTo")}
                 </th>
 
                 <th className="px-4 py-3 text-left">
-                  Priority
+                  {t("content.col.priority")}
                 </th>
               </tr>
             </thead>

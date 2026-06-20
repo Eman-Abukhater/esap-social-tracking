@@ -10,6 +10,7 @@ import {
 import { useContentItems } from "@/hooks/use-content-items";
 import { useProducts } from "@/hooks/use-products";
 import { useUsers } from "@/hooks/use-users";
+import { useTranslation } from "@/providers/language-provider";
 
 export type ActivityFiltersState = {
   userId: string;
@@ -36,6 +37,7 @@ export function ActivityFilters({
   filters,
   onFiltersChange,
 }: ActivityFiltersProps) {
+  const t = useTranslation();
   const { data: users = [] } = useUsers();
   const { data: products = [] } = useProducts();
   const { data: contentItems = [] } = useContentItems(allContentFilters);
@@ -52,11 +54,11 @@ export function ActivityFilters({
         }
       >
         <SelectTrigger>
-          <SelectValue placeholder="User" />
+          <SelectValue placeholder={t("filters.user")} />
         </SelectTrigger>
 
         <SelectContent>
-          <SelectItem value="all">All Users</SelectItem>
+          <SelectItem value="all">{t("filters.allUsers")}</SelectItem>
           {users.map((user) => (
             <SelectItem key={user.id} value={user.id}>
               {user.name}
@@ -75,11 +77,11 @@ export function ActivityFilters({
         }
       >
         <SelectTrigger>
-          <SelectValue placeholder="Product" />
+          <SelectValue placeholder={t("filters.product")} />
         </SelectTrigger>
 
         <SelectContent>
-          <SelectItem value="all">All Products</SelectItem>
+          <SelectItem value="all">{t("filters.allProducts")}</SelectItem>
           {products.map((product) => (
             <SelectItem key={product.id} value={product.id}>
               {product.name}
@@ -98,11 +100,11 @@ export function ActivityFilters({
         }
       >
         <SelectTrigger>
-          <SelectValue placeholder="Content item" />
+          <SelectValue placeholder={t("filters.contentItem")} />
         </SelectTrigger>
 
         <SelectContent>
-          <SelectItem value="all">All Content</SelectItem>
+          <SelectItem value="all">{t("filters.allContent")}</SelectItem>
           {contentItems.map((item) => (
             <SelectItem key={item.id} value={item.id}>
               {item.title}

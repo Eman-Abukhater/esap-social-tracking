@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { useTranslation } from "@/providers/language-provider";
 
 const COLOR_OPTIONS = [
   "#ef4444",
@@ -33,6 +34,7 @@ type AddProductDialogProps = {
 };
 
 export function AddProductDialog({ onCreateProduct }: AddProductDialogProps) {
+  const t = useTranslation();
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -56,22 +58,22 @@ export function AddProductDialog({ onCreateProduct }: AddProductDialogProps) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>Add Product</Button>
+        <Button>{t("products.addProduct")}</Button>
       </DialogTrigger>
 
       <DialogContent className="sm:max-w-[480px]">
         <DialogHeader>
-          <DialogTitle>Add New Product</DialogTitle>
+          <DialogTitle>{t("products.addNewProduct")}</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-5 py-2">
           <div className="space-y-2">
             <label htmlFor="add-product-name" className="text-sm font-medium">
-              Name
+              {t("products.name")}
             </label>
             <Input
               id="add-product-name"
-              placeholder="Enter product name"
+              placeholder={t("products.enterName")}
               value={name}
               onChange={(e) => setName(e.target.value)}
             />
@@ -79,18 +81,18 @@ export function AddProductDialog({ onCreateProduct }: AddProductDialogProps) {
 
           <div className="space-y-2">
             <label htmlFor="add-product-description" className="text-sm font-medium">
-              Description
+              {t("products.productDescription")}
             </label>
             <Textarea
               id="add-product-description"
-              placeholder="Write product description..."
+              placeholder={t("products.writeDescription")}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
             />
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium">Color</label>
+            <label className="text-sm font-medium">{t("products.color")}</label>
             <div className="flex flex-wrap gap-2">
               {COLOR_OPTIONS.map((c) => (
                 <button
@@ -102,7 +104,7 @@ export function AddProductDialog({ onCreateProduct }: AddProductDialogProps) {
                     borderColor: color === c ? "currentColor" : "transparent",
                   }}
                   onClick={() => setColor(c)}
-                  aria-label={`Select color ${c}`}
+                  aria-label={t("products.selectColor", { color: c })}
                 />
               ))}
             </div>
@@ -117,11 +119,11 @@ export function AddProductDialog({ onCreateProduct }: AddProductDialogProps) {
                 setOpen(false);
               }}
             >
-              Cancel
+              {t("common.cancel")}
             </Button>
 
             <Button type="button" onClick={handleCreate} disabled={!isFormValid}>
-              Create Product
+              {t("products.createProduct")}
             </Button>
           </div>
         </div>

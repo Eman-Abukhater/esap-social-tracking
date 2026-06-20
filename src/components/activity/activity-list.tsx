@@ -2,6 +2,7 @@
 
 import type { BackendActivityLog } from "@/lib/types";
 import { getChangedFields } from "@/lib/constants";
+import { useTranslation } from "@/providers/language-provider";
 
 type ActivityListProps = {
   activityLogs: BackendActivityLog[];
@@ -14,26 +15,14 @@ function getObjectValue(value: unknown): Record<string, unknown> {
   return {};
 }
 
-function getContentTitle(log: BackendActivityLog) {
+function getContentTitle(log: BackendActivityLog, unknownLabel: string) {
   const previousValue = getObjectValue(log.previousValue);
   const newValue = getObjectValue(log.newValue);
 
   return (
     log.contentItem?.title ??
-    String(previousValue.title ?? newValue.title ?? "Unknown content")
+    String(previousValue.title ?? newValue.title ?? unknownLabel)
   );
-}
-
-function formatFieldName(field: string) {
-  const labels: Record<string, string> = {
-    status: "Status",
-    title: "Title",
-    priority: "Priority",
-    scheduledDate: "Scheduled date",
-    assignedToId: "Assigned user",
-  };
-
-  return labels[field] ?? field;
 }
 
 function formatValue(value: unknown) {
@@ -43,12 +32,26 @@ function formatValue(value: unknown) {
 }
 
 export function ActivityList({ activityLogs }: ActivityListProps) {
+  const t = useTranslation();
+
+  const fieldLabels: Record<string, string> = {
+    status: t("activity.field.status"),
+    title: t("activity.field.title"),
+    priority: t("activity.field.priority"),
+    scheduledDate: t("activity.field.scheduledDate"),
+    assignedToId: t("activity.field.assignedUser"),
+  };
+
+  function formatFieldName(field: string) {
+    return fieldLabels[field] ?? field;
+  }
+
   if (activityLogs.length === 0) {
     return (
       <div className="rounded-xl border bg-background p-10 text-center shadow-sm">
-        <h3 className="font-semibold">No activity yet</h3>
+        <h3 className="font-semibold">{t("activity.noActivity")}</h3>
         <p className="mt-1 text-sm text-muted-foreground">
-          Changes will appear here once content is created or updated.
+          {t("activity.noActivityDesc")}
         </p>
       </div>
     );
@@ -58,8 +61,8 @@ export function ActivityList({ activityLogs }: ActivityListProps) {
     <div className="space-y-4">
       {activityLogs.map((log) => {
         const changedFields = getChangedFields(log);
-        const userName = log.changedBy?.name ?? "Unknown user";
-        const contentTitle = getContentTitle(log);
+        const userName = log.changedBy?.name ?? t("activity.unknownUser");
+        const contentTitle = getContentTitle(log, t("activity.unknownContent"));
 
         return (
           <div
@@ -70,13 +73,13 @@ export function ActivityList({ activityLogs }: ActivityListProps) {
               <div className="space-y-2">
                 <p className="font-medium">
                   {userName}{" "}
-                  {log.action === "created" && "created"}
-                  {log.action === "updated" && "updated"}
-                  {log.action === "status_changed" && "changed status of"}
-                  {log.action === "assigned" && "assigned"}
-                  {log.action === "deleted" && "deleted"}{" "}
+                  {log.action === "created" && t("activity.action.created")}
+                  {log.action === "updated" && t("activity.action.updated")}
+                  {log.action === "status_changed" && t("activity.action.statusChanged")}
+                  {log.action === "assigned" && t("activity.action.assigned")}
+                  {log.action === "deleted" && t("activity.action.deleted")}{" "}
                   <span className="font-semibold">
-                    “{contentTitle}”
+                    &ldquo;{contentTitle}&rdquo;
                   </span>
                 </p>
 
@@ -87,11 +90,11 @@ export function ActivityList({ activityLogs }: ActivityListProps) {
                         <span className="font-medium text-foreground">
                           {formatFieldName(change.field)}
                         </span>{" "}
-                        changed from{" "}
+                        {t("activity.changedFrom")}{" "}
                         <span className="font-medium text-foreground">
                           {formatValue(change.from)}
                         </span>{" "}
-                        to{" "}
+                        {t("activity.to")}{" "}
                         <span className="font-medium text-foreground">
                           {formatValue(change.to)}
                         </span>

@@ -1,6 +1,7 @@
 "use client";
 
 import type { DashboardStats as DashboardStatsData } from "@/lib/types";
+import { useTranslation } from "@/providers/language-provider";
 
 type DashboardStatsProps = {
   totals: DashboardStatsData["totals"];
@@ -8,27 +9,28 @@ type DashboardStatsProps = {
 };
 
 export function DashboardStats({ totals, typeBreakdown }: DashboardStatsProps) {
+  const t = useTranslation();
   const totalVideos = typeBreakdown.find((t) => t.type === "video")?.total ?? 0;
 
   const stats = [
     {
-      title: "Total Content",
+      title: t("dashboard.totalContent"),
       value: totals.totalContent,
     },
     {
-      title: "Total Videos",
+      title: t("dashboard.totalVideos"),
       value: totalVideos,
     },
     {
-      title: "Published",
+      title: t("dashboard.published"),
       value: totals.published,
     },
     {
-      title: "In Progress",
+      title: t("dashboard.inProgress"),
       value: totals.inProgress,
     },
     {
-      title: "Planned",
+      title: t("dashboard.planned"),
       value: totals.planned,
     },
   ];

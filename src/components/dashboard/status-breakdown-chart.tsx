@@ -12,12 +12,14 @@ import {
 
 import type { DashboardStats } from "@/lib/types";
 import { STATUS_LABELS } from "@/lib/constants";
+import { useTranslation } from "@/providers/language-provider";
 
 type Props = {
   data: DashboardStats["statusBreakdown"];
 };
 
 export function StatusBreakdownChart({ data }: Props) {
+  const t = useTranslation();
   const chartData = data.map((entry) => ({
     name: STATUS_LABELS[entry.status] ?? entry.status,
     total: entry.total,
@@ -26,9 +28,9 @@ export function StatusBreakdownChart({ data }: Props) {
   return (
     <div className="rounded-xl border bg-background p-6 shadow-sm">
       <div className="mb-6">
-        <h2 className="text-lg font-semibold">Status Breakdown</h2>
+        <h2 className="text-lg font-semibold">{t("dashboard.statusBreakdown")}</h2>
         <p className="text-sm text-muted-foreground">
-          Current content pipeline status
+          {t("dashboard.statusBreakdownDesc")}
         </p>
       </div>
 

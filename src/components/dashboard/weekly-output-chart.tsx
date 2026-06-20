@@ -11,12 +11,14 @@ import {
 } from "recharts";
 
 import type { DashboardStats } from "@/lib/types";
+import { useTranslation } from "@/providers/language-provider";
 
 type Props = {
   data: DashboardStats["weeklyOutput"];
 };
 
 export function WeeklyOutputChart({ data }: Props) {
+  const t = useTranslation();
   const chartData = data.map((entry) => ({
     date: new Date(entry.date).toLocaleDateString(),
     total: entry.total,
@@ -25,9 +27,9 @@ export function WeeklyOutputChart({ data }: Props) {
   return (
     <div className="rounded-xl border bg-background p-6 shadow-sm">
       <div className="mb-6">
-        <h2 className="text-lg font-semibold">Weekly Output Trend</h2>
+        <h2 className="text-lg font-semibold">{t("dashboard.weeklyOutput")}</h2>
         <p className="text-sm text-muted-foreground">
-          Content creation activity over time
+          {t("dashboard.weeklyOutputDesc")}
         </p>
       </div>
 

@@ -27,6 +27,7 @@ import { Input } from "@/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { UserAvatar } from "@/components/user-avatar";
 import { useCurrentUser } from "@/providers/auth-provider";
+import { useTranslation } from "@/providers/language-provider";
 
 import {
   Select,
@@ -37,7 +38,7 @@ import {
 } from "@/components/ui/select";
 
 import type { BackendContentItem, ContentItem, Platform, User } from "@/lib/types";
-import { PLATFORMS, STATUS_LABELS, PRIORITY_LABELS } from "@/lib/constants";
+import { PLATFORMS } from "@/lib/constants";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -78,6 +79,7 @@ type RowHandlers = {
 // ── SortableRow ───────────────────────────────────────────────────────────────
 
 function SortableRow({ item, ...h }: { item: BackendContentItem } & RowHandlers) {
+  const t = useTranslation();
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
     useSortable({ id: item.id });
 
@@ -117,7 +119,7 @@ function SortableRow({ item, ...h }: { item: BackendContentItem } & RowHandlers)
           {...listeners}
           type="button"
           className="cursor-grab touch-none text-muted-foreground/40 hover:text-muted-foreground active:cursor-grabbing"
-          aria-label="Drag to reorder"
+          aria-label={t("content.dragToReorder")}
         >
           <GripVertical className="h-4 w-4" />
         </button>
@@ -142,14 +144,14 @@ function SortableRow({ item, ...h }: { item: BackendContentItem } & RowHandlers)
               }}
               onBlur={saveTitleEdit}
             />
-            <p className="text-xs text-muted-foreground">Enter to save, Esc to cancel</p>
+            <p className="text-xs text-muted-foreground">{t("content.editTitleSaveHint")}</p>
           </div>
         ) : (
           <div className="space-y-1">
             <div
               className="cursor-text rounded-md px-1 py-1 hover:bg-muted"
               onDoubleClick={() => { setTitleDraft(item.title); setEditingTitle(true); }}
-              title="Double click to edit title"
+              title={t("content.editTitleHint")}
             >
               <p className="font-medium">{item.title}</p>
             </div>
@@ -163,10 +165,10 @@ function SortableRow({ item, ...h }: { item: BackendContentItem } & RowHandlers)
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="post">Post</SelectItem>
-                <SelectItem value="video">Video</SelectItem>
-                <SelectItem value="reel">Reel</SelectItem>
-                <SelectItem value="carousel">Carousel</SelectItem>
+                <SelectItem value="post">{t("type.post")}</SelectItem>
+                <SelectItem value="video">{t("type.video")}</SelectItem>
+                <SelectItem value="reel">{t("type.reel")}</SelectItem>
+                <SelectItem value="carousel">{t("type.carousel")}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -187,7 +189,7 @@ function SortableRow({ item, ...h }: { item: BackendContentItem } & RowHandlers)
           <PopoverTrigger asChild>
             <button type="button" className="flex flex-wrap gap-1 rounded-md px-1 py-1 hover:bg-muted">
               {item.platforms.length === 0 ? (
-                <span className="text-xs text-muted-foreground">None</span>
+                <span className="text-xs text-muted-foreground">{t("content.none")}</span>
               ) : (
                 item.platforms.map((p) => <Badge key={p} variant="outline" className="text-xs">{p}</Badge>)
               )}
@@ -223,14 +225,14 @@ function SortableRow({ item, ...h }: { item: BackendContentItem } & RowHandlers)
           }}
         >
           <SelectTrigger className="w-[160px]">
-            <SelectValue>{STATUS_LABELS[item.status] ?? item.status}</SelectValue>
+            <SelectValue>{t(`status.${item.status}`)}</SelectValue>
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="planned">Planned</SelectItem>
-            <SelectItem value="in_progress">In Progress</SelectItem>
-            <SelectItem value="review">Review</SelectItem>
-            <SelectItem value="done">Done</SelectItem>
-            <SelectItem value="published">Published</SelectItem>
+            <SelectItem value="planned">{t("status.planned")}</SelectItem>
+            <SelectItem value="in_progress">{t("status.in_progress")}</SelectItem>
+            <SelectItem value="review">{t("status.review")}</SelectItem>
+            <SelectItem value="done">{t("status.done")}</SelectItem>
+            <SelectItem value="published">{t("status.published")}</SelectItem>
           </SelectContent>
         </Select>
       </td>
@@ -252,7 +254,7 @@ function SortableRow({ item, ...h }: { item: BackendContentItem } & RowHandlers)
                     <span className="truncate text-sm">{currentAssignee.name}</span>
                   </>
                 ) : (
-                  <span className="text-sm text-muted-foreground">Unassigned</span>
+                  <span className="text-sm text-muted-foreground">{t("content.unassigned")}</span>
                 )}
               </div>
             </SelectTrigger>
@@ -270,7 +272,7 @@ function SortableRow({ item, ...h }: { item: BackendContentItem } & RowHandlers)
         ) : (
           <div className="flex items-center gap-2">
             {item.assignedTo && <UserAvatar user={item.assignedTo} size="sm" />}
-            <span className="text-sm">{item.assignedTo?.name ?? "Unassigned"}</span>
+            <span className="text-sm">{item.assignedTo?.name ?? t("content.unassigned")}</span>
           </div>
         )}
       </td>
@@ -284,12 +286,12 @@ function SortableRow({ item, ...h }: { item: BackendContentItem } & RowHandlers)
           }}
         >
           <SelectTrigger className="w-[120px]">
-            <SelectValue>{PRIORITY_LABELS[item.priority] ?? item.priority}</SelectValue>
+            <SelectValue>{t(`priority.${item.priority}`)}</SelectValue>
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="low">Low</SelectItem>
-            <SelectItem value="medium">Medium</SelectItem>
-            <SelectItem value="high">High</SelectItem>
+            <SelectItem value="low">{t("priority.low")}</SelectItem>
+            <SelectItem value="medium">{t("priority.medium")}</SelectItem>
+            <SelectItem value="high">{t("priority.high")}</SelectItem>
           </SelectContent>
         </Select>
       </td>
@@ -312,7 +314,7 @@ function SortableRow({ item, ...h }: { item: BackendContentItem } & RowHandlers)
         <div className="flex items-center gap-2">
           <button
             type="button"
-            aria-label="View details"
+            aria-label={t("common.viewDetails")}
             className="text-muted-foreground hover:text-foreground"
             onClick={() => h.onOpenDetails(item)}
           >
@@ -321,7 +323,7 @@ function SortableRow({ item, ...h }: { item: BackendContentItem } & RowHandlers)
           {h.canManageContent && (
             <button
               type="button"
-              aria-label="Delete"
+              aria-label={t("common.delete")}
               className="text-muted-foreground hover:text-destructive"
               onClick={() => h.onDelete(item.id)}
             >
@@ -382,6 +384,7 @@ export function ContentTable({
   onReorder,
 }: ContentTableProps) {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const t = useTranslation();
 
   const currentUser = useCurrentUser();
   const canManageContent = currentUser?.role === "admin" || currentUser?.role === "manager";
@@ -428,9 +431,9 @@ export function ContentTable({
   if (contentItems.length === 0) {
     return (
       <div className="rounded-xl border bg-background p-10 text-center shadow-sm">
-        <h3 className="font-semibold">No content found</h3>
+        <h3 className="font-semibold">{t("content.noContent")}</h3>
         <p className="mt-1 text-sm text-muted-foreground">
-          Create your first content item to start tracking execution.
+          {t("content.noContentDesc")}
         </p>
       </div>
     );
@@ -456,13 +459,13 @@ export function ContentTable({
       {selectedIds.length > 0 && (
         <div className="flex flex-wrap items-center justify-between gap-4 border-b bg-muted/40 px-4 py-3">
           <div className="flex items-center gap-3">
-            <p className="text-sm font-medium">{selectedIds.length} selected</p>
+            <p className="text-sm font-medium">{t("content.selected", { count: selectedIds.length })}</p>
             <button
               type="button"
               className="text-sm text-muted-foreground hover:text-foreground"
               onClick={() => setSelectedIds([])}
             >
-              Clear selection
+              {t("content.clearSelection")}
             </button>
           </div>
 
@@ -474,14 +477,14 @@ export function ContentTable({
               }}
             >
               <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Bulk Status" />
+                <SelectValue placeholder={t("content.bulkStatus")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="planned">Planned</SelectItem>
-                <SelectItem value="in_progress">In Progress</SelectItem>
-                <SelectItem value="review">Review</SelectItem>
-                <SelectItem value="done">Done</SelectItem>
-                <SelectItem value="published">Published</SelectItem>
+                <SelectItem value="planned">{t("status.planned")}</SelectItem>
+                <SelectItem value="in_progress">{t("status.in_progress")}</SelectItem>
+                <SelectItem value="review">{t("status.review")}</SelectItem>
+                <SelectItem value="done">{t("status.done")}</SelectItem>
+                <SelectItem value="published">{t("status.published")}</SelectItem>
               </SelectContent>
             </Select>
 
@@ -493,7 +496,7 @@ export function ContentTable({
                 }}
               >
                 <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Assign User" />
+                  <SelectValue placeholder={t("content.assignUser")} />
                 </SelectTrigger>
                 <SelectContent>
                   {users.map((u) => (
@@ -511,7 +514,7 @@ export function ContentTable({
                   setSelectedIds([]);
                 }}
               >
-                Delete Selected
+                {t("content.deleteSelected")}
               </Button>
             )}
           </div>
@@ -528,8 +531,18 @@ export function ContentTable({
                 <th className="w-12 px-4 py-3">
                   <Checkbox checked={allSelected} onCheckedChange={toggleSelectAll} />
                 </th>
-                {["Title", "Product", "Platforms", "Status", "Assigned To", "Priority", "Scheduled", "Last Updated", ""].map((h) => (
-                  <th key={h} className="px-4 py-3 text-left text-xs font-medium uppercase text-muted-foreground">
+                {[
+                  t("content.col.title"),
+                  t("content.col.product"),
+                  t("content.col.platforms"),
+                  t("content.col.status"),
+                  t("content.col.assignedTo"),
+                  t("content.col.priority"),
+                  t("content.col.scheduled"),
+                  t("content.col.lastUpdated"),
+                  "",
+                ].map((h, i) => (
+                  <th key={h || i} className="px-4 py-3 text-left text-xs font-medium uppercase text-muted-foreground">
                     {h}
                   </th>
                 ))}
@@ -560,8 +573,11 @@ export function ContentTable({
       {/* Pagination */}
       <div className="flex flex-wrap items-center justify-between gap-4 border-t px-4 py-3">
         <p className="text-sm text-muted-foreground">
-          Showing {total === 0 ? 0 : (page - 1) * pageSize + 1}–
-          {Math.min(page * pageSize, total)} of {total}
+          {t("content.showing", {
+            from: total === 0 ? 0 : (page - 1) * pageSize + 1,
+            to: Math.min(page * pageSize, total),
+            total,
+          })}
         </p>
 
         <div className="flex items-center gap-3">
@@ -570,22 +586,22 @@ export function ContentTable({
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="5">5 / page</SelectItem>
-              <SelectItem value="10">10 / page</SelectItem>
-              <SelectItem value="20">20 / page</SelectItem>
+              <SelectItem value="5">{t("content.perPage", { size: 5 })}</SelectItem>
+              <SelectItem value="10">{t("content.perPage", { size: 10 })}</SelectItem>
+              <SelectItem value="20">{t("content.perPage", { size: 20 })}</SelectItem>
             </SelectContent>
           </Select>
 
           <Button variant="outline" disabled={page === 1} onClick={() => handlePageChange(page - 1)}>
-            Previous
+            {t("content.previous")}
           </Button>
 
           <span className="text-sm text-muted-foreground">
-            Page {page} of {Math.max(1, totalPages)}
+            {t("content.pageOf", { page, totalPages: Math.max(1, totalPages) })}
           </span>
 
           <Button variant="outline" disabled={page >= totalPages} onClick={() => handlePageChange(page + 1)}>
-            Next
+            {t("content.next")}
           </Button>
         </div>
       </div>

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 
+import { useTranslation } from "@/providers/language-provider";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -40,9 +41,10 @@ onCreateContent: (content: {
 }) => void;};
 
 export function AddContentDialog({ onCreateContent }: AddContentDialogProps) {
+  const t = useTranslation();
   const [open, setOpen] = useState(false);
   const { data: products = [] } = useProducts();
-  const { data: users = [] } = useUsers(); 
+  const { data: users = [] } = useUsers();
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -119,20 +121,20 @@ export function AddContentDialog({ onCreateContent }: AddContentDialogProps) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>Add Content</Button>
+        <Button>{t("content.addContent")}</Button>
       </DialogTrigger>
 
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-[620px]">
         <DialogHeader>
-          <DialogTitle>Add New Content</DialogTitle>
+          <DialogTitle>{t("content.addNewContent")}</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-5 py-2">
           <div className="space-y-2">
-            <label htmlFor="add-content-title" className="text-sm font-medium">Title</label>
+            <label htmlFor="add-content-title" className="text-sm font-medium">{t("content.col.title")}</label>
             <Input
               id="add-content-title"
-              placeholder="Enter content title"
+              placeholder={t("content.enterTitle")}
               value={formData.title}
               onChange={(event) =>
                 setFormData({ ...formData, title: event.target.value })
@@ -141,10 +143,10 @@ export function AddContentDialog({ onCreateContent }: AddContentDialogProps) {
           </div>
 
           <div className="space-y-2">
-            <label htmlFor="add-content-description" className="text-sm font-medium">Description</label>
+            <label htmlFor="add-content-description" className="text-sm font-medium">{t("content.description_label")}</label>
             <Textarea
               id="add-content-description"
-              placeholder="Write content description..."
+              placeholder={t("content.writeDescription")}
               value={formData.description}
               onChange={(event) =>
                 setFormData({ ...formData, description: event.target.value })
@@ -154,7 +156,7 @@ export function AddContentDialog({ onCreateContent }: AddContentDialogProps) {
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
-              <label className="text-sm font-medium">Type</label>
+              <label className="text-sm font-medium">{t("content.selectType")}</label>
               <Select
                 value={formData.type}
                 onValueChange={(value) =>
@@ -162,19 +164,19 @@ export function AddContentDialog({ onCreateContent }: AddContentDialogProps) {
                 }
               >
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select type" />
+                  <SelectValue placeholder={t("content.selectType")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="post">Post</SelectItem>
-                  <SelectItem value="video">Video</SelectItem>
-                  <SelectItem value="reel">Reel</SelectItem>
-                  <SelectItem value="carousel">Carousel</SelectItem>
+                  <SelectItem value="post">{t("type.post")}</SelectItem>
+                  <SelectItem value="video">{t("type.video")}</SelectItem>
+                  <SelectItem value="reel">{t("type.reel")}</SelectItem>
+                  <SelectItem value="carousel">{t("type.carousel")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium">Status</label>
+              <label className="text-sm font-medium">{t("content.col.status")}</label>
               <Select
                 value={formData.status}
                 onValueChange={(value) =>
@@ -182,14 +184,14 @@ export function AddContentDialog({ onCreateContent }: AddContentDialogProps) {
                 }
               >
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select status" />
+                  <SelectValue placeholder={t("content.selectStatus")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="planned">Planned</SelectItem>
-                  <SelectItem value="in_progress">In Progress</SelectItem>
-                  <SelectItem value="review">Review</SelectItem>
-                  <SelectItem value="done">Done</SelectItem>
-                  <SelectItem value="published">Published</SelectItem>
+                  <SelectItem value="planned">{t("status.planned")}</SelectItem>
+                  <SelectItem value="in_progress">{t("status.in_progress")}</SelectItem>
+                  <SelectItem value="review">{t("status.review")}</SelectItem>
+                  <SelectItem value="done">{t("status.done")}</SelectItem>
+                  <SelectItem value="published">{t("status.published")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -197,7 +199,7 @@ export function AddContentDialog({ onCreateContent }: AddContentDialogProps) {
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
-              <label className="text-sm font-medium">Product</label>
+              <label className="text-sm font-medium">{t("content.col.product")}</label>
               <Select
                 value={formData.productId}
                 onValueChange={(value) =>
@@ -205,7 +207,7 @@ export function AddContentDialog({ onCreateContent }: AddContentDialogProps) {
                 }
               >
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select product" />
+                  <SelectValue placeholder={t("content.selectProduct")} />
                 </SelectTrigger>
                 <SelectContent>
                   {products.map((product) => (
@@ -218,7 +220,7 @@ export function AddContentDialog({ onCreateContent }: AddContentDialogProps) {
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium">Priority</label>
+              <label className="text-sm font-medium">{t("content.col.priority")}</label>
               <Select
                 value={formData.priority}
                 onValueChange={(value) =>
@@ -226,12 +228,12 @@ export function AddContentDialog({ onCreateContent }: AddContentDialogProps) {
                 }
               >
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select priority" />
+                  <SelectValue placeholder={t("content.selectPriority")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="low">Low</SelectItem>
-                  <SelectItem value="medium">Medium</SelectItem>
-                  <SelectItem value="high">High</SelectItem>
+                  <SelectItem value="low">{t("priority.low")}</SelectItem>
+                  <SelectItem value="medium">{t("priority.medium")}</SelectItem>
+                  <SelectItem value="high">{t("priority.high")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -239,7 +241,7 @@ export function AddContentDialog({ onCreateContent }: AddContentDialogProps) {
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
-              <label className="text-sm font-medium">Assigned To</label>
+              <label className="text-sm font-medium">{t("content.col.assignedTo")}</label>
               <Select
                 value={formData.assignedTo}
                 onValueChange={(value) =>
@@ -247,7 +249,7 @@ export function AddContentDialog({ onCreateContent }: AddContentDialogProps) {
                 }
               >
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select user" />
+                  <SelectValue placeholder={t("content.selectUser")} />
                 </SelectTrigger>
                 <SelectContent>
                   {users.map((user) => (
@@ -260,7 +262,7 @@ export function AddContentDialog({ onCreateContent }: AddContentDialogProps) {
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="add-content-date" className="text-sm font-medium">Scheduled Date</label>
+              <label htmlFor="add-content-date" className="text-sm font-medium">{t("content.scheduledDate")}</label>
               <Input
                 id="add-content-date"
                 type="date"
@@ -276,7 +278,7 @@ export function AddContentDialog({ onCreateContent }: AddContentDialogProps) {
           </div>
 
           <div className="space-y-3">
-            <label className="text-sm font-medium">Platforms</label>
+            <label className="text-sm font-medium">{t("common.platforms")}</label>
 
             <div className="grid gap-3 rounded-lg border p-4 sm:grid-cols-2">
               {PLATFORMS.map((platform) => (
@@ -296,7 +298,7 @@ export function AddContentDialog({ onCreateContent }: AddContentDialogProps) {
 
           <div className="flex justify-end gap-3 pt-2">
             <Button type="button" variant="outline" onClick={handleCancel}>
-              Cancel
+              {t("common.cancel")}
             </Button>
 
             <Button
@@ -304,7 +306,7 @@ export function AddContentDialog({ onCreateContent }: AddContentDialogProps) {
               onClick={handleCreateContent}
               disabled={!isFormValid}
             >
-              Create Content
+              {t("content.createContent")}
             </Button>
           </div>
         </div>

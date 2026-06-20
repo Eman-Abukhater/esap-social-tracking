@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { toast } from "sonner";
+import { useTranslation } from "@/providers/language-provider";
 
 import { AddContentDialog } from "@/components/content/add-content-dialog";
 import { ContentDetailSheet } from "@/components/content/content-detail-sheet";
@@ -26,6 +27,7 @@ import type { BackendContentItem, ContentItem, Platform } from "@/lib/types";
 const EMPTY_PAGE = { items: [], total: 0, page: 1, pageSize: 10, totalPages: 0 };
 
 export default function ContentPage() {
+  const t = useTranslation();
   const [filters, setFilters] = useState<ContentFiltersState>({
     search: "",
     productId: "all",
@@ -74,10 +76,10 @@ export default function ContentPage() {
       },
       {
         onSuccess: () => {
-          toast.success("Status updated successfully");
+          toast.success(t("content.toast.statusUpdated"));
         },
         onError: () => {
-          toast.error("Failed to update status");
+          toast.error(t("content.toast.statusFailed"));
         },
       }
     );
@@ -93,10 +95,10 @@ export default function ContentPage() {
       },
       {
         onSuccess: () => {
-          toast.success("Title updated successfully");
+          toast.success(t("content.toast.titleUpdated"));
         },
         onError: () => {
-          toast.error("Failed to update title");
+          toast.error(t("content.toast.titleFailed"));
         },
       }
     );
@@ -109,8 +111,8 @@ export default function ContentPage() {
     updateContentMutation.mutate(
       { contentId, data: { priority } },
       {
-        onSuccess: () => toast.success("Priority updated"),
-        onError: () => toast.error("Failed to update priority"),
+        onSuccess: () => toast.success(t("content.toast.priorityUpdated")),
+        onError: () => toast.error(t("content.toast.priorityFailed")),
       }
     );
   }
@@ -119,8 +121,8 @@ export default function ContentPage() {
     updateContentMutation.mutate(
       { contentId, data: { type } },
       {
-        onSuccess: () => toast.success("Type updated"),
-        onError: () => toast.error("Failed to update type"),
+        onSuccess: () => toast.success(t("content.toast.typeUpdated")),
+        onError: () => toast.error(t("content.toast.typeFailed")),
       }
     );
   }
@@ -129,8 +131,8 @@ export default function ContentPage() {
     updateContentMutation.mutate(
       { contentId, data: { scheduledDate: date } },
       {
-        onSuccess: () => toast.success("Date updated"),
-        onError: () => toast.error("Failed to update date"),
+        onSuccess: () => toast.success(t("content.toast.dateUpdated")),
+        onError: () => toast.error(t("content.toast.dateFailed")),
       }
     );
   }
@@ -139,8 +141,8 @@ export default function ContentPage() {
     updateContentMutation.mutate(
       { contentId, data: { platforms } },
       {
-        onSuccess: () => toast.success("Platforms updated"),
-        onError: () => toast.error("Failed to update platforms"),
+        onSuccess: () => toast.success(t("content.toast.platformsUpdated")),
+        onError: () => toast.error(t("content.toast.platformsFailed")),
       }
     );
   }
@@ -150,10 +152,10 @@ export default function ContentPage() {
   ) {
     createContentMutation.mutate(newContent, {
       onSuccess: () => {
-        toast.success("Content created successfully");
+        toast.success(t("content.toast.created"));
       },
       onError: () => {
-        toast.error("Failed to create content");
+        toast.error(t("content.toast.createFailed"));
       },
     });
   }
@@ -169,10 +171,10 @@ export default function ContentPage() {
       },
       {
         onSuccess: () => {
-          toast.success("Bulk status updated");
+          toast.success(t("content.toast.bulkStatusUpdated"));
         },
         onError: () => {
-          toast.error("Failed to update selected items");
+          toast.error(t("content.toast.bulkStatusFailed"));
         },
       }
     );
@@ -182,8 +184,8 @@ export default function ContentPage() {
     assignMutation.mutate(
       { contentId, assignedToId },
       {
-        onSuccess: () => toast.success("Assignee updated"),
-        onError: () => toast.error("Failed to update assignee"),
+        onSuccess: () => toast.success(t("content.toast.assigneeUpdated")),
+        onError: () => toast.error(t("content.toast.assigneeFailed")),
       }
     );
   }
@@ -196,10 +198,10 @@ export default function ContentPage() {
       },
       {
         onSuccess: () => {
-          toast.success("Selected items assigned");
+          toast.success(t("content.toast.bulkAssigned"));
         },
         onError: () => {
-          toast.error("Failed to assign selected items");
+          toast.error(t("content.toast.bulkAssignFailed"));
         },
       }
     );
@@ -209,7 +211,7 @@ export default function ContentPage() {
     updateContentMutation.mutate(
       { contentId, data: { order: newOrder } },
       {
-        onError: () => toast.error("Failed to save order"),
+        onError: () => toast.error(t("content.toast.orderFailed")),
       }
     );
   }
@@ -226,10 +228,10 @@ export default function ContentPage() {
       },
       {
         onSuccess: () => {
-          toast.success("Selected items deleted");
+          toast.success(t("content.toast.deleted"));
         },
         onError: () => {
-          toast.error("Failed to delete selected items");
+          toast.error(t("content.toast.deleteFailed"));
         },
       }
     );
@@ -239,10 +241,10 @@ export default function ContentPage() {
     <div className="space-y-6">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold">Content</h1>
+          <h1 className="text-3xl font-bold">{t("content.title")}</h1>
 
           <p className="text-muted-foreground">
-            Manage and track all social media content.
+            {t("content.description")}
           </p>
         </div>
 
@@ -253,13 +255,13 @@ export default function ContentPage() {
 
       {isLoading && (
         <div className="rounded-xl border bg-background p-6 text-sm text-muted-foreground">
-          Loading content items...
+          {t("content.loading")}
         </div>
       )}
 
       {isError && (
         <div role="alert" className="rounded-xl border bg-background p-6 text-sm text-destructive">
-          Failed to load content items.
+          {t("content.error")}
         </div>
       )}
 

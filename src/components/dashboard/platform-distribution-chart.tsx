@@ -9,6 +9,7 @@ import {
 } from "recharts";
 
 import type { DashboardStats } from "@/lib/types";
+import { useTranslation } from "@/providers/language-provider";
 
 type PlatformDistributionChartProps = {
   data: DashboardStats["platformDistribution"];
@@ -17,6 +18,7 @@ type PlatformDistributionChartProps = {
 export function PlatformDistributionChart({
   data,
 }: PlatformDistributionChartProps) {
+  const t = useTranslation();
   const chartData = data
     .filter((entry) => entry.total > 0)
     .map((entry) => ({
@@ -28,11 +30,11 @@ export function PlatformDistributionChart({
     <div className="rounded-xl border bg-background p-6 shadow-sm">
       <div className="mb-6">
         <h2 className="text-lg font-semibold">
-          Platform Distribution
+          {t("dashboard.platformDistribution")}
         </h2>
 
         <p className="text-sm text-muted-foreground">
-          Content distribution across social platforms
+          {t("dashboard.platformDistributionDesc")}
         </p>
       </div>
 

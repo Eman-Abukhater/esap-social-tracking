@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslation } from "@/providers/language-provider";
 import { TeamList } from "@/components/team/team-list";
 import { TeamWorkload } from "@/components/team/team-workload";
 import { useContentItems } from "@/hooks/use-content-items";
@@ -16,6 +17,7 @@ const ALL_FILTERS = {
 } as const;
 
 export default function TeamPage() {
+  const t = useTranslation();
   const { data: users = [], isLoading: isUsersLoading, isError: isUsersError } = useUsers();
   const { data: contentItems = [], isLoading: isItemsLoading } = useContentItems(ALL_FILTERS);
 
@@ -25,21 +27,21 @@ export default function TeamPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold">Team</h1>
+        <h1 className="text-3xl font-bold">{t("team.title")}</h1>
         <p className="text-muted-foreground">
-          View team members, roles, and assignment workload.
+          {t("team.description")}
         </p>
       </div>
 
       {isLoading && (
         <div className="rounded-xl border bg-background p-6 text-sm text-muted-foreground">
-          Loading team...
+          {t("team.loading")}
         </div>
       )}
 
       {isError && (
         <div role="alert" className="rounded-xl border bg-background p-6 text-sm text-destructive">
-          Failed to load team members.
+          {t("team.error")}
         </div>
       )}
 

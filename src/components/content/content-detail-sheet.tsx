@@ -4,6 +4,8 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { CalendarDays, Link2, Tag, FileText, StickyNote, User } from "lucide-react";
 
+import { useTranslation } from "@/providers/language-provider";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -43,30 +45,30 @@ const PRIORITY_STYLES: Record<string, { badge: string }> = {
   high:   { badge: "border-[var(--priority-badge-high-border)] bg-[var(--priority-badge-high-bg)] text-[var(--priority-badge-high-fg)]" },
 };
 
-const ACTION_LABELS: Record<string, string> = {
-  created: "created",
-  updated: "updated",
-  status_changed: "changed status",
-  assigned: "reassigned",
-  deleted: "deleted",
+const ACTION_KEYS: Record<string, string> = {
+  created: "content.action.created",
+  updated: "content.action.updated",
+  status_changed: "content.action.statusChanged",
+  assigned: "content.action.assigned",
+  deleted: "content.action.deleted",
 };
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-function formatDate(iso?: string | null) {
-  if (!iso) return "Not set";
+function formatDate(iso: string | null | undefined, notSetLabel: string) {
+  if (!iso) return notSetLabel;
   return new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 }
 
-function timeAgo(iso: string) {
+function timeAgo(iso: string, t: (key: string, params?: Record<string, string | number>) => string) {
   const diff = Date.now() - new Date(iso).getTime();
   const mins = Math.floor(diff / 60_000);
-  if (mins < 1) return "just now";
-  if (mins < 60) return `${mins}m ago`;
+  if (mins < 1) return t("content.time.justNow");
+  if (mins < 60) return t("content.time.minutesAgo", { mins });
   const hours = Math.floor(mins / 60);
-  if (hours < 24) return `${hours}h ago`;
+  if (hours < 24) return t("content.time.hoursAgo", { hours });
   const days = Math.floor(hours / 24);
-  return `${days}d ago`;
+  return t("content.time.daysAgo", { days });
 }
 
 function parseTags(input: string): string[] {
@@ -86,7 +88,8 @@ function useDetailForm(item: BackendContentItem | null) {
 
 // ── Activity timeline ─────────────────────────────────────────────────────────
 
-function ActivityTimeline({ logs, isLoading }: { logs: BackendActivityLog[]; isLoading: boolean }) {
+function ActivityTimeline({ logs, isLoading }: { logs: BackendActivityLog[]; isLoading: boolean; }) {
+  const t = useTranslation();
   if (isLoading) {
     return (
       <div className="space-y-3 pt-2">
@@ -109,8 +112,8 @@ function ActivityTimeline({ logs, isLoading }: { logs: BackendActivityLog[]; isL
         <div className="rounded-full bg-muted p-3">
           <FileText className="h-5 w-5 text-muted-foreground" />
         </div>
-        <p className="text-sm font-medium">No activity yet</p>
-        <p className="text-xs text-muted-foreground">Changes will appear here.</p>
+        <p className="text-sm font-medium">{t("content.noActivity")}</p>
+        <p className="text-xs text-muted-foreground">{t("content.noActivityDesc")}</p>
       </div>
     );
   }
@@ -139,9 +142,9 @@ function ActivityTimeline({ logs, isLoading }: { logs: BackendActivityLog[]; isL
                 <div className="flex items-baseline justify-between gap-2">
                   <p className="text-sm">
                     <span className="font-medium">{log.changedBy?.name ?? "Someone"}</span>
-                    {" "}<span className="text-muted-foreground">{ACTION_LABELS[log.action] ?? log.action} this</span>
+                    {" "}<span className="text-muted-foreground">{ACTION_KEYS[log.action] ? t(ACTION_KEYS[log.action]) : log.action} this</span>
                   </p>
-                  <span className="shrink-0 text-xs text-muted-foreground">{timeAgo(log.timestamp)}</span>
+                  <span className="shrink-0 text-xs text-muted-foreground">{timeAgo(log.timestamp, t)}</span>
                 </div>
 
                 {fields.length > 0 && log.action !== "deleted" && (
@@ -168,6 +171,7 @@ function ActivityTimeline({ logs, isLoading }: { logs: BackendActivityLog[]; isL
 // ── Main component ────────────────────────────────────────────────────────────
 
 export function ContentDetailSheet({ item, open, onOpenChange }: Props) {
+  const t = useTranslation();
   const { description, setDescription, notes, setNotes, mediaUrl, setMediaUrl, tagsInput, setTagsInput } =
     useDetailForm(item);
 
@@ -213,7 +217,7 @@ export function ContentDetailSheet({ item, open, onOpenChange }: Props) {
             style={{ backgroundColor: item?.product?.color ?? "#94a3b8" }}
           />
 
-          <SheetTitle className="sr-only">{item?.title ?? "Content details"}</SheetTitle>
+          <SheetTitle className="sr-only">{item?.title ?? t("content.contentDetails")}</SheetTitle>
 
           {/* Breadcrumb */}
           <div className="mb-2 flex items-center gap-1.5 pl-1">
@@ -253,13 +257,13 @@ export function ContentDetailSheet({ item, open, onOpenChange }: Props) {
             ) : (
               <span className="flex items-center gap-1.5">
                 <User className="h-3.5 w-3.5" />
-                Unassigned
+                {t("content.unassigned")}
               </span>
             )}
 
             <span className="flex items-center gap-1.5">
               <CalendarDays className="h-3.5 w-3.5" />
-              {formatDate(item?.scheduledDate)}
+              {formatDate(item?.scheduledDate, t("content.notSet"))}
             </span>
           </div>
         </div>
@@ -272,13 +276,13 @@ export function ContentDetailSheet({ item, open, onOpenChange }: Props) {
                 value="details"
                 className="h-8 rounded-none border-b-2 border-transparent px-0 text-sm font-medium text-muted-foreground data-[state=active]:border-foreground data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none"
               >
-                Details
+                {t("content.details")}
               </TabsTrigger>
               <TabsTrigger
                 value="activity"
                 className="h-8 rounded-none border-b-2 border-transparent px-0 text-sm font-medium text-muted-foreground data-[state=active]:border-foreground data-[state=active]:bg-transparent data-[state=active]:text-foreground data-[state=active]:shadow-none"
               >
-                Activity
+                {t("content.activity")}
                 {activityLogs.length > 0 && (
                   <span className="ml-1.5 rounded-full bg-muted px-1.5 py-0.5 text-xs font-medium tabular-nums">
                     {activityLogs.length}
@@ -297,13 +301,13 @@ export function ContentDetailSheet({ item, open, onOpenChange }: Props) {
                 <div className="space-y-1.5">
                   <label htmlFor="detail-description" className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                     <FileText className="h-3.5 w-3.5" />
-                    Description
+                    {t("content.description_label")}
                   </label>
                   <Textarea
                     id="detail-description"
                     className="resize-none bg-muted/30 leading-relaxed focus:bg-background"
                     rows={4}
-                    placeholder="Add a description…"
+                    placeholder={t("content.addDescription")}
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                   />
@@ -313,13 +317,13 @@ export function ContentDetailSheet({ item, open, onOpenChange }: Props) {
                 <div className="space-y-1.5">
                   <label htmlFor="detail-notes" className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                     <StickyNote className="h-3.5 w-3.5" />
-                    Internal Notes
+                    {t("content.internalNotes")}
                   </label>
                   <Textarea
                     id="detail-notes"
                     className="resize-none bg-muted/30 leading-relaxed focus:bg-background"
                     rows={3}
-                    placeholder="Internal notes visible to the team…"
+                    placeholder={t("content.internalNotesPlaceholder")}
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
                   />
@@ -329,14 +333,14 @@ export function ContentDetailSheet({ item, open, onOpenChange }: Props) {
                 <div className="space-y-1.5">
                   <label htmlFor="detail-media-url" className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                     <Link2 className="h-3.5 w-3.5" />
-                    Media URL
+                    {t("content.mediaUrl")}
                   </label>
                   <div className="flex gap-2">
                     <Input
                       id="detail-media-url"
                       type="url"
                       className="min-w-0 flex-1 bg-muted/30 focus:bg-background"
-                      placeholder="https://…"
+                      placeholder={t("content.mediaUrlPlaceholder")}
                       value={mediaUrl}
                       onChange={(e) => setMediaUrl(e.target.value)}
                     />
@@ -345,7 +349,7 @@ export function ContentDetailSheet({ item, open, onOpenChange }: Props) {
                         href={mediaUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        aria-label="Open media link"
+                        aria-label={t("content.openMediaLink")}
                         className="flex items-center rounded-lg border bg-muted/30 px-2.5 text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
                       >
                         <Link2 className="h-4 w-4" />
@@ -358,7 +362,7 @@ export function ContentDetailSheet({ item, open, onOpenChange }: Props) {
                 <div className="space-y-1.5">
                   <label htmlFor="detail-tags" className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                     <Tag className="h-3.5 w-3.5" />
-                    Tags
+                    {t("content.tags")}
                   </label>
 
                   {liveTags.length > 0 && (
@@ -378,7 +382,7 @@ export function ContentDetailSheet({ item, open, onOpenChange }: Props) {
                     id="detail-tags"
                     type="text"
                     className="bg-muted/30 focus:bg-background"
-                    placeholder="brand, launch, q2 — comma-separated"
+                    placeholder={t("content.tagsPlaceholder")}
                     value={tagsInput}
                     onChange={(e) => setTagsInput(e.target.value)}
                   />
@@ -395,7 +399,7 @@ export function ContentDetailSheet({ item, open, onOpenChange }: Props) {
                 className="w-full"
                 size="sm"
               >
-                {updateMutation.isPending ? "Saving…" : "Save Changes"}
+                {updateMutation.isPending ? t("content.saving") : t("content.saveChanges")}
               </Button>
             </div>
           </TabsContent>

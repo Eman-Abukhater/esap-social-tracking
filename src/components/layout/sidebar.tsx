@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import {
   Activity,
   FileText,
+  Languages,
   LayoutDashboard,
   LogOut,
   Moon,
@@ -14,45 +15,57 @@ import {
 } from "lucide-react";
 
 import { useAuth } from "@/providers/auth-provider";
+import { useLanguage, useTranslation } from "@/providers/language-provider";
 import { useTheme } from "@/providers/theme-provider";
 
-const navigationItems = [
-  { title: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { title: "Content", href: "/content", icon: FileText },
-  { title: "Products", href: "/products", icon: Package },
-  { title: "Activity", href: "/activity", icon: Activity },
-  { title: "Team", href: "/team", icon: Users },
+const navigationKeys = [
+  { key: "nav.dashboard", href: "/dashboard", icon: LayoutDashboard },
+  { key: "nav.content", href: "/content", icon: FileText },
+  { key: "nav.products", href: "/products", icon: Package },
+  { key: "nav.activity", href: "/activity", icon: Activity },
+  { key: "nav.team", href: "/team", icon: Users },
 ];
 
 export function Sidebar() {
   const pathname = usePathname();
   const { currentUser, logout } = useAuth();
   const { toggleTheme } = useTheme();
+  const { toggleLanguage } = useLanguage();
+  const t = useTranslation();
 
   return (
-    <aside className="fixed left-0 top-0 z-40 flex h-screen w-64 flex-col border-r bg-background px-4 py-6">
+    <aside className="fixed inset-y-0 start-0 z-40 flex w-64 flex-col border-e bg-background px-4 py-6">
       <div className="mb-8 flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-bold">ESAP</h1>
-          <p className="text-sm text-muted-foreground">Social Tracking</p>
+          <h1 className="text-xl font-bold">{t("app.name")}</h1>
+          <p className="text-sm text-muted-foreground">{t("app.subtitle")}</p>
         </div>
 
-        {/* Sun shown in dark mode (click → switch to light); Moon shown in light mode (click → switch to dark) */}
-        <button
-          type="button"
-          onClick={toggleTheme}
-          title="Toggle theme"
-          className="rounded-md p-2 text-muted-foreground transition hover:bg-muted hover:text-foreground"
-        >
-          <Sun className="h-4 w-4 hidden dark:block" />
-          <Moon className="h-4 w-4 dark:hidden" />
-        </button>
+        <div className="flex items-center gap-1">
+          <button
+            type="button"
+            onClick={toggleLanguage}
+            title={t("nav.toggleLanguage")}
+            className="rounded-md p-2 text-xs font-medium text-muted-foreground transition hover:bg-muted hover:text-foreground"
+          >
+            <Languages className="h-4 w-4" />
+          </button>
+
+          <button
+            type="button"
+            onClick={toggleTheme}
+            title={t("nav.toggleTheme")}
+            className="rounded-md p-2 text-muted-foreground transition hover:bg-muted hover:text-foreground"
+          >
+            <Sun className="h-4 w-4 hidden dark:block" />
+            <Moon className="h-4 w-4 dark:hidden" />
+          </button>
+        </div>
       </div>
 
       <nav className="flex-1 space-y-1">
-        {navigationItems.map((item) => {
+        {navigationKeys.map((item) => {
           const Icon = item.icon;
-
           const isActive = pathname === item.href;
 
           return (
@@ -66,7 +79,7 @@ export function Sidebar() {
               }`}
             >
               <Icon className="h-4 w-4" />
-              {item.title}
+              {t(item.key)}
             </Link>
           );
         })}
@@ -84,7 +97,7 @@ export function Sidebar() {
           <button
             type="button"
             onClick={() => logout()}
-            title="Logout"
+            title={t("nav.logout")}
             className="rounded-md p-2 text-muted-foreground transition hover:bg-muted hover:text-foreground"
           >
             <LogOut className="h-4 w-4" />

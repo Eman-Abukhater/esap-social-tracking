@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslation } from "@/providers/language-provider";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -31,13 +32,14 @@ export function ContentFilters({
   filters,
   onFiltersChange,
 }: ContentFiltersProps) {
+  const t = useTranslation();
   const { data: products = [] } = useProducts();
   const { data: users = [] } = useUsers();
 
   return (
     <div className="grid gap-3 rounded-xl border bg-background p-4 shadow-sm md:grid-cols-4">
       <Input
-        placeholder="Search by title..."
+        placeholder={t("filters.searchByTitle")}
         value={filters.search}
         onChange={(event) =>
           onFiltersChange({
@@ -57,11 +59,11 @@ export function ContentFilters({
         }
       >
         <SelectTrigger>
-          <SelectValue placeholder="Product" />
+          <SelectValue placeholder={t("filters.product")} />
         </SelectTrigger>
 
         <SelectContent>
-          <SelectItem value="all">All Products</SelectItem>
+          <SelectItem value="all">{t("filters.allProducts")}</SelectItem>
           {products.map((product) => (
             <SelectItem key={product.id} value={product.id}>
               {product.name}
@@ -80,16 +82,16 @@ export function ContentFilters({
         }
       >
         <SelectTrigger>
-          <SelectValue placeholder="Status" />
+          <SelectValue placeholder={t("filters.status")} />
         </SelectTrigger>
 
         <SelectContent>
-          <SelectItem value="all">All Statuses</SelectItem>
-          <SelectItem value="planned">Planned</SelectItem>
-          <SelectItem value="in_progress">In Progress</SelectItem>
-          <SelectItem value="review">Review</SelectItem>
-          <SelectItem value="done">Done</SelectItem>
-          <SelectItem value="published">Published</SelectItem>
+          <SelectItem value="all">{t("filters.allStatuses")}</SelectItem>
+          <SelectItem value="planned">{t("status.planned")}</SelectItem>
+          <SelectItem value="in_progress">{t("status.in_progress")}</SelectItem>
+          <SelectItem value="review">{t("status.review")}</SelectItem>
+          <SelectItem value="done">{t("status.done")}</SelectItem>
+          <SelectItem value="published">{t("status.published")}</SelectItem>
         </SelectContent>
       </Select>
 
@@ -103,11 +105,11 @@ export function ContentFilters({
         }
       >
         <SelectTrigger>
-          <SelectValue placeholder="Platform" />
+          <SelectValue placeholder={t("filters.platform")} />
         </SelectTrigger>
 
         <SelectContent>
-          <SelectItem value="all">All Platforms</SelectItem>
+          <SelectItem value="all">{t("filters.allPlatforms")}</SelectItem>
           {PLATFORMS.map((platform) => (
             <SelectItem key={platform} value={platform}>
               {platform}
@@ -126,11 +128,11 @@ export function ContentFilters({
         }
       >
         <SelectTrigger>
-          <SelectValue placeholder="Assigned To" />
+          <SelectValue placeholder={t("filters.assignedTo")} />
         </SelectTrigger>
 
         <SelectContent>
-          <SelectItem value="all">All Assignees</SelectItem>
+          <SelectItem value="all">{t("filters.allAssignees")}</SelectItem>
           {users.map((user) => (
             <SelectItem key={user.id} value={user.id}>
               {user.name}
@@ -141,7 +143,7 @@ export function ContentFilters({
 
       <Input
         type="date"
-        aria-label="Scheduled from"
+        aria-label={t("filters.scheduledFrom")}
         value={filters.startDate}
         onChange={(event) =>
           onFiltersChange({
@@ -153,7 +155,7 @@ export function ContentFilters({
 
       <Input
         type="date"
-        aria-label="Scheduled to"
+        aria-label={t("filters.scheduledTo")}
         value={filters.endDate}
         onChange={(event) =>
           onFiltersChange({

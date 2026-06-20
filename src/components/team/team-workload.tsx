@@ -4,7 +4,8 @@ import { useMemo } from "react";
 import { Badge } from "@/components/ui/badge";
 import { UserAvatar } from "@/components/user-avatar";
 import type { BackendContentItem, ContentStatus, User } from "@/lib/types";
-import { STATUSES, STATUS_LABELS } from "@/lib/constants";
+import { STATUSES } from "@/lib/constants";
+import { useTranslation } from "@/providers/language-provider";
 
 type Props = {
   users: User[];
@@ -20,6 +21,7 @@ const STATUS_COLORS: Record<ContentStatus, string> = {
 };
 
 export function TeamWorkload({ users, contentItems }: Props) {
+  const t = useTranslation();
   const workloadByUser = useMemo(() => {
     const map = new Map<string, Record<ContentStatus, number>>();
 
@@ -43,8 +45,8 @@ export function TeamWorkload({ users, contentItems }: Props) {
   return (
     <div className="rounded-xl border bg-background shadow-sm">
       <div className="border-b px-6 py-4">
-        <h2 className="font-semibold">Workload</h2>
-        <p className="text-sm text-muted-foreground">Active content assigned per team member</p>
+        <h2 className="font-semibold">{t("team.workload")}</h2>
+        <p className="text-sm text-muted-foreground">{t("team.workloadDesc")}</p>
       </div>
 
       <div className="divide-y">
@@ -63,7 +65,7 @@ export function TeamWorkload({ users, contentItems }: Props) {
               </div>
 
               <Badge variant="outline" className="shrink-0 tabular-nums">
-                {total} item{total !== 1 ? "s" : ""}
+                {t("team.items", { total })}
               </Badge>
 
               <div className="flex flex-wrap gap-2">
@@ -74,13 +76,13 @@ export function TeamWorkload({ users, contentItems }: Props) {
                     <div key={status} className="flex items-center gap-1.5">
                       <span className={`h-2 w-2 rounded-full ${STATUS_COLORS[status]}`} />
                       <span className="text-sm text-muted-foreground">
-                        {STATUS_LABELS[status]}: <span className="font-medium text-foreground">{count}</span>
+                        {t(`status.${status}`)}: <span className="font-medium text-foreground">{count}</span>
                       </span>
                     </div>
                   );
                 })}
                 {total === 0 && (
-                  <span className="text-sm text-muted-foreground">No assignments</span>
+                  <span className="text-sm text-muted-foreground">{t("team.noAssignments")}</span>
                 )}
               </div>
 
@@ -93,7 +95,7 @@ export function TeamWorkload({ users, contentItems }: Props) {
                     return (
                       <div
                         key={status}
-                        title={`${STATUS_LABELS[status]}: ${count}`}
+                        title={`${t(`status.${status}`)}: ${count}`}
                         className={`${STATUS_COLORS[status]} h-full`}
                         style={{ width: `${pct}%` }}
                       />

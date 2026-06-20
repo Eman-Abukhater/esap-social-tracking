@@ -12,12 +12,14 @@ import {
 } from "recharts";
 
 import type { DashboardStats } from "@/lib/types";
+import { useTranslation } from "@/providers/language-provider";
 
 type Props = {
   data: DashboardStats["productCompletion"];
 };
 
 export function ProductCompletionChart({ data }: Props) {
+  const t = useTranslation();
   const chartData = data.map((entry) => ({
     name: entry.productName,
     completion: entry.completionRate,
@@ -26,9 +28,9 @@ export function ProductCompletionChart({ data }: Props) {
   return (
     <div className="rounded-xl border bg-background p-6 shadow-sm">
       <div className="mb-6">
-        <h2 className="text-lg font-semibold">Product Completion</h2>
+        <h2 className="text-lg font-semibold">{t("dashboard.productCompletion")}</h2>
         <p className="text-sm text-muted-foreground">
-          Published content percentage per product
+          {t("dashboard.productCompletionDesc")}
         </p>
       </div>
 
