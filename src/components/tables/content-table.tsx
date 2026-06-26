@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { memo, useCallback, useMemo, useState } from "react";
 
 import {
   DndContext,
@@ -39,7 +39,7 @@ import {
 } from "@/components/ui/select";
 
 import type { BackendContentItem, ContentItem, Platform, User } from "@/lib/types";
-import { PLATFORMS } from "@/lib/constants";
+import { CONTENT_TYPES, PLATFORMS, PRIORITIES, STATUSES } from "@/lib/constants";
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -48,14 +48,17 @@ function formatDate(date?: string) {
   return new Date(date).toLocaleDateString();
 }
 
+// Large initial gap between items so fractional mid-point inserts stay precise
+// for many operations before a rebalance pass is needed.
+const ORDER_GAP = 1000;
+
 function computeNewOrder(items: BackendContentItem[], fromIndex: number, toIndex: number): number {
-  // arrayMove places the dragged item at toIndex in the new array
   const reordered = arrayMove(items, fromIndex, toIndex);
   const before = reordered[toIndex - 1];
   const after = reordered[toIndex + 1];
   if (!before && !after) return 0;
-  if (!before) return after.order - 1000;
-  if (!after) return before.order + 1000;
+  if (!before) return after.order - ORDER_GAP;
+  if (!after) return before.order + ORDER_GAP;
   return (before.order + after.order) / 2;
 }
 
@@ -64,7 +67,7 @@ function computeNewOrder(items: BackendContentItem[], fromIndex: number, toIndex
 type RowHandlers = {
   users: User[];
   canManageContent: boolean;
-  selectedIds: string[];
+  isSelected: boolean;
   onToggleSelect: (id: string) => void;
   onStatusChange: (id: string, status: ContentItem["status"]) => void;
   onTitleChange: (id: string, title: string) => void;
@@ -79,7 +82,7 @@ type RowHandlers = {
 
 // ── SortableRow ───────────────────────────────────────────────────────────────
 
-function SortableRow({ item, ...h }: { item: BackendContentItem } & RowHandlers) {
+const SortableRow = memo(function SortableRow({ item, ...h }: { item: BackendContentItem } & RowHandlers) {
   const t = useTranslation();
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
     useSortable({ id: item.id });
@@ -87,7 +90,7 @@ function SortableRow({ item, ...h }: { item: BackendContentItem } & RowHandlers)
   const [editingTitle, setEditingTitle] = useState(false);
   const [titleDraft, setTitleDraft] = useState(item.title);
 
-  const isSelected = h.selectedIds.includes(item.id);
+  const isSelected = h.isSelected;
 
   const style = {
     transform: transform
@@ -121,6 +124,7 @@ function SortableRow({ item, ...h }: { item: BackendContentItem } & RowHandlers)
           type="button"
           className="cursor-grab touch-none text-muted-foreground/40 hover:text-muted-foreground active:cursor-grabbing"
           aria-label={t("content.dragToReorder")}
+          data-testid="content-row-drag"
         >
           <GripVertical className="h-4 w-4" />
         </button>
@@ -166,10 +170,9 @@ function SortableRow({ item, ...h }: { item: BackendContentItem } & RowHandlers)
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="post">{t("type.post")}</SelectItem>
-                <SelectItem value="video">{t("type.video")}</SelectItem>
-                <SelectItem value="reel">{t("type.reel")}</SelectItem>
-                <SelectItem value="carousel">{t("type.carousel")}</SelectItem>
+                {CONTENT_TYPES.map((ct) => (
+                  <SelectItem key={ct} value={ct}>{t(`type.${ct}`)}</SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
@@ -229,11 +232,9 @@ function SortableRow({ item, ...h }: { item: BackendContentItem } & RowHandlers)
             <SelectValue>{t(`status.${item.status}`)}</SelectValue>
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="planned">{t("status.planned")}</SelectItem>
-            <SelectItem value="in_progress">{t("status.in_progress")}</SelectItem>
-            <SelectItem value="review">{t("status.review")}</SelectItem>
-            <SelectItem value="done">{t("status.done")}</SelectItem>
-            <SelectItem value="published">{t("status.published")}</SelectItem>
+            {STATUSES.map((s) => (
+              <SelectItem key={s} value={s}>{t(`status.${s}`)}</SelectItem>
+            ))}
           </SelectContent>
         </Select>
       </td>
@@ -290,9 +291,9 @@ function SortableRow({ item, ...h }: { item: BackendContentItem } & RowHandlers)
             <SelectValue>{t(`priority.${item.priority}`)}</SelectValue>
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="low">{t("priority.low")}</SelectItem>
-            <SelectItem value="medium">{t("priority.medium")}</SelectItem>
-            <SelectItem value="high">{t("priority.high")}</SelectItem>
+            {PRIORITIES.map((p) => (
+              <SelectItem key={p} value={p}>{t(`priority.${p}`)}</SelectItem>
+            ))}
           </SelectContent>
         </Select>
       </td>
@@ -316,6 +317,7 @@ function SortableRow({ item, ...h }: { item: BackendContentItem } & RowHandlers)
           <button
             type="button"
             aria-label={t("common.viewDetails")}
+            data-testid="content-row-details"
             className="text-muted-foreground hover:text-foreground"
             onClick={() => h.onOpenDetails(item)}
           >
@@ -325,6 +327,7 @@ function SortableRow({ item, ...h }: { item: BackendContentItem } & RowHandlers)
             <button
               type="button"
               aria-label={t("common.delete")}
+              data-testid="content-row-delete"
               className="text-muted-foreground hover:text-destructive"
               onClick={() => h.onDelete(item.id)}
             >
@@ -335,7 +338,7 @@ function SortableRow({ item, ...h }: { item: BackendContentItem } & RowHandlers)
       </td>
     </tr>
   );
-}
+});
 
 // ── ContentTable ──────────────────────────────────────────────────────────────
 
@@ -390,6 +393,14 @@ export function ContentTable({
   const currentUser = useCurrentUser();
   const canManageContent = currentUser?.role === "admin" || currentUser?.role === "manager";
 
+  const handleToggleSelect = useCallback(
+    (id: string) =>
+      setSelectedIds((prev) =>
+        prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+      ),
+    []
+  );
+
   const sensors = useSensors(
     useSensor(PointerSensor),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
@@ -442,19 +453,36 @@ export function ContentTable({
     );
   }
 
-  const rowHandlers: Omit<RowHandlers, "selectedIds" | "onToggleSelect"> = {
-    users,
-    canManageContent,
-    onStatusChange,
-    onTitleChange,
-    onTypeChange,
-    onPriorityChange,
-    onScheduledDateChange,
-    onPlatformsChange,
-    onAssignChange,
-    onOpenDetails,
-    onDelete: (id: string) => onBulkDelete([id]),
-  };
+  const rowHandlers: Omit<RowHandlers, "isSelected"> = useMemo(
+    () => ({
+      users,
+      canManageContent,
+      onToggleSelect: handleToggleSelect,
+      onStatusChange,
+      onTitleChange,
+      onTypeChange,
+      onPriorityChange,
+      onScheduledDateChange,
+      onPlatformsChange,
+      onAssignChange,
+      onOpenDetails,
+      onDelete: (id: string) => onBulkDelete([id]),
+    }),
+    [
+      users,
+      canManageContent,
+      handleToggleSelect,
+      onStatusChange,
+      onTitleChange,
+      onTypeChange,
+      onPriorityChange,
+      onScheduledDateChange,
+      onPlatformsChange,
+      onAssignChange,
+      onOpenDetails,
+      onBulkDelete,
+    ]
+  );
 
   return (
     <Card className="overflow-hidden">
@@ -483,11 +511,9 @@ export function ContentTable({
                 <SelectValue placeholder={t("content.bulkStatus")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="planned">{t("status.planned")}</SelectItem>
-                <SelectItem value="in_progress">{t("status.in_progress")}</SelectItem>
-                <SelectItem value="review">{t("status.review")}</SelectItem>
-                <SelectItem value="done">{t("status.done")}</SelectItem>
-                <SelectItem value="published">{t("status.published")}</SelectItem>
+                {STATUSES.map((s) => (
+                  <SelectItem key={s} value={s}>{t(`status.${s}`)}</SelectItem>
+                ))}
               </SelectContent>
             </Select>
 
@@ -558,12 +584,7 @@ export function ContentTable({
                   <SortableRow
                     key={item.id}
                     item={item}
-                    selectedIds={selectedIds}
-                    onToggleSelect={(id) =>
-                      setSelectedIds((prev) =>
-                        prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
-                      )
-                    }
+                    isSelected={selectedIds.includes(item.id)}
                     {...rowHandlers}
                   />
                 ))}

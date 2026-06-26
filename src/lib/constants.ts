@@ -8,6 +8,10 @@ export const STATUSES: ContentStatus[] = [
   "planned", "in_progress", "review", "done", "published",
 ];
 
+export const CONTENT_TYPES: ContentType[] = ["post", "video", "reel", "carousel"];
+
+export const PRIORITIES: Priority[] = ["low", "medium", "high"];
+
 export const STATUS_LABELS: Record<ContentStatus, string> = {
   planned: "Planned",
   in_progress: "In Progress",
