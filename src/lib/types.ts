@@ -79,6 +79,14 @@ export type BackendActivityLog = Omit<
   contentItem?: ContentItem | null;
 };
 
+export type PaginatedActivityLogs = {
+  logs: BackendActivityLog[];
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+};
+
 export type ActivityAction =
   | "created"
   | "updated"

@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { apiFetch } from "@/lib/api";
-import type { BackendActivityLog } from "@/lib/types";
+import type { BackendActivityLog, PaginatedActivityLogs } from "@/lib/types";
 import type { ActivityFiltersState } from "@/components/activity/activity-filters";
 
 const defaultFilters: ActivityFiltersState = {
@@ -28,6 +28,8 @@ export function useActivityLogs(filters: ActivityFiltersState = defaultFilters) 
     queryKey: ["activity-logs", filters],
 
     queryFn: () =>
-      apiFetch<BackendActivityLog[]>(`/activity?${params.toString()}`),
+      apiFetch<PaginatedActivityLogs>(`/activity?${params.toString()}`).then(
+        (r) => r.logs as BackendActivityLog[]
+      ),
   });
 }
