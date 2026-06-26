@@ -106,8 +106,8 @@ export function Sidebar() {
         <div className="flex items-center justify-between gap-2 rounded-lg border px-3 py-2">
           <div className="min-w-0">
             <p className="truncate text-sm font-medium">{currentUser.name}</p>
-            <p className="truncate text-xs capitalize text-muted-foreground">
-              {currentUser.role}
+            <p className="truncate text-xs text-muted-foreground">
+              {t(`role.${currentUser.role}`)}
             </p>
           </div>
 

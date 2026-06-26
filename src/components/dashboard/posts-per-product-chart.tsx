@@ -39,7 +39,7 @@ export function PostsPerProductChart({ data }: PostsPerProductChartProps) {
               <CartesianGrid vertical={false} />
               <XAxis dataKey="name" tickLine={false} axisLine={false} />
               <YAxis tickLine={false} axisLine={false} allowDecimals={false} />
-              <Tooltip />
+              <Tooltip formatter={(value) => [value, t("dashboard.posts")]} />
               <Bar dataKey="total" radius={[10, 10, 0, 0]} maxBarSize={120}>
                 {chartData.map((_entry, index) => (
                   <Cell key={index} fill={`var(--chart-${(index % 5) + 1})`} />

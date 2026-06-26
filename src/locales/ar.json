@@ -155,6 +155,8 @@
   "content.toast.orderFailed": "فشل حفظ الترتيب",
   "content.toast.deleted": "تم حذف العناصر المحددة",
   "content.toast.deleteFailed": "فشل حذف العناصر المحددة",
+  "content.toast.detailsSaved": "تم حفظ التفاصيل",
+  "content.toast.detailsFailed": "فشل حفظ التفاصيل",
 
   "filters.searchByTitle": "البحث بالعنوان...",
   "filters.product": "المنتج",
@@ -210,6 +212,7 @@
   "activity.action.statusChanged": "غيّر حالة",
   "activity.action.assigned": "أسند",
   "activity.action.deleted": "حذف",
+  "activity.action.this": "هذا",
   "activity.field.status": "الحالة",
   "activity.field.title": "العنوان",
   "activity.field.priority": "الأولوية",
@@ -228,6 +231,12 @@
   "team.workloadDesc": "المحتوى النشط المُسند لكل عضو في الفريق",
   "team.items": "{total} عنصر",
   "team.noAssignments": "لا توجد مهام",
+
+  "role.admin": "مدير النظام",
+  "role.manager": "مدير",
+  "role.contributor": "مساهم",
+
+  "dashboard.posts": "منشورات",
 
   "common.cancel": "إلغاء",
   "common.delete": "حذف",

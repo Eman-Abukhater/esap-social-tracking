@@ -2,6 +2,7 @@
 
 import {
   Cell,
+  Legend,
   Pie,
   PieChart,
   ResponsiveContainer,
@@ -41,14 +42,14 @@ export function PlatformDistributionChart({
                 data={chartData}
                 dataKey="value"
                 nameKey="name"
-                outerRadius={110}
-                label
+                outerRadius={100}
               >
                 {chartData.map((entry, index) => (
                   <Cell key={entry.name} fill={`var(--chart-${(index % 5) + 1})`} />
                 ))}
               </Pie>
-              <Tooltip />
+              <Tooltip formatter={(value) => [value, t("dashboard.posts")]} />
+              <Legend />
             </PieChart>
           </ResponsiveContainer>
         </div>

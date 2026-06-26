@@ -1,13 +1,17 @@
+"use client";
+
 import { Badge } from "@/components/ui/badge";
 import { Card, CardAction, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { UserAvatar } from "@/components/user-avatar";
 import type { User } from "@/lib/types";
+import { useTranslation } from "@/providers/language-provider";
 
 type TeamListProps = {
   users: User[];
 };
 
 export function TeamList({ users }: TeamListProps) {
+  const t = useTranslation();
   return (
     <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
       {users.map((user) => (
@@ -21,7 +25,7 @@ export function TeamList({ users }: TeamListProps) {
               </div>
             </div>
             <CardAction>
-              <Badge variant="outline" className="capitalize">{user.role}</Badge>
+              <Badge variant="outline">{t(`role.${user.role}`)}</Badge>
             </CardAction>
           </CardHeader>
         </Card>

@@ -155,6 +155,8 @@
   "content.toast.orderFailed": "Failed to save order",
   "content.toast.deleted": "Selected items deleted",
   "content.toast.deleteFailed": "Failed to delete selected items",
+  "content.toast.detailsSaved": "Details saved",
+  "content.toast.detailsFailed": "Failed to save details",
 
   "filters.searchByTitle": "Search by title...",
   "filters.product": "Product",
@@ -210,6 +212,7 @@
   "activity.action.statusChanged": "changed status of",
   "activity.action.assigned": "assigned",
   "activity.action.deleted": "deleted",
+  "activity.action.this": "this",
   "activity.field.status": "Status",
   "activity.field.title": "Title",
   "activity.field.priority": "Priority",
@@ -228,6 +231,12 @@
   "team.workloadDesc": "Active content assigned per team member",
   "team.items": "{total} item(s)",
   "team.noAssignments": "No assignments",
+
+  "role.admin": "Admin",
+  "role.manager": "Manager",
+  "role.contributor": "Contributor",
+
+  "dashboard.posts": "Posts",
 
   "common.cancel": "Cancel",
   "common.delete": "Delete",

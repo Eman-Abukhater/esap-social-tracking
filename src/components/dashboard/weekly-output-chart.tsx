@@ -12,7 +12,7 @@ import {
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import type { DashboardStats } from "@/lib/types";
-import { useTranslation } from "@/providers/language-provider";
+import { useLanguage, useTranslation } from "@/providers/language-provider";
 
 type Props = {
   data: DashboardStats["weeklyOutput"];
@@ -20,8 +20,10 @@ type Props = {
 
 export function WeeklyOutputChart({ data }: Props) {
   const t = useTranslation();
+  const { language } = useLanguage();
+  const locale = language === "ar" ? "ar-SA" : "en-US";
   const chartData = data.map((entry) => ({
-    date: new Date(entry.date).toLocaleDateString(),
+    date: new Date(entry.date).toLocaleDateString(locale, { month: "short", day: "numeric" }),
     total: entry.total,
   }));
 
@@ -38,7 +40,7 @@ export function WeeklyOutputChart({ data }: Props) {
               <CartesianGrid vertical={false} />
               <XAxis dataKey="date" tickLine={false} axisLine={false} />
               <YAxis tickLine={false} axisLine={false} allowDecimals={false} />
-              <Tooltip />
+              <Tooltip formatter={(value) => [value, t("dashboard.posts")]} />
               <Line
                 type="monotone"
                 dataKey="total"

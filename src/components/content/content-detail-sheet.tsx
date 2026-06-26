@@ -141,8 +141,8 @@ function ActivityTimeline({ logs, isLoading }: { logs: BackendActivityLog[]; isL
               <div className="min-w-0 flex-1 pb-1">
                 <div className="flex items-baseline justify-between gap-2">
                   <p className="text-sm">
-                    <span className="font-medium">{log.changedBy?.name ?? "Someone"}</span>
-                    {" "}<span className="text-muted-foreground">{ACTION_KEYS[log.action] ? t(ACTION_KEYS[log.action]) : log.action} this</span>
+                    <span className="font-medium">{log.changedBy?.name ?? t("activity.unknownUser")}</span>
+                    {" "}<span className="text-muted-foreground">{ACTION_KEYS[log.action] ? t(ACTION_KEYS[log.action]) : log.action} {t("activity.action.this")}</span>
                   </p>
                   <span className="shrink-0 text-xs text-muted-foreground">{timeAgo(log.timestamp, t)}</span>
                 </div>
@@ -196,8 +196,8 @@ export function ContentDetailSheet({ item, open, onOpenChange }: Props) {
         },
       },
       {
-        onSuccess: () => toast.success("Details saved"),
-        onError: () => toast.error("Failed to save details"),
+        onSuccess: () => toast.success(t("content.toast.detailsSaved")),
+        onError: () => toast.error(t("content.toast.detailsFailed")),
       }
     );
   }
@@ -239,11 +239,11 @@ export function ContentDetailSheet({ item, open, onOpenChange }: Props) {
 
             <span className={`flex items-center gap-1.5 rounded-md border px-2 py-0.5 text-xs font-medium ${statusStyle.badge}`}>
               <span className={`h-1.5 w-1.5 rounded-full ${statusStyle.dot}`} />
-              {item?.status.replace("_", " ") ?? ""}
+              {item ? t(`status.${item.status}`) : ""}
             </span>
 
-            <span className={`rounded-md border px-2 py-0.5 text-xs font-medium capitalize ${priorityStyle.badge}`}>
-              {item?.priority ?? ""}
+            <span className={`rounded-md border px-2 py-0.5 text-xs font-medium ${priorityStyle.badge}`}>
+              {item ? t(`priority.${item.priority}`) : ""}
             </span>
           </div>
 

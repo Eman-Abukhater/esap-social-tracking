@@ -119,10 +119,10 @@ export function ProductDetails({
               {contentItems.map((item) => (
                 <TableRow key={item.id}>
                   <TableCell>{item.title}</TableCell>
-                  <TableCell>{item.status}</TableCell>
+                  <TableCell>{t(`status.${item.status}`)}</TableCell>
                   <TableCell>{item.assignedTo?.name}</TableCell>
                   <TableCell>
-                    <Badge variant="outline">{item.priority}</Badge>
+                    <Badge variant="outline">{t(`priority.${item.priority}`)}</Badge>
                   </TableCell>
                 </TableRow>
               ))}

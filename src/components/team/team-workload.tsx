@@ -61,7 +61,7 @@ export function TeamWorkload({ users, contentItems }: Props) {
                 <UserAvatar user={user} size="default" />
                 <div className="min-w-0">
                   <p className="truncate font-medium">{user.name}</p>
-                  <p className="text-xs capitalize text-muted-foreground">{user.role}</p>
+                  <p className="text-xs text-muted-foreground">{t(`role.${user.role}`)}</p>
                 </div>
               </div>
 
