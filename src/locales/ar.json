@@ -231,8 +231,12 @@
 
   "common.cancel": "إلغاء",
   "common.delete": "حذف",
+  "common.confirm": "تأكيد",
   "common.viewDetails": "عرض التفاصيل",
   "common.platforms": "المنصات",
   "common.permissionDenied": "ليس لديك صلاحية لتنفيذ هذا الإجراء",
-  "common.permissionDeniedOwnership": "يمكنك فقط تعديل المحتوى الذي أنشأته أو المُسند إليك"
+  "common.permissionDeniedOwnership": "يمكنك فقط تعديل المحتوى الذي أنشأته أو المُسند إليك",
+
+  "content.confirmDelete.title": "حذف المحتوى",
+  "content.confirmDelete.description": "هل أنت متأكد أنك تريد حذف {count} عنصر؟ لا يمكن التراجع عن هذا الإجراء."
 }

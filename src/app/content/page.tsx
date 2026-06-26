@@ -11,6 +11,16 @@ import {
   type ContentFiltersState,
 } from "@/components/content/content-filters";
 import { ContentTable } from "@/components/tables/content-table";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { useAssignContentItem } from "@/hooks/use-assign-content-item";
@@ -55,6 +65,7 @@ export default function ContentPage() {
   const [pageSize, setPageSize] = useState(10);
   const [detailItem, setDetailItem] = useState<BackendContentItem | null>(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
+  const [pendingDeleteIds, setPendingDeleteIds] = useState<string[] | null>(null);
 
   function handleFiltersChange(newFilters: ContentFiltersState) {
     setFilters(newFilters);
@@ -236,16 +247,22 @@ export default function ContentPage() {
   }
 
   function handleBulkDelete(contentIds: string[]) {
+    setPendingDeleteIds(contentIds);
+  }
+
+  function confirmDelete() {
+    if (!pendingDeleteIds) return;
     bulkDeleteMutation.mutate(
-      {
-        contentIds,
-      },
+      { contentIds: pendingDeleteIds },
       {
         onSuccess: () => {
           toast.success(t("content.toast.deleted"));
         },
         onError: (error) => {
           showError(error, "content.toast.deleteFailed");
+        },
+        onSettled: () => {
+          setPendingDeleteIds(null);
         },
       }
     );
@@ -314,6 +331,26 @@ export default function ContentPage() {
         open={isDetailOpen}
         onOpenChange={setIsDetailOpen}
       />
+
+      <AlertDialog
+        open={pendingDeleteIds !== null}
+        onOpenChange={(open) => { if (!open) setPendingDeleteIds(null); }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t("content.confirmDelete.title")}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t("content.confirmDelete.description", { count: pendingDeleteIds?.length ?? 0 })}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t("common.cancel")}</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDelete}>
+              {t("common.delete")}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

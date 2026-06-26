@@ -231,8 +231,12 @@
 
   "common.cancel": "Cancel",
   "common.delete": "Delete",
+  "common.confirm": "Confirm",
   "common.viewDetails": "View details",
   "common.platforms": "Platforms",
   "common.permissionDenied": "You don't have permission to perform this action",
-  "common.permissionDeniedOwnership": "You can only edit content you created or are assigned to"
+  "common.permissionDeniedOwnership": "You can only edit content you created or are assigned to",
+
+  "content.confirmDelete.title": "Delete Content",
+  "content.confirmDelete.description": "Are you sure you want to delete {count} item(s)? This action cannot be undone."
 }
