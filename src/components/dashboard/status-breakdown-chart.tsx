@@ -12,14 +12,14 @@ import {
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import type { DashboardStats } from "@/lib/types";
-import { useTranslation } from "@/providers/language-provider";
+import { useLanguage } from "@/providers/language-provider";
 
 type Props = {
   data: DashboardStats["statusBreakdown"];
 };
 
 export function StatusBreakdownChart({ data }: Props) {
-  const t = useTranslation();
+  const { t, formatNumber } = useLanguage();
   const chartData = data.map((entry) => ({
     name: t(`status.${entry.status}`),
     total: entry.total,
@@ -37,8 +37,8 @@ export function StatusBreakdownChart({ data }: Props) {
             <BarChart data={chartData}>
               <CartesianGrid vertical={false} />
               <XAxis dataKey="name" tickLine={false} axisLine={false} />
-              <YAxis tickLine={false} axisLine={false} allowDecimals={false} />
-              <Tooltip formatter={(value) => [value, t("dashboard.posts")]} />
+              <YAxis tickLine={false} axisLine={false} allowDecimals={false} tickFormatter={(v) => formatNumber(v)} />
+              <Tooltip formatter={(value) => [typeof value === "number" ? formatNumber(value) : value, t("dashboard.posts")]} />
               <Bar dataKey="total" radius={[10, 10, 0, 0]} maxBarSize={80} fill="var(--chart-1)" />
             </BarChart>
           </ResponsiveContainer>

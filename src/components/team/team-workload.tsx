@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { UserAvatar } from "@/components/user-avatar";
 import type { BackendContentItem, ContentStatus, User } from "@/lib/types";
 import { STATUSES } from "@/lib/constants";
-import { useTranslation } from "@/providers/language-provider";
+import { useLanguage } from "@/providers/language-provider";
 
 type Props = {
   users: User[];
@@ -22,7 +22,7 @@ const STATUS_COLORS: Record<ContentStatus, string> = {
 };
 
 export function TeamWorkload({ users, contentItems }: Props) {
-  const t = useTranslation();
+  const { t, formatNumber } = useLanguage();
   const workloadByUser = useMemo(() => {
     const map = new Map<string, Record<ContentStatus, number>>();
 
@@ -77,7 +77,7 @@ export function TeamWorkload({ users, contentItems }: Props) {
                     <div key={status} className="flex items-center gap-1.5">
                       <span className={`h-2 w-2 rounded-full ${STATUS_COLORS[status]}`} />
                       <span className="text-sm text-muted-foreground">
-                        {t(`status.${status}`)}: <span className="font-medium text-foreground">{count}</span>
+                        {t(`status.${status}`)}: <span className="font-medium text-foreground">{formatNumber(count)}</span>
                       </span>
                     </div>
                   );

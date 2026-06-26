@@ -20,7 +20,7 @@ type Props = {
 
 export function WeeklyOutputChart({ data }: Props) {
   const t = useTranslation();
-  const { language } = useLanguage();
+  const { language, formatNumber } = useLanguage();
   const locale = language === "ar" ? "ar-SA" : "en-US";
   const chartData = data.map((entry) => ({
     date: new Date(entry.date).toLocaleDateString(locale, { month: "short", day: "numeric" }),
@@ -39,8 +39,8 @@ export function WeeklyOutputChart({ data }: Props) {
             <LineChart data={chartData}>
               <CartesianGrid vertical={false} />
               <XAxis dataKey="date" tickLine={false} axisLine={false} />
-              <YAxis tickLine={false} axisLine={false} allowDecimals={false} />
-              <Tooltip formatter={(value) => [value, t("dashboard.posts")]} />
+              <YAxis tickLine={false} axisLine={false} allowDecimals={false} tickFormatter={(v) => formatNumber(v)} />
+              <Tooltip formatter={(value) => [typeof value === "number" ? formatNumber(value) : value, t("dashboard.posts")]} />
               <Line
                 type="monotone"
                 dataKey="total"

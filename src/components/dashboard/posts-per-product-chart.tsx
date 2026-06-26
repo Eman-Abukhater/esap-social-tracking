@@ -13,14 +13,14 @@ import {
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import type { DashboardStats } from "@/lib/types";
-import { useTranslation } from "@/providers/language-provider";
+import { useLanguage } from "@/providers/language-provider";
 
 type PostsPerProductChartProps = {
   data: DashboardStats["postsPerProduct"];
 };
 
 export function PostsPerProductChart({ data }: PostsPerProductChartProps) {
-  const t = useTranslation();
+  const { t, formatNumber } = useLanguage();
   const chartData = data.map((entry) => ({
     name: entry.productName,
     total: entry.total,
@@ -38,8 +38,8 @@ export function PostsPerProductChart({ data }: PostsPerProductChartProps) {
             <BarChart data={chartData}>
               <CartesianGrid vertical={false} />
               <XAxis dataKey="name" tickLine={false} axisLine={false} />
-              <YAxis tickLine={false} axisLine={false} allowDecimals={false} />
-              <Tooltip formatter={(value) => [value, t("dashboard.posts")]} />
+              <YAxis tickLine={false} axisLine={false} allowDecimals={false} tickFormatter={(v) => formatNumber(v)} />
+              <Tooltip formatter={(value) => [typeof value === "number" ? formatNumber(value) : value, t("dashboard.posts")]} />
               <Bar dataKey="total" radius={[10, 10, 0, 0]} maxBarSize={120}>
                 {chartData.map((_entry, index) => (
                   <Cell key={index} fill={`var(--chart-${(index % 5) + 1})`} />

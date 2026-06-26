@@ -11,7 +11,7 @@ import {
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import type { DashboardStats } from "@/lib/types";
-import { useTranslation } from "@/providers/language-provider";
+import { useLanguage } from "@/providers/language-provider";
 
 type PlatformDistributionChartProps = {
   data: DashboardStats["platformDistribution"];
@@ -20,7 +20,7 @@ type PlatformDistributionChartProps = {
 export function PlatformDistributionChart({
   data,
 }: PlatformDistributionChartProps) {
-  const t = useTranslation();
+  const { t, formatNumber } = useLanguage();
   const chartData = data
     .filter((entry) => entry.total > 0)
     .map((entry) => ({
@@ -48,7 +48,7 @@ export function PlatformDistributionChart({
                   <Cell key={entry.name} fill={`var(--chart-${(index % 5) + 1})`} />
                 ))}
               </Pie>
-              <Tooltip formatter={(value) => [value, t("dashboard.posts")]} />
+              <Tooltip formatter={(value) => [typeof value === "number" ? formatNumber(value) : value, t("dashboard.posts")]} />
               <Legend />
             </PieChart>
           </ResponsiveContainer>

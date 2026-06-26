@@ -33,6 +33,7 @@ type LanguageContextValue = {
   setLanguage: (lang: Language) => void;
   toggleLanguage: () => void;
   t: (key: string, params?: Record<string, string | number>) => string;
+  formatNumber: (value: number) => string;
 };
 
 const LanguageContext = createContext<LanguageContextValue | null>(null);
@@ -52,21 +53,28 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     setLanguage(language === "ar" ? "en" : "ar");
   }, [language, setLanguage]);
 
+  const formatNumber = useCallback(
+    (value: number): string =>
+      language === "ar" ? value.toLocaleString("ar-SA") : value.toLocaleString("en-US"),
+    [language]
+  );
+
   const t = useCallback(
     (key: string, params?: Record<string, string | number>) => {
       let value = translations[language][key] ?? key;
       if (params) {
         Object.entries(params).forEach(([k, v]) => {
-          value = value.replace(`{${k}}`, String(v));
+          const formatted = typeof v === "number" ? formatNumber(v) : v;
+          value = value.replace(`{${k}}`, String(formatted));
         });
       }
       return value;
     },
-    [language]
+    [language, formatNumber]
   );
 
   return (
-    <LanguageContext.Provider value={{ language, dir, setLanguage, toggleLanguage, t }}>
+    <LanguageContext.Provider value={{ language, dir, setLanguage, toggleLanguage, t, formatNumber }}>
       {children}
     </LanguageContext.Provider>
   );

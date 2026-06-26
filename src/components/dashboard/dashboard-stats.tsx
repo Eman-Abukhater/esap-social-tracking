@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card";
 import type { DashboardStats as DashboardStatsData } from "@/lib/types";
-import { useTranslation } from "@/providers/language-provider";
+import { useLanguage } from "@/providers/language-provider";
 
 type DashboardStatsProps = {
   totals: DashboardStatsData["totals"];
@@ -10,7 +10,7 @@ type DashboardStatsProps = {
 };
 
 export function DashboardStats({ totals, typeBreakdown }: DashboardStatsProps) {
-  const t = useTranslation();
+  const { t, formatNumber } = useLanguage();
   const totalVideos = typeBreakdown.find((t) => t.type === "video")?.total ?? 0;
 
   const stats = [
@@ -44,7 +44,7 @@ export function DashboardStats({ totals, typeBreakdown }: DashboardStatsProps) {
             <CardDescription>{stat.title}</CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="text-3xl font-bold">{stat.value}</p>
+            <p className="text-3xl font-bold">{formatNumber(stat.value)}</p>
           </CardContent>
         </Card>
       ))}
