@@ -4,7 +4,7 @@ import Link from "next/link";
 
 import { Badge } from "@/components/ui/badge";
 import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { useTranslation } from "@/providers/language-provider";
+import { useLanguage } from "@/providers/language-provider";
 
 import type { DashboardStats, Product } from "@/lib/types";
 
@@ -17,7 +17,7 @@ export function ProductsOverview({
   products,
   productCompletion,
 }: ProductsOverviewProps) {
-  const t = useTranslation();
+  const { t, formatNumber } = useLanguage();
   const statsByProductId = new Map(
     productCompletion.map((entry) => [entry.productId, entry])
   );
@@ -46,22 +46,22 @@ export function ProductsOverview({
                 </div>
                 <CardDescription>{product.description}</CardDescription>
                 <CardAction>
-                  <Badge variant="outline">{completionRate}%</Badge>
+                  <Badge variant="outline">{formatNumber(completionRate)}%</Badge>
                 </CardAction>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-3 gap-3 text-sm">
                   <div>
                     <p className="text-muted-foreground">{t("products.total")}</p>
-                    <p className="text-xl font-bold">{total}</p>
+                    <p className="text-xl font-bold">{formatNumber(total)}</p>
                   </div>
                   <div>
                     <p className="text-muted-foreground">{t("products.published")}</p>
-                    <p className="text-xl font-bold">{published}</p>
+                    <p className="text-xl font-bold">{formatNumber(published)}</p>
                   </div>
                   <div>
                     <p className="text-muted-foreground">{t("products.completion")}</p>
-                    <p className="text-xl font-bold">{completionRate}%</p>
+                    <p className="text-xl font-bold">{formatNumber(completionRate)}%</p>
                   </div>
                 </div>
               </CardContent>

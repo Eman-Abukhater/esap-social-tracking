@@ -6,7 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { PlatformDistributionChart } from "@/components/dashboard/platform-distribution-chart";
 import { WeeklyOutputChart } from "@/components/dashboard/weekly-output-chart";
 import { useDashboardStats } from "@/hooks/use-dashboard-stats";
-import { useTranslation } from "@/providers/language-provider";
+import { useLanguage } from "@/providers/language-provider";
 
 import type {
   BackendContentItem,
@@ -24,7 +24,7 @@ export function ProductDetails({
   product,
   contentItems,
 }: ProductDetailsProps) {
-  const t = useTranslation();
+  const { t, formatNumber } = useLanguage();
   const { data: stats, isLoading: isStatsLoading } = useDashboardStats(
     product.id
   );
@@ -74,7 +74,7 @@ export function ProductDetails({
               <StatCard
                 key={entry.status}
                 title={statusLabels[entry.status]}
-                value={entry.total}
+                value={formatNumber(entry.total)}
               />
             ))}
           </div>
@@ -84,13 +84,13 @@ export function ProductDetails({
               <StatCard
                 key={entry.type}
                 title={typeLabels[entry.type]}
-                value={entry.total}
+                value={formatNumber(entry.total)}
               />
             ))}
 
             <StatCard
               title={t("products.completionRate")}
-              value={`${stats.completionRate}%`}
+              value={`${formatNumber(stats.completionRate)}%`}
             />
           </div>
 
